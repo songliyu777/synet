@@ -5,6 +5,7 @@ import io.netty.channel.*;
 import io.netty.util.concurrent.EventExecutor;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.ScheduledFuture;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
@@ -20,6 +21,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 public class main {
+
+    public static String GetThreadId() {
+        return " [tid:" + Thread.currentThread().getId() + "]";
+    }
+
+
     public static void main(String[] args) {
         System.out.println("==>0:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
         Consumer<ServerBootstrap> test1 = (param) -> {
@@ -64,7 +71,6 @@ public class main {
 //                }).doOnSuccess((param) -> System.out.println("==>exi success id:" + i + " Thread id:" + Thread.currentThread().getId()))
 //                        .delaySubscription(Duration.ofSeconds(3)).block();
             }
-
 
             channelFuture.sync();
             System.out.println("disposeNow");
