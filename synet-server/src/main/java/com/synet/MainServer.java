@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-public class main {
+public class MainServer {
 
     public static String GetThreadId() {
         return " [tid:" + Thread.currentThread().getId() + "]";
@@ -47,30 +47,30 @@ public class main {
             ChannelFuture channelFuture = server.channel()
                     .closeFuture();
 //                    .addListener(ChannelFutureListener.CLOSE);
-            for (int i = 1; i <= 100; i++) {
-                Mono<Integer> mono = Mono.just(new Integer(i));
-                if (i == 100) {
-                    mono.delaySubscription(Duration.ofSeconds(3))
-                            .doOnSuccess((input) -> {
-                                System.out.println("==>end success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-                                channelFuture.channel().close();
-                            })
-                            .subscribe((input) -> System.out.println("==>end mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
-                } else {
-                    mono.delaySubscription(Duration.ofSeconds(3))
-                            .doOnSuccess((input) -> System.out.println("==>success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()))
-                            .subscribe((input) -> System.out.println("==>mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
-                }
-
-//                Mono.create(sink -> {
-//                    System.out.println("==>exi process id:" + i + " Thread id:" + Thread.currentThread().getId());
-//                    if (i == 100) {
-//                        channelFuture.channel().close();
-//                    }
-//                    sink.success();
-//                }).doOnSuccess((param) -> System.out.println("==>exi success id:" + i + " Thread id:" + Thread.currentThread().getId()))
-//                        .delaySubscription(Duration.ofSeconds(3)).block();
-            }
+//            for (int i = 1; i <= 100; i++) {
+//                Mono<Integer> mono = Mono.just(new Integer(i));
+//                if (i == 100) {
+//                    mono.delaySubscription(Duration.ofSeconds(3))
+//                            .doOnSuccess((input) -> {
+//                                System.out.println("==>end success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
+//                                channelFuture.channel().close();
+//                            })
+//                            .subscribe((input) -> System.out.println("==>end mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
+//                } else {
+//                    mono.delaySubscription(Duration.ofSeconds(3))
+//                            .doOnSuccess((input) -> System.out.println("==>success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()))
+//                            .subscribe((input) -> System.out.println("==>mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
+//                }
+//
+////                Mono.create(sink -> {
+////                    System.out.println("==>exi process id:" + i + " Thread id:" + Thread.currentThread().getId());
+////                    if (i == 100) {
+////                        channelFuture.channel().close();
+////                    }
+////                    sink.success();
+////                }).doOnSuccess((param) -> System.out.println("==>exi success id:" + i + " Thread id:" + Thread.currentThread().getId()))
+////                        .delaySubscription(Duration.ofSeconds(3)).block();
+//            }
 
             channelFuture.sync();
             System.out.println("disposeNow");

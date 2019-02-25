@@ -3,7 +3,7 @@ package com.synet;
 import org.junit.Test;
 
 
-public class mainTest {
+public class MainServerTest {
 
     @Test
     public void testFlux() {

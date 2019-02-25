@@ -297,7 +297,7 @@ public class FluxTest {
             e.printStackTrace();
         }
         myEventProcessor.shutdown();
-        System.out.println("main thread exit");
+        System.out.println("MainServer thread exit");
     }
 
     @Test
@@ -331,7 +331,7 @@ public class FluxTest {
             e.printStackTrace();
         }
         myEventProcessor.shutdown();
-        System.out.println("main thread exit");
+        System.out.println("MainServer thread exit");
     }
 
     /**
@@ -351,12 +351,27 @@ public class FluxTest {
 //        });
     }
 
+    /**
+     * The handle method is a bit different: it is an instance method, meaning that it is chained on an existing source (as are the common operators).
+     * It is present in both Mono and Flux.
+     *
+     * handle 的不同在于可以跳过一些元素，不用
+     *
+     * */
+
+    public String alphabet(int letterNumber) {
+        if (letterNumber < 1 || letterNumber > 26) {
+            return null;
+        }
+        int letterIndexAscii = 'A' + letterNumber - 1;
+        return "" + (char) letterIndexAscii;
+    }
 
     @Test
     public void testFlux_13() {
         Flux<String> alphabet = Flux.just(-1, 30, 13, 9, 20)
                 .handle((i, sink) -> {
-                    String letter = String.valueOf(i);
+                    String letter = alphabet(i);
                     if (letter != null)
                         sink.next(letter);
                 });
