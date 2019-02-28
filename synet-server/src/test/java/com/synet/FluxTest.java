@@ -3,6 +3,8 @@ package com.synet;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.hamcrest.Condition;
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
 import reactor.core.Disposable;
@@ -51,7 +53,6 @@ public class FluxTest {
      * Runnable completeConsumer,
      * Consumer<? super Subscription> subscriptionConsumer);处理值、错误和成功完成，但也要处理此订阅调用生成的订阅。
      */
-
 
     @Test
     public void testFlux_Create() {
@@ -262,11 +263,9 @@ public class FluxTest {
         }
     }
 
-
-    public static MyEventProcessor myEventProcessor = new ScheduledSingleListenerEventProcessor();
-
     @Test
     public void testFlux_10() {
+        MyEventProcessor myEventProcessor = new ScheduledSingleListenerEventProcessor();
         Flux.create(sink -> {
             myEventProcessor.register(
                     new MyEventListener<String>() {
@@ -302,6 +301,7 @@ public class FluxTest {
 
     @Test
     public void testFlux_11() {
+        MyEventProcessor myEventProcessor = new ScheduledSingleListenerEventProcessor();
         Flux<String> bridge = Flux.push(sink -> {
             myEventProcessor.register(
                     new MyEventListener<String>() {

@@ -1,15 +1,21 @@
 package com.synet;
 
+import com.synet.protocol.IProtocol;
+import com.synet.protocol.TcpNetProtocol;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.util.concurrent.EventExecutor;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.ScheduledFuture;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.netty.ByteBufFlux;
 import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
 
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
@@ -36,12 +42,32 @@ public class MainServer {
         Consumer<DisposableServer> test3 = (param) -> System.out.println("==>3:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
 
         try {
-
             DisposableServer server = TcpServer.create().doOnBind(test1)
                     .doOnBound(test2)
                     .doOnUnbound(test3)
+                    .doOnConnection((c) -> {
+//                        c.onReadIdle(10000, () -> {
+//                            System.out.println("Close:" + GetThreadId());
+//                            c.disposeNow();
+//                        });
+                        System.out.println("Connection");
+                        c.addHandler("frame", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
+                        //c.addHandler("decoder", new TestDecoder());
+                    })
                     .host("127.0.0.1")
                     .port(1234)
+                    .handle((in, out) -> {
+                        System.out.println("handle");
+                        in.receive().map((bb) -> {
+                            try {
+                                return TcpNetProtocol.Parse(bb);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).subscribe((protocol) -> System.out.println("Success"), System.err::println);
+                        return Flux.never();
+                    })
+                    .wiretap(true)
                     .bind()
                     .block();
             ChannelFuture channelFuture = server.channel()
