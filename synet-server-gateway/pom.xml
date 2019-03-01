@@ -15,10 +15,6 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>synet-server-gateway</name>
 	<description>server gateway</description>
-	<properties>
-		<java.version>1.8</java.version>
-		<spring-cloud.version>Finchley.SR2</spring-cloud.version>
-	</properties>
 
 	<dependencies>
 
@@ -44,23 +40,6 @@
 		</dependency>
 
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>${spring-cloud.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.synet.server</groupId>
-				<artifactId>synet-server</artifactId>
-				<version>1.0-SNAPSHOT</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<plugins>
