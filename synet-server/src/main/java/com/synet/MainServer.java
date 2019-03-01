@@ -20,10 +20,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 
 public class MainServer {
@@ -33,77 +30,8 @@ public class MainServer {
     }
 
 
-    public static void main(String[] args) {
-        System.out.println("==>0:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-        Consumer<ServerBootstrap> test1 = (param) -> {
-            System.out.println("==>1:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-        };
-        Consumer<DisposableServer> test2 = (param) -> System.out.println("==>2:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-        Consumer<DisposableServer> test3 = (param) -> System.out.println("==>3:" + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-
-        try {
-            DisposableServer server = TcpServer.create().doOnBind(test1)
-                    .doOnBound(test2)
-                    .doOnUnbound(test3)
-                    .doOnConnection((c) -> {
-//                        c.onReadIdle(10000, () -> {
-//                            System.out.println("Close:" + GetThreadId());
-//                            c.disposeNow();
-//                        });
-                        System.out.println("Connection");
-                        c.addHandler("frame", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
-                        //c.addHandler("decoder", new TestDecoder());
-                    })
-                    .host("127.0.0.1")
-                    .port(1234)
-                    .handle((in, out) -> {
-                        System.out.println("handle");
-                        in.receive().map((bb) -> {
-                            try {
-                                return TcpNetProtocol.Parse(bb);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }).subscribe((protocol) -> System.out.println("Success"), System.err::println);
-                        return Flux.never();
-                    })
-                    .wiretap(true)
-                    .bind()
-                    .block();
-            ChannelFuture channelFuture = server.channel()
-                    .closeFuture();
-//                    .addListener(ChannelFutureListener.CLOSE);
-//            for (int i = 1; i <= 100; i++) {
-//                Mono<Integer> mono = Mono.just(new Integer(i));
-//                if (i == 100) {
-//                    mono.delaySubscription(Duration.ofSeconds(3))
-//                            .doOnSuccess((input) -> {
-//                                System.out.println("==>end success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
-//                                channelFuture.channel().close();
-//                            })
-//                            .subscribe((input) -> System.out.println("==>end mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
-//                } else {
-//                    mono.delaySubscription(Duration.ofSeconds(3))
-//                            .doOnSuccess((input) -> System.out.println("==>success id:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()))
-//                            .subscribe((input) -> System.out.println("==>mono:" + input + " Thread id:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName()));
-//                }
-//
-////                Mono.create(sink -> {
-////                    System.out.println("==>exi process id:" + i + " Thread id:" + Thread.currentThread().getId());
-////                    if (i == 100) {
-////                        channelFuture.channel().close();
-////                    }
-////                    sink.success();
-////                }).doOnSuccess((param) -> System.out.println("==>exi success id:" + i + " Thread id:" + Thread.currentThread().getId()))
-////                        .delaySubscription(Duration.ofSeconds(3)).block();
-//            }
-
-            channelFuture.sync();
-            System.out.println("disposeNow");
-            server.disposeNow();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("==>6:" + Thread.currentThread().getId() + "name:" + Thread.currentThread().getName());
+    public static void main(String[] args) throws InterruptedException {
+        TcpNetServer server = new TcpNetServer("",1234);
+        server.CreateServer();
     }
 }
