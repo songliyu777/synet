@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 public class TcpNetServer {
 
-    CountDownLatch latch = new CountDownLatch(1);
+    CountDownLatch latch;
 
     private String ip = "";
     private int port = 0;
@@ -34,6 +34,8 @@ public class TcpNetServer {
     Consumer<TcpNetProtocol> success;
     Consumer<Throwable> error;
 
+    DisposableServer server;
+
     public TcpNetServer(String ip, int port) {
         this.ip = ip;
         this.port = port;
@@ -52,50 +54,53 @@ public class TcpNetServer {
     }
 
     Runnable createRun = () -> {
-        DisposableServer server = TcpServer.create().doOnBind(OnBind)
-                .doOnBound(OnBound)
-                .doOnUnbound(OnUnbound)
-                .doOnConnection((c) -> {
-                    if (readIdleTime > 0) {
-                        c.onReadIdle(readIdleTime, () -> {
-                            c.disposeNow();
-                        });
-                    }
-                    if (writeIdleTime > 0) {
-                        c.onWriteIdle(writeIdleTime, () -> {
-                            c.disposeNow();
-                        });
-                    }
-                    c.addHandler("frame", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
-                })
-                .host(ip)
-                .port(port)
-                .handle((in, out) -> {
-                    in.receive().map((bb) -> {
-                        try {
-                            return TcpNetProtocol.Parse(bb);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).subscribe((protocol) -> System.out.println("Success"), System.err::println);
-                    return Flux.never();
-                })
-                .wiretap(true)
-                .bind()
-                .block();
 
-        closeFuture = server.channel().closeFuture();
         try {
+            server = TcpServer.create().doOnBind(OnBind)
+                    .doOnBound(OnBound)
+                    .doOnUnbound(OnUnbound)
+                    .doOnConnection((c) -> {
+                        if (readIdleTime > 0) {
+                            c.onReadIdle(readIdleTime, () -> {
+                                c.disposeNow();
+                            });
+                        }
+                        if (writeIdleTime > 0) {
+                            c.onWriteIdle(writeIdleTime, () -> {
+                                c.disposeNow();
+                            });
+                        }
+                        c.addHandler("frame", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
+                    })
+                    .host(ip)
+                    .port(port)
+                    .handle((in, out) -> {
+                        in.receive().map((bb) -> {
+                            try {
+                                return TcpNetProtocol.Parse(bb);
+                            } catch (Exception e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).subscribe((protocol) -> System.out.println("Success"), System.err::println);
+                        return Flux.never();
+                    })
+                    .wiretap(true)
+                    .bind()
+                    .block();
+
+            closeFuture = server.channel().closeFuture();
             closeFuture.sync();
-        } catch (InterruptedException e) {
+            server.disposeNow();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        server.disposeNow();
-
     };
 
     public void CreateServer() throws InterruptedException {
+        latch = new CountDownLatch(1);
         new Thread(createRun).start();
-        latch.await(5, TimeUnit.SECONDS);
+        if (!latch.await(5, TimeUnit.SECONDS)) {
+            throw new InterruptedException();
+        }
     }
 }
