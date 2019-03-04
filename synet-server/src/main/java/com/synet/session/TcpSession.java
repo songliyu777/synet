@@ -1,5 +1,6 @@
 package com.synet.session;
 
+import reactor.core.publisher.Flux;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
 
@@ -23,7 +24,7 @@ public class TcpSession implements ISession {
 
     @Override
     public void Send(byte[] data) {
-        ByteBufFlux f = ByteBufFlux.fromInbound(ByteBufFlux.just(data));
+        ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
         connection.outbound().send(f).then().subscribe();
     }
 }

@@ -2,6 +2,7 @@ package com.synet;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import reactor.core.publisher.Flux;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
 import reactor.netty.tcp.TcpClient;
@@ -61,7 +62,7 @@ public class TcpNetClient {
     }
 
     public void Send(byte[] data) {
-        ByteBufFlux f = ByteBufFlux.fromInbound(ByteBufFlux.just(data));
+        ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
         client.outbound().send(f).then().subscribe();
     }
 }
