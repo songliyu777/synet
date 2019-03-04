@@ -65,6 +65,10 @@ public class TcpNetServer {
         this.error = error;
     }
 
+    public DisposableServer GetServer() {
+        return server;
+    }
+
     public String GetThreadId() {
         return " [tid:" + Thread.currentThread().getName() + "]";
     }
