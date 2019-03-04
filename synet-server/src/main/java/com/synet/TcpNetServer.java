@@ -140,10 +140,18 @@ public class TcpNetServer {
         return scheduler;
     }
 
+    /**
+     * subscribe on work thread
+     * @param doOnConnection
+     */
     public void DoOnConnection(Consumer<? super Connection> doOnConnection) {
         this.doOnConnection = doOnConnection;
     }
 
+    /**
+     * subscribe on work thread
+     * @param doOnDisconnection
+     */
     public void DoOnDisconnection(Consumer<? super Connection> doOnDisconnection) {
         this.doOnDisconnection = doOnDisconnection;
     }
