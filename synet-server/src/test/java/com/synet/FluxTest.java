@@ -1,24 +1,14 @@
 package com.synet;
 
-import io.netty.channel.embedded.EmbeddedChannel;
-import org.hamcrest.Condition;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.reactivestreams.Subscription;
-import reactor.core.Disposable;
 import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -229,8 +219,8 @@ public class FluxTest {
 
     public static class ScheduledSingleListenerEventProcessor implements MyEventProcessor {
         private MyEventListener<String> eventListener;
-        Scheduler executor = Schedulers.newParallel("scheduler", 4);
-        //Scheduler.Worker executor = Schedulers.newParallel(4,"scheduler").createWorker();
+        Scheduler executor = Schedulers.newParallel("com/synet/scheduler", 4);
+        //Scheduler.Worker executor = Schedulers.newParallel(4,"com.synet.scheduler").createWorker();
         //private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
         @Override

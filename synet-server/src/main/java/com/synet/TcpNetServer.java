@@ -3,8 +3,15 @@ package com.synet;
 import com.synet.protocol.TcpNetProtocol;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
+import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
 
@@ -12,6 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+@Slf4j
 public class TcpNetServer {
 
     CountDownLatch latch;
@@ -31,10 +39,14 @@ public class TcpNetServer {
     Consumer<DisposableServer> OnUnbound = (param) -> {
     };
 
-    Consumer<TcpNetProtocol> success;
-    Consumer<Throwable> error;
+    Consumer<TcpNetProtocol> process = (protocol) -> log.warn("process need implement");
+    Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());
 
     DisposableServer server;
+    Scheduler scheduler;
+
+    Consumer<? super Connection> doOnConnection = (connection) -> log.warn("==>doOnConnection need implement" + GetThreadId());
+    Consumer<? super Connection> doOnDisconnection = (connection) -> log.warn("doOnDisconnection need implement" + GetThreadId());
 
     public TcpNetServer(String ip, int port) {
         this.ip = ip;
@@ -49,8 +61,12 @@ public class TcpNetServer {
     }
 
     public void SetProcessHandler(Consumer<TcpNetProtocol> process, Consumer<Throwable> error) {
-        this.success = success;
+        this.process = process;
         this.error = error;
+    }
+
+    public String GetThreadId() {
+        return " [tid:" + Thread.currentThread().getName() + "]";
     }
 
     Runnable createRun = () -> {
@@ -59,38 +75,50 @@ public class TcpNetServer {
             server = TcpServer.create().doOnBind(OnBind)
                     .doOnBound(OnBound)
                     .doOnUnbound(OnUnbound)
-                    .doOnConnection((c) -> {
+                    .doOnConnection((connection) -> {
                         if (readIdleTime > 0) {
-                            c.onReadIdle(readIdleTime, () -> {
-                                c.disposeNow();
+                            connection.onReadIdle(readIdleTime, () -> {
+                                connection.disposeNow();
                             });
                         }
                         if (writeIdleTime > 0) {
-                            c.onWriteIdle(writeIdleTime, () -> {
-                                c.disposeNow();
+                            connection.onWriteIdle(writeIdleTime, () -> {
+                                connection.disposeNow();
                             });
                         }
-                        c.addHandler("frame", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
+                        connection.addHandler("server handler", new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+                                Connection c = () -> ctx.channel();
+                                Mono.just(c).subscribeOn(scheduler).subscribe(doOnDisconnection);
+                                ctx.fireChannelUnregistered();
+                            }
+                        });
+                        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
+                        Mono.just(connection).subscribeOn(scheduler).subscribe(doOnConnection);
                     })
                     .host(ip)
                     .port(port)
                     .handle((in, out) -> {
-                        in.receive().map((bb) -> {
-                            try {
-                                return TcpNetProtocol.Parse(bb);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        }).subscribe((protocol) -> System.out.println("Success"), System.err::println);
+                        in.withConnection((connection) -> {
+                            in.receive().map((bb) -> {
+                                try {
+                                    return TcpNetProtocol.Parse(bb);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }).subscribe(process, error);
+                        });
                         return Flux.never();
                     })
                     .wiretap(true)
                     .bind()
                     .block();
-
+            scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
             closeFuture.sync();
             server.disposeNow();
+            scheduler.dispose();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -102,5 +130,17 @@ public class TcpNetServer {
         if (!latch.await(5, TimeUnit.SECONDS)) {
             throw new InterruptedException();
         }
+    }
+
+    public Scheduler GetSingleWorkScheduler() {
+        return scheduler;
+    }
+
+    public void DoOnConnection(Consumer<? super Connection> doOnConnection) {
+        this.doOnConnection = doOnConnection;
+    }
+
+    public void DoOnDisconnection(Consumer<? super Connection> doOnDisconnection) {
+        this.doOnDisconnection = doOnDisconnection;
     }
 }

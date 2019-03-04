@@ -59,16 +59,16 @@ public class SchedulersTest {
 
         CountDownLatch latch = new CountDownLatch(1);
 
-        Scheduler s = Schedulers.newParallel("parallel-scheduler", 4);
+        Scheduler s = Schedulers.newParallel("parallel-com.synet.scheduler", 4);
 
         final Flux<String> flux = Flux
                 .range(1, 2)
                 .map(i -> { System.out.println("1:"+ i + GetThreadId());return 10 + i;}) //第一个线程中执行
                 .publishOn(s)
-                .map(i -> { System.out.println("2:"+ i + GetThreadId());return "value " + i;}); //scheduler 线程中执行
+                .map(i -> { System.out.println("2:"+ i + GetThreadId());return "value " + i;}); //com.synet.scheduler 线程中执行
 
         new Thread(() -> flux.subscribe((str) -> {
-            System.out.println("3:" + str + GetThreadId());//scheduler 线程中执行
+            System.out.println("3:" + str + GetThreadId());//com.synet.scheduler 线程中执行
             latch.countDown();
         })).start();
 
@@ -80,22 +80,22 @@ public class SchedulersTest {
     public void testSubscribeOn() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
 
-        Scheduler s = Schedulers.newParallel("parallel-scheduler", 4);
+        Scheduler s = Schedulers.newParallel("parallel-com.synet.scheduler", 4);
 
         final Flux<String> flux = Flux
                 .range(1, 2)
                 .map(i -> {
-                    System.out.println("1:" + GetThreadId()); //scheduler 线程中执行
+                    System.out.println("1:" + GetThreadId()); //com.synet.scheduler 线程中执行
                     return 10 + i;
                 })
                 .subscribeOn(s)
                 .map(i -> {
-                    System.out.println("1:" + GetThreadId()); //scheduler 线程中执行
+                    System.out.println("1:" + GetThreadId()); //com.synet.scheduler 线程中执行
                     return "value " + i;
                 });
 
         new Thread(() -> flux.subscribe((str) -> {
-            System.out.println("3:" + str + GetThreadId());//scheduler 线程中执行
+            System.out.println("3:" + str + GetThreadId());//com.synet.scheduler 线程中执行
             latch.countDown();
         })).start();
 
