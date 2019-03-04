@@ -7,7 +7,7 @@ public class TcpNetProtocol implements IProtocol {
     ProtocolBody body;
     ProtocolHead head;
 
-    public static TcpNetProtocol Parse(ByteBuf buf) throws Exception {
+    public static TcpNetProtocol Parse(ByteBuf buf) throws RuntimeException {
 
         TcpNetProtocol protocol = new TcpNetProtocol();
         //设置封包头

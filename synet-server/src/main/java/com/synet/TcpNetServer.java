@@ -1,6 +1,8 @@
 package com.synet;
 
 import com.synet.protocol.TcpNetProtocol;
+import com.synet.session.ISession;
+import com.synet.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +13,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
@@ -45,8 +48,8 @@ public class TcpNetServer {
     DisposableServer server;
     Scheduler scheduler;
 
-    Consumer<? super Connection> doOnConnection = (connection) -> log.warn("==>doOnConnection need implement" + GetThreadId());
-    Consumer<? super Connection> doOnDisconnection = (connection) -> log.warn("doOnDisconnection need implement" + GetThreadId());
+    Consumer<? super ISession> doOnConnection = (session) -> log.warn("doOnConnection to be implement");
+    Consumer<? super ISession> doOnDisconnection = (session) -> log.warn("doOnDisconnection to be implement");
 
     public TcpNetServer(String ip, int port) {
         this.ip = ip;
@@ -60,17 +63,16 @@ public class TcpNetServer {
         this.writeIdleTime = writeIdleTime;
     }
 
-    public void SetProcessHandler(Consumer<TcpNetProtocol> process, Consumer<Throwable> error) {
+    public void SetProcessHandler(Consumer<TcpNetProtocol> process) {
         this.process = process;
+    }
+
+    public void SetErrorHandler(Consumer<Throwable> error) {
         this.error = error;
     }
 
     public DisposableServer GetServer() {
         return server;
-    }
-
-    public String GetThreadId() {
-        return " [tid:" + Thread.currentThread().getName() + "]";
     }
 
     Runnable createRun = () -> {
@@ -94,24 +96,26 @@ public class TcpNetServer {
                             @Override
                             public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
                                 Connection c = () -> ctx.channel();
-                                Mono.just(c).subscribeOn(scheduler).subscribe(doOnDisconnection);
+                                Mono.just(c)
+                                        .map(ct -> SessionManager.GetInstance().RemoveSession(ct.channel().attr(SessionManager.channel_session_id).get()))
+                                        .subscribeOn(scheduler)
+                                        .subscribe(doOnDisconnection, error);
                                 ctx.fireChannelUnregistered();
                             }
                         });
                         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
-                        Mono.just(connection).subscribeOn(scheduler).subscribe(doOnConnection);
+                        //连接成功调度到工作线程进行连接绑定
+                        Mono.just(connection)
+                                .map(c -> SessionManager.GetInstance().AddSession(SessionManager.GetInstance().NewTcpSession(c)))
+                                .subscribeOn(scheduler)
+                                .subscribe(doOnConnection, error);
                     })
                     .host(ip)
                     .port(port)
                     .handle((in, out) -> {
                         in.withConnection((connection) -> {
-                            in.receive().map((bb) -> {
-                                try {
-                                    return TcpNetProtocol.Parse(bb);
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }).subscribe(process, error);
+                            in.receive().map((bb) -> TcpNetProtocol.Parse(bb)
+                            ).subscribe(process, error);
                         });
                         return Flux.never();
                     })
@@ -142,17 +146,26 @@ public class TcpNetServer {
 
     /**
      * subscribe on work thread
+     *
      * @param doOnConnection
      */
-    public void DoOnConnection(Consumer<? super Connection> doOnConnection) {
+    public void DoOnConnection(Consumer<? super ISession> doOnConnection) {
         this.doOnConnection = doOnConnection;
     }
 
     /**
      * subscribe on work thread
+     *
      * @param doOnDisconnection
      */
-    public void DoOnDisconnection(Consumer<? super Connection> doOnDisconnection) {
+    public void DoOnDisconnection(Consumer<? super ISession> doOnDisconnection) {
         this.doOnDisconnection = doOnDisconnection;
+    }
+
+    public void Send(long id, byte[] data) {
+        Mono.just(id)
+                .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
+                .subscribeOn(scheduler)
+                .subscribe(session -> session.Send(data), error);
     }
 }

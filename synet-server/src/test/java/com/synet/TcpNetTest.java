@@ -20,7 +20,7 @@ public class TcpNetTest {
         server.SetProcessHandler((protocol) -> {
             System.out.println("Success");
             latch.countDown();
-        }, System.err::println);
+        });
 
         server.DoOnConnection(c->System.out.println("OnConnection:" + c));
         server.DoOnDisconnection(c->System.out.println("OnDisconnection:" + c));
