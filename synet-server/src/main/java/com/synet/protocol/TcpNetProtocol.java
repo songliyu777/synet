@@ -30,7 +30,26 @@ public class TcpNetProtocol implements IProtocol {
         return protocol;
     }
 
-    private TcpNetProtocol() {
+    public static TcpNetProtocol create(byte head, byte version, int length, int serial, short command, byte[] body, long session) {
+
+        TcpNetProtocol protocol = new TcpNetProtocol();
+        //设置封包头
+        protocol.head.setHead(head);
+        protocol.head.setVersion(version);
+        protocol.head.setLength(length);
+        protocol.head.setSerial(serial);
+        protocol.head.setCmd(command);
+        protocol.body.setBytes(body);
+
+        //加密
+        //decode(bytes);
+        protocol.head.setChecksum((short) 0);
+
+        return protocol;
+    }
+
+
+    protected TcpNetProtocol() {
         body = new ProtocolBody();
         head = new ProtocolHead();
     }
@@ -45,7 +64,11 @@ public class TcpNetProtocol implements IProtocol {
         return body;
     }
 
-    public void decode(byte[] bytes) throws ProtocolPaseExcetion {
+    public short decode(byte[] bytes) throws ProtocolPaseExcetion {
         throw new ProtocolPaseExcetion("tcp decode");
+    }
+
+    public short encode(byte[] bytes) throws ProtocolPaseExcetion {
+        throw new ProtocolPaseExcetion("tcp encode");
     }
 }

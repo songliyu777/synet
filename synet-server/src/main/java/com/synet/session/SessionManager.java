@@ -22,11 +22,14 @@ public class SessionManager {
 
     public static final AttributeKey<Long> channel_session_id = AttributeKey.valueOf("channel_session_id");
 
+    protected ISession emptySession = new EmptySession();
+
     public long GenerateId() {
         return id_gen.incrementAndGet();
     }
 
     public ISession AddSession(ISession session) throws RuntimeException {
+        log.debug("AddSession id[" + session.GetId() + "]");
         if (sessions.containsKey(session.GetId())) {
             throw new SessionException("exist session key");
         }
@@ -35,6 +38,7 @@ public class SessionManager {
     }
 
     public ISession RemoveSession(long id) throws RuntimeException {
+        log.debug("RemoveSession id[" + id + "]");
         if (sessions.containsKey(id)) {
             ISession session = sessions.get(id);
             sessions.remove(id);
@@ -47,13 +51,13 @@ public class SessionManager {
         return new TcpSession(GenerateId(), c);
     }
 
-    public TcpSession GetTcpSession(long id) throws RuntimeException {
+    public ISession GetTcpSession(long id) throws RuntimeException {
         if (!sessions.containsKey(id)) {
-            throw new SessionException("no tcp session key");
+            return emptySession;
         }
         ISession session = sessions.get(id);
-        if(session instanceof TcpSession){
-            return (TcpSession) sessions.get(id);
+        if (session instanceof TcpSession) {
+            return sessions.get(id);
         }
 
         throw new SessionException("session is not TcpSession" + session);
