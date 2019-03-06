@@ -15,6 +15,7 @@ public class TcpSession implements ISession {
             throw new SessionException("connection.channel().isInActive()");
         }
         connection.channel().attr(SessionManager.channel_session_id).set(id);
+        this.id = id;
     }
 
     @Override

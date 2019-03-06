@@ -26,6 +26,7 @@
         <module>synet-server</module>
         <module>synet-eureka-register</module>
         <module>synet-server-gateway</module>
+        <module>synet-server-logic</module>
     </modules>
 
     <dependencyManagement>
