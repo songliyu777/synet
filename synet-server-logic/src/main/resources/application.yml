@@ -1,0 +1,15 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: server-logic
+    serviceId: server-logic
+
+eureka:
+  instance:
+    hostname: localhost
+    port: 17000
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
