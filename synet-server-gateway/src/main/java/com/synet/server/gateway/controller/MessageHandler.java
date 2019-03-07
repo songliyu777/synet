@@ -1,4 +1,4 @@
-package com.synet.server.gateway.handler;
+package com.synet.server.gateway.controller;
 
 import com.synet.server.gateway.service.TcpNetService;
 import org.springframework.beans.factory.annotation.Autowired;

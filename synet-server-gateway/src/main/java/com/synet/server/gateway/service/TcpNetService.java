@@ -2,6 +2,8 @@ package com.synet.server.gateway.service;
 
 import com.synet.TcpNetServer;
 import com.synet.protocol.TcpNetProtocol;
+import com.synet.server.gateway.feign.MessageClient;
+import com.synet.server.gateway.protobuf.TestOuterClass;
 import com.synet.server.gateway.protocol.ProtocolHeadDefine;
 import com.synet.session.ISession;
 import lombok.extern.slf4j.Slf4j;
@@ -14,16 +16,21 @@ import java.util.function.Consumer;
 @Service
 public class TcpNetService {
 
+    @Autowired
+    MessageClient feignclient;
+
     TcpNetServer server;
 
     Consumer<TcpNetProtocol> process = protocol -> {
+        TestOuterClass.Test test = feignclient.test();
+        System.err.println(test.getName() + ":" + test.getPassword());
     };
     Consumer<Throwable> error = error -> {
         log.error(error.toString());
     };
     Consumer<? super ISession> doOnConnection = session -> {
 
-        TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF, ProtocolHeadDefine.VERSION, 0, 0, (short) 0, null, 0);
+        //TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF, ProtocolHeadDefine.VERSION, 0, 0, (short) 0, null, 0);
     };
 
     @Autowired

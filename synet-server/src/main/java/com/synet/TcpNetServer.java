@@ -91,7 +91,7 @@ public class TcpNetServer {
                                 connection.disposeNow();
                             });
                         }
-                        connection.addHandler("server handler", new ChannelInboundHandlerAdapter() {
+                        connection.addHandler("server controller", new ChannelInboundHandlerAdapter() {
                             @Override
                             public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
                                 //连接中断通道关闭调度到工作线程进行ISession的移除
