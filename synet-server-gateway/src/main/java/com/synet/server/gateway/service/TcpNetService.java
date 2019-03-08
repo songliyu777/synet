@@ -1,5 +1,6 @@
 package com.synet.server.gateway.service;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.synet.TcpNetServer;
 import com.synet.protocol.TcpNetProtocol;
 import com.synet.server.gateway.feign.MessageClient;
@@ -22,8 +23,13 @@ public class TcpNetService {
     TcpNetServer server;
 
     Consumer<TcpNetProtocol> process = protocol -> {
-        TestOuterClass.Test test = feignclient.test();
-        System.err.println(test.getName() + ":" + test.getPassword());
+        try {
+            byte[] buf = feignclient.test();
+            TestOuterClass.Test test = TestOuterClass.Test.parseFrom(buf);
+            System.err.println(test.getName() + ":" + test.getPassword());
+        } catch (InvalidProtocolBufferException e) {
+           throw new RuntimeException(e);
+        }
     };
     Consumer<Throwable> error = error -> {
         log.error(error.toString());

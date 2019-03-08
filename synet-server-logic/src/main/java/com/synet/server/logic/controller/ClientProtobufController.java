@@ -1,7 +1,7 @@
 package com.synet.server.logic.controller;
 
-import com.google.protobuf.GeneratedMessageV3;
 import com.synet.server.logic.protobuf.TestOuterClass;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -24,9 +24,9 @@ public class ClientProtobufController {
     }
 
 
-    @RequestMapping(value = "/test", method = POST, consumes = "application/x-protobuf", produces = "application/x-protobuf")
-    public Mono<TestOuterClass.Test> test() {
+    @RequestMapping(value = "/test", method = POST, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public Mono<byte[]> test() {
         TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("123").setPassword("456").build();
-        return Mono.just(test);
+        return Mono.just(test.toByteArray());
     }
 }

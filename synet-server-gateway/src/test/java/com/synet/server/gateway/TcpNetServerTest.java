@@ -25,7 +25,7 @@ public class TcpNetServerTest {
                     .doOnSuccess((t) -> client.Send(a))
                     .block();
         }
-
+        Thread.sleep(10000);
         latch.countDown();
 
         Assert.assertTrue("finished", latch.await(5, TimeUnit.SECONDS));
