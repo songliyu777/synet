@@ -164,5 +164,7 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.20" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-java:3.7.0-rc1" level="project" />
+    <orderEntry type="library" name="Maven: io.github.reactivefeign:feign-reactive-core:unknown" level="project" />
+    <orderEntry type="library" name="Maven: io.github.reactivefeign:feign-reactor-webclient:0.0.1-SNAPSHOT" level="project" />
   </component>
 </module>
