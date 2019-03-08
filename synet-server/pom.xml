@@ -13,7 +13,7 @@
 
     <groupId>com.synet.server</groupId>
     <artifactId>synet-server</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <build>
         <plugins>
             <plugin>
