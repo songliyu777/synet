@@ -5,6 +5,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.nio.ByteBuffer;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -25,8 +28,8 @@ public class ClientProtobufController {
 
 
     @RequestMapping(value = "/test", method = POST, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public Mono<byte[]> test() {
+    public Mono<ByteBuffer> test() {
         TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("123").setPassword("456").build();
-        return Mono.just(test.toByteArray());
+        return Mono.just(ByteBuffer.wrap(test.toByteArray()));
     }
 }

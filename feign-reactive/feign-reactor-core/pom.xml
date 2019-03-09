@@ -27,7 +27,7 @@
 
     <artifactId>feign-reactor-core</artifactId>
     <packaging>jar</packaging>
-    <name>Feign Reactive Core</name>
+    <name>feign-reactor-core</name>
 
     <properties>
         <main.basedir>${project.basedir}/..</main.basedir>

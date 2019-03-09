@@ -1,35 +1,51 @@
 package com.synet.server.gateway.service;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.netflix.client.ClientFactory;
+import com.netflix.client.DefaultLoadBalancerRetryHandler;
+import com.netflix.client.config.CommonClientConfigKey;
+import com.netflix.client.config.DefaultClientConfigImpl;
+import com.netflix.loadbalancer.AbstractLoadBalancer;
+import com.netflix.loadbalancer.BaseLoadBalancer;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.synet.TcpNetServer;
 import com.synet.protocol.TcpNetProtocol;
 import com.synet.server.gateway.feign.MessageClient;
 import com.synet.server.gateway.protobuf.TestOuterClass;
-import com.synet.server.gateway.protocol.ProtocolHeadDefine;
 import com.synet.session.ISession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactivefeign.ReactiveFeign;
+import reactivefeign.cloud.CloudReactiveFeign;
+import reactor.core.publisher.Mono;
 
+import java.nio.ByteBuffer;
 import java.util.function.Consumer;
+
+import static java.util.Arrays.asList;
 
 @Slf4j
 @Service
 public class TcpNetService {
 
-    @Autowired
     MessageClient feignclient;
 
     TcpNetServer server;
 
     Consumer<TcpNetProtocol> process = protocol -> {
-        try {
-            byte[] buf = feignclient.test();
-            TestOuterClass.Test test = TestOuterClass.Test.parseFrom(buf);
-            System.err.println(test.getName() + ":" + test.getPassword());
-        } catch (InvalidProtocolBufferException e) {
-           throw new RuntimeException(e);
-        }
+
+        Mono<ByteBuffer> buf = feignclient.test();
+        buf.map((b) -> {
+            try {
+                return TestOuterClass.Test.parseFrom(b);
+            } catch (InvalidProtocolBufferException e) {
+                throw new RuntimeException(e);
+            }
+        }).subscribe(t -> System.err.println(t.getName() + ":" + t.getPassword()), System.err::println);
+
     };
     Consumer<Throwable> error = error -> {
         log.error(error.toString());
@@ -41,6 +57,19 @@ public class TcpNetService {
 
     @Autowired
     public TcpNetService() throws Exception {
+
+        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
+        clientConfig.loadDefaultValues();
+        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
+        ILoadBalancer lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-logic", clientConfig);
+        lb.addServers(asList(new Server("localhost", 8000)));
+
+
+        feignclient = CloudReactiveFeign.<MessageClient>builder()
+                .enableLoadBalancer()
+                .target(MessageClient.class, "http://server-logic");
+
+
         server = new TcpNetServer("", 7000, 60000, 120000);
         server.SetProcessHandler(process);
         server.SetErrorHandler(error);
