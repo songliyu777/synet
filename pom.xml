@@ -28,11 +28,12 @@
 
 
     <modules>
+        <module>feign-reactive</module>
         <module>synet-server</module>
+        <module>synet-protobuf</module>
         <module>synet-eureka-register</module>
         <module>synet-server-gateway</module>
         <module>synet-server-logic</module>
-        <module>feign-reactive</module>
     </modules>
 
     <dependencyManagement>
@@ -62,6 +63,12 @@
             <dependency>
                 <groupId>com.synet.server</groupId>
                 <artifactId>synet-server</artifactId>
+                <version>1.0.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.synet.protobuf</groupId>
+                <artifactId>synet-protobuf</artifactId>
                 <version>1.0.0-SNAPSHOT</version>
             </dependency>
 

@@ -1,13 +1,12 @@
 package com.synet.server.logic.controller;
 
-import com.synet.server.logic.protobuf.TestOuterClass;
+import com.synet.protobuf.TestOuterClass;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
