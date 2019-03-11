@@ -1,5 +1,6 @@
 package com.synet.server.logic.controller;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.synet.protobuf.TestOuterClass;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,13 @@ public class ClientProtobufController {
 
 
     @RequestMapping(value = "/test", method = POST, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public Mono<ByteBuffer> test() {
-        TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("123").setPassword("456").build();
+    public Mono<ByteBuffer> test(ByteBuffer body) {
+        TestOuterClass.Test test = null;
+//        try {
+//            test = TestOuterClass.Test.parseFrom(slice);
+//        } catch (InvalidProtocolBufferException e) {
+//            e.printStackTrace();
+//        }
         return Mono.just(ByteBuffer.wrap(test.toByteArray()));
     }
 }

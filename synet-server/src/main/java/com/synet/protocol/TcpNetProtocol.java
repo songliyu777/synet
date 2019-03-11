@@ -1,57 +1,67 @@
 package com.synet.protocol;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class TcpNetProtocol implements IProtocol {
 
-    ProtocolBody body;
-    ProtocolHead head;
+    protected ProtocolHead head;
+    protected ProtocolBody body;
+    protected ByteBuf protocolBuf;
 
-    public static TcpNetProtocol Parse(ByteBuf buf) throws RuntimeException {
+    public static TcpNetProtocol Parse(ByteBuf recvbuf) throws RuntimeException {
 
-        TcpNetProtocol protocol = new TcpNetProtocol();
-        //设置封包头
-        protocol.head.setHead(buf.readByte());
-        protocol.head.setVersion(buf.readByte());
-        protocol.head.setLength(buf.readInt());
-        protocol.head.setSerial(buf.readInt());
-        protocol.head.setChecksum(buf.readShort());
-        protocol.head.setCmd(buf.readShort());
-        //设置封包体
-        int byteLength = buf.readableBytes();
-        byte[] bytes = new byte[byteLength];
-
+        ByteBuf protocolBuf = Unpooled.buffer(recvbuf.readableBytes());
+        recvbuf.readBytes(protocolBuf);
+        TcpNetProtocol protocol = new TcpNetProtocol(protocolBuf);
         //解密
         //decode(bytes);
-
-        buf.getBytes(buf.readerIndex(), bytes);
-        protocol.body.setBytes(bytes);
 
         return protocol;
     }
 
-    public static TcpNetProtocol create(byte head, byte version, int length, int serial, short command, byte[] body, long session) {
+    public static TcpNetProtocol create(byte head, byte version, int serial, short command, byte[] protobuf) {
 
-        TcpNetProtocol protocol = new TcpNetProtocol();
+        ByteBuf protocolBuf = Unpooled.buffer(14 + protobuf.length);
+
+        TcpNetProtocol protocol = new TcpNetProtocol(protocolBuf);
         //设置封包头
         protocol.head.setHead(head);
         protocol.head.setVersion(version);
-        protocol.head.setLength(length);
+        protocol.head.setLength(protobuf.length);
         protocol.head.setSerial(serial);
         protocol.head.setCmd(command);
-        protocol.body.setBytes(body);
 
         //加密
         //decode(bytes);
         protocol.head.setChecksum((short) 0);
+        protocol.body.SetProtobuf(protobuf);
 
         return protocol;
     }
 
+    public byte[] toBodyArray() throws ProtocolExcetion {
+        ByteBuf b = protocolBuf.skipBytes(8);
+        if (!b.hasArray()) {
+            throw new ProtocolExcetion("toBodyArray no array");
+        }
+        return protocolBuf.skipBytes(8).array();
+    }
 
-    protected TcpNetProtocol() {
-        body = new ProtocolBody();
-        head = new ProtocolHead();
+    public byte[] toArray() {
+        return protocolBuf.array();
+    }
+
+    public void release() {
+        if (protocolBuf != null) {
+            protocolBuf.release();
+        }
+    }
+
+    protected TcpNetProtocol(ByteBuf byteBuf) {
+        body = new ProtocolBody(byteBuf);
+        head = new ProtocolHead(byteBuf);
+        protocolBuf = byteBuf;
     }
 
     @Override
@@ -64,11 +74,11 @@ public class TcpNetProtocol implements IProtocol {
         return body;
     }
 
-    public short decode(byte[] bytes) throws ProtocolPaseExcetion {
-        throw new ProtocolPaseExcetion("tcp decode");
+    public short decode(byte[] bytes) throws ProtocolExcetion {
+        throw new ProtocolExcetion("tcp decode");
     }
 
-    public short encode(byte[] bytes) throws ProtocolPaseExcetion {
-        throw new ProtocolPaseExcetion("tcp encode");
+    public short encode(byte[] bytes) throws ProtocolExcetion {
+        throw new ProtocolExcetion("tcp encode");
     }
 }

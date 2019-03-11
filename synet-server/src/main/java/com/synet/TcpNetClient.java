@@ -53,7 +53,7 @@ public class TcpNetClient {
         }
     };
 
-    public void ConnectServer() throws InterruptedException {
+    public void connectServer() throws InterruptedException {
         latch = new CountDownLatch(1);
         new Thread(connect).start();
         if (!latch.await(5, TimeUnit.SECONDS)) {
@@ -61,8 +61,12 @@ public class TcpNetClient {
         }
     }
 
-    public void Send(byte[] data) {
+    public void send(byte[] data) {
         ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
         client.outbound().send(f).then().subscribe();
+    }
+
+    public Connection getConnection() {
+        return client;
     }
 }

@@ -31,12 +31,12 @@ public class TcpNetTest {
 
         TcpNetClient client = new TcpNetClient("127.0.0.1", 1234);
 
-        client.ConnectServer();
+        client.connectServer();
 
         for (int i = 0; i < 10; i++) {
             Mono<Integer> m = Mono.just(i);
             m.delaySubscription(Duration.ofMillis(i * 10))
-                    .doOnSuccess((t) -> client.Send(a))
+                    .doOnSuccess((t) -> client.send(a))
                     .block();
         }
 

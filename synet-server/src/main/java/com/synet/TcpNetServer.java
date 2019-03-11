@@ -41,7 +41,11 @@ public class TcpNetServer {
     Consumer<DisposableServer> OnUnbound = (param) -> {
     };
 
-    Consumer<TcpNetProtocol> process = (protocol) -> log.warn("process need implement");
+    Consumer<TcpNetProtocol> process = (protocol) -> {
+        log.warn("process need implement and protocol need release");
+        protocol.release();
+    };
+
     Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());
 
     DisposableServer server;

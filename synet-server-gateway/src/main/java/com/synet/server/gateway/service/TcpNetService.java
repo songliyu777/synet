@@ -2,14 +2,11 @@ package com.synet.server.gateway.service;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.netflix.client.ClientFactory;
-import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.config.CommonClientConfigKey;
 import com.netflix.client.config.DefaultClientConfigImpl;
-import com.netflix.loadbalancer.AbstractLoadBalancer;
 import com.netflix.loadbalancer.BaseLoadBalancer;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import com.synet.TcpNetServer;
 import com.synet.protobuf.TestOuterClass;
 import com.synet.protocol.TcpNetProtocol;
@@ -18,7 +15,6 @@ import com.synet.session.ISession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactivefeign.ReactiveFeign;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactor.core.publisher.Mono;
 
@@ -37,14 +33,20 @@ public class TcpNetService {
 
     Consumer<TcpNetProtocol> process = protocol -> {
 
-        Mono<ByteBuffer> buf = feignclient.test();
+        Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toBodyArray()));
         buf.map((b) -> {
             try {
                 return TestOuterClass.Test.parseFrom(b);
             } catch (InvalidProtocolBufferException e) {
                 throw new RuntimeException(e);
             }
-        }).subscribe(t -> System.err.println(t.getName() + ":" + t.getPassword()), System.err::println);
+        }).subscribe(t -> {
+            System.err.println(t.getName() + ":" + t.getPassword());
+            protocol.release();
+        }, (e) -> {
+            System.err.println(e);
+            protocol.release();
+        });
 
     };
     Consumer<Throwable> error = error -> {
@@ -55,7 +57,6 @@ public class TcpNetService {
         //TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF, ProtocolHeadDefine.VERSION, 0, 0, (short) 0, null, 0);
     };
 
-    @Autowired
     public TcpNetService() throws Exception {
 
         DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
