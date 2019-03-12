@@ -33,7 +33,7 @@ public class TcpNetService {
 
     Consumer<TcpNetProtocol> process = protocol -> {
 
-        Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toBodyArray()));
+        Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toArray()));
         buf.map((b) -> {
             try {
                 return TestOuterClass.Test.parseFrom(b);

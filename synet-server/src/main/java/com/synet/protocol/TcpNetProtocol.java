@@ -40,14 +40,6 @@ public class TcpNetProtocol implements IProtocol {
         return protocol;
     }
 
-    public byte[] toBodyArray() throws ProtocolExcetion {
-        ByteBuf b = protocolBuf.skipBytes(8);
-        if (!b.hasArray()) {
-            throw new ProtocolExcetion("toBodyArray no array");
-        }
-        return protocolBuf.skipBytes(8).array();
-    }
-
     public byte[] toArray() {
         return protocolBuf.array();
     }

@@ -27,14 +27,14 @@ public class ClientProtobufController {
     }
 
 
-    @RequestMapping(value = "/test", method = POST, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public Mono<ByteBuffer> test(ByteBuffer body) {
-        TestOuterClass.Test test = null;
-//        try {
-//            test = TestOuterClass.Test.parseFrom(slice);
-//        } catch (InvalidProtocolBufferException e) {
-//            e.printStackTrace();
-//        }
-        return Mono.just(ByteBuffer.wrap(test.toByteArray()));
-    }
+//    @RequestMapping(value = "/test", method = POST, consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+//    public Mono<ByteBuffer> test(ByteBuffer body) {
+//        TestOuterClass.Test test = null;
+////        try {
+////            test = TestOuterClass.Test.parseFrom(slice);
+////        } catch (InvalidProtocolBufferException e) {
+////            e.printStackTrace();
+////        }
+//        return Mono.just(ByteBuffer.wrap(test.toByteArray()));
+//    }
 }
