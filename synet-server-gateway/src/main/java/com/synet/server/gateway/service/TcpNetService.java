@@ -32,7 +32,7 @@ public class TcpNetService {
 
         Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toArray()));
         buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
-            server.send(t.getHead().getSession(),t.toArray());
+            server.send(t.getHead().getSession(), t.toArray(), () -> t.release());
             protocol.release();
         }, (e) -> {
             System.err.println(e);
@@ -40,9 +40,7 @@ public class TcpNetService {
         });
 
     };
-    Consumer<Throwable> error = error -> {
-        log.error(error.toString());
-    };
+    Consumer<Throwable> error = error -> error.printStackTrace();
     Consumer<? super ISession> doOnConnection = session -> {
 
         //TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF, ProtocolHeadDefine.VERSION, 0, 0, (short) 0, null, 0);

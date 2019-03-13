@@ -34,6 +34,6 @@ public class PBMessage implements IMessage<AbstractMessage> {
 
     @Override
     public AbstractMessage getMessage() {
-        return null;
+        return message;
     }
 }

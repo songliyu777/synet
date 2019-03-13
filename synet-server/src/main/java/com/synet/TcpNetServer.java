@@ -170,10 +170,10 @@ public class TcpNetServer {
         this.doOnDisconnection = doOnDisconnection;
     }
 
-    public void send(long id, byte[] data) {
+    public void send(long id, byte[] data, Runnable onComplete) {
         Mono.just(id)
                 .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
                 .subscribeOn(scheduler)
-                .subscribe(session -> session.send(data), error);
+                .subscribe(session -> {session.send(data); onComplete.run();}, error);
     }
 }

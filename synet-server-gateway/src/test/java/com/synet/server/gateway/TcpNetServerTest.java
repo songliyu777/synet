@@ -14,44 +14,53 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TcpNetServerTest {
 
     @Test
     public void TcpClientTest() throws InterruptedException {
-        CountDownLatch latch = new CountDownLatch(1);
-
+        int connection_count = 10;
+        CountDownLatch latch_all = new CountDownLatch(connection_count);
+        AtomicInteger revccount = new AtomicInteger();
+        AtomicInteger sendcount = new AtomicInteger();
         TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("input 1").setPassword("input 2").build();
         byte[] protobuf = test.toByteArray();
 
-        for (int i = 0; i < 1; i++) {
+
+        for (int i = 0; i < connection_count; i++) {
+
             TcpNetClient client = new TcpNetClient("127.0.0.1", 7000);
-            client.connectServer();
             client.setProcessHandler((protocol) -> {
                 ByteBuf tmp = Unpooled.buffer(protocol.getSize() - protocol.getHead().headSize);
                 protocol.getBody().getProtobuf(tmp);
                 try {
                     TestOuterClass.Test t = TestOuterClass.Test.parseFrom(tmp.array());
-                    System.out.println(t);
+                    System.err.println("recv:" + revccount.incrementAndGet() + " " + t.getName() + " " + t.getPassword());
                 } catch (InvalidProtocolBufferException e) {
                     e.printStackTrace();
                 }
-                latch.countDown();
+                latch_all.countDown();
+                tmp.release();
                 protocol.release();
             });
+            client.connectServer();
 
-            Mono<TcpNetClient> m = Mono.just(client);
-            m.delaySubscription(Duration.ofMillis(i * 10))
-                    .doOnSuccess((c) -> {
-                        TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
-                        c.send(protocol.toArray());
-                        protocol.release();
-                    })
-                    .block();
+            TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
+            client.send(protocol.toArray());
+            protocol.release();
+
+//            Mono<TcpNetClient> m = Mono.just(client);
+//            m.delaySubscription(Duration.ofMillis(i*10))
+//                    .doOnSuccess((c) -> {
+//                        TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
+//                        c.send(protocol.toArray());
+//                        protocol.release();
+//                    })
+//                    .subscribe();
         }
 
 
-
-        Assert.assertTrue("finished", latch.await(5, TimeUnit.SECONDS));
+        Assert.assertTrue("finished", latch_all.await(30, TimeUnit.SECONDS));
     }
 }

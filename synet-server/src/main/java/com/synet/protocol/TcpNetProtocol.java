@@ -43,8 +43,8 @@ public class TcpNetProtocol implements IProtocol {
     }
 
     public static TcpNetProtocol create(byte head, byte version, int serial, short command, long session, byte[] protobuf) {
-
-        ByteBuf protocolBuf = Unpooled.buffer(ProtocolHead.headSize + protobuf.length);
+        int protobuf_length = protobuf == null ? 0 : protobuf.length;
+        ByteBuf protocolBuf = Unpooled.buffer(ProtocolHead.headSize + protobuf_length);
 
         TcpNetProtocol protocol = new TcpNetProtocol(protocolBuf);
         //设置封包头
@@ -58,7 +58,9 @@ public class TcpNetProtocol implements IProtocol {
         //加密
         //decode(bytes);
         protocol.head.setChecksum((short) 0);
-        protocol.body.setProtobuf(protobuf);
+        if (protobuf_length > 0) {
+            protocol.body.setProtobuf(protobuf);
+        }
 
         return protocol;
     }
@@ -89,7 +91,7 @@ public class TcpNetProtocol implements IProtocol {
         return body;
     }
 
-    public int getSize(){
+    public int getSize() {
         return protocolBuf.readableBytes();
     }
 

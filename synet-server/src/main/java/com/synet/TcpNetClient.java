@@ -28,7 +28,6 @@ public class TcpNetClient {
     };
     Consumer<Connection> OnConnected = (connection) -> {
         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
-        latch.countDown();
     };
     Consumer<Connection> OnDisconnected = (connection) -> {
         System.err.println("Disconnected");
@@ -63,6 +62,8 @@ public class TcpNetClient {
                     })
                     .connect()
                     .block();
+
+            latch.countDown();
 
             ChannelFuture closeFuture = client.channel().closeFuture();
             closeFuture.sync();

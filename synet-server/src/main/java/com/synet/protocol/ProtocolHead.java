@@ -82,7 +82,7 @@ public class ProtocolHead {
      * Session
      */
     public long getSession() {
-        return byteBuf.getShort(TcpNetProtocol.session_index);
+        return byteBuf.getLong(TcpNetProtocol.session_index);
     }
 
     public void setSession(long session) {

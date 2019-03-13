@@ -4,6 +4,8 @@ import reactor.core.publisher.Flux;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class TcpSession implements ISession {
 
     long id;
@@ -22,7 +24,7 @@ public class TcpSession implements ISession {
     public long getId() {
         return id;
     }
-
+    AtomicInteger count = new AtomicInteger();
     @Override
     public void send(byte[] data) {
         ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
