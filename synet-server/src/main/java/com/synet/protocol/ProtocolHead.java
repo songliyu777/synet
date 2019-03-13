@@ -86,6 +86,9 @@ public class ProtocolHead {
     }
 
     public void setSession(long session) {
+        if(byteBuf == null){
+            System.err.println("byteBuf == null");
+        }
         byteBuf.setLong(TcpNetProtocol.session_index, session);
     }
 

@@ -36,7 +36,7 @@ public class TcpNetServer {
     Consumer<ServerBootstrap> OnBind = (param) -> {
     };
     Consumer<DisposableServer> OnBound = (param) -> {
-        latch.countDown();
+
     };
     Consumer<DisposableServer> OnUnbound = (param) -> {
     };
@@ -120,6 +120,18 @@ public class TcpNetServer {
                         in.withConnection((connection) -> {
                             in.receive().map((bb) -> {
                                         TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
+                                        if (protocol == null) {
+                                            System.err.println("protocol == null");
+                                        }
+
+                                        if (connection == null) {
+                                            System.err.println("protocol == null");
+                                        }
+
+                                        if (connection.channel() == null) {
+                                            System.err.println("connection.channel()");
+                                        }
+
                                         protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
                                         return protocol;
                                     }
@@ -132,6 +144,7 @@ public class TcpNetServer {
                     .block();
             scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
+            latch.countDown();
             closeFuture.sync();
             server.disposeNow();
             scheduler.dispose();
@@ -174,6 +187,9 @@ public class TcpNetServer {
         Mono.just(id)
                 .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
                 .subscribeOn(scheduler)
-                .subscribe(session -> {session.send(data); onComplete.run();}, error);
+                .subscribe(session -> {
+                    session.send(data);
+                    onComplete.run();
+                }, error);
     }
 }
