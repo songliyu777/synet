@@ -11,27 +11,15 @@ public class ProtocolBody {
     }
 
     /**
-     * 序列号
-     */
-    public int getSerial() {
-        return byteBuf.getInt(8);
-    }
-
-    /**
-     * 命令
-     */
-    public short getCmd() {
-        return byteBuf.getShort(12);
-    }
-
-    /**
      * protobuf 数据
      */
-    public void GetProtobuf(ByteBuf protobuf) {
-        byteBuf.getBytes(14, protobuf);
+    public void getProtobuf(ByteBuf protobuf) {
+        byteBuf.getBytes(TcpNetProtocol.protobuf_index, protobuf);
     }
 
-    public void SetProtobuf(byte[] protobuf) {
-        byteBuf.setBytes(14, protobuf);
+    public void setProtobuf(byte[] protobuf) {
+        byteBuf.setBytes(TcpNetProtocol.protobuf_index, protobuf);
     }
+
+
 }

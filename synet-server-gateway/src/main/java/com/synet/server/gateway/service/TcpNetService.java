@@ -1,6 +1,5 @@
 package com.synet.server.gateway.service;
 
-import com.google.protobuf.InvalidProtocolBufferException;
 import com.netflix.client.ClientFactory;
 import com.netflix.client.config.CommonClientConfigKey;
 import com.netflix.client.config.DefaultClientConfigImpl;
@@ -8,12 +7,10 @@ import com.netflix.loadbalancer.BaseLoadBalancer;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
 import com.synet.TcpNetServer;
-import com.synet.protobuf.TestOuterClass;
 import com.synet.protocol.TcpNetProtocol;
 import com.synet.server.gateway.feign.MessageClient;
 import com.synet.session.ISession;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactor.core.publisher.Mono;
@@ -34,14 +31,8 @@ public class TcpNetService {
     Consumer<TcpNetProtocol> process = protocol -> {
 
         Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toArray()));
-        buf.map((b) -> {
-            try {
-                return TestOuterClass.Test.parseFrom(b);
-            } catch (InvalidProtocolBufferException e) {
-                throw new RuntimeException(e);
-            }
-        }).subscribe(t -> {
-            System.err.println(t.getName() + ":" + t.getPassword());
+        buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
+            server.send(t.getHead().getSession(),t.toArray());
             protocol.release();
         }, (e) -> {
             System.err.println(e);
@@ -72,9 +63,9 @@ public class TcpNetService {
 
 
         server = new TcpNetServer("", 7000, 60000, 120000);
-        server.SetProcessHandler(process);
-        server.SetErrorHandler(error);
-        server.DoOnConnection(doOnConnection);
-        server.CreateServer();
+        server.setProcessHandler(process);
+        server.setErrorHandler(error);
+        server.doOnConnection(doOnConnection);
+        server.createServer();
     }
 }

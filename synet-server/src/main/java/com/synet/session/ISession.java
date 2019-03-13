@@ -1,7 +1,7 @@
 package com.synet.session;
 
 public interface ISession {
-    long GetId();
+    long getId();
 
-    void Send(byte[] data);
+    void send(byte[] data);
 }

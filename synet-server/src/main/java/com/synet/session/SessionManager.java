@@ -29,11 +29,11 @@ public class SessionManager {
     }
 
     public ISession AddSession(ISession session) throws RuntimeException {
-        log.debug("AddSession id[" + session.GetId() + "]");
-        if (sessions.containsKey(session.GetId())) {
+        log.debug("AddSession id[" + session.getId() + "]");
+        if (sessions.containsKey(session.getId())) {
             throw new SessionException("exist session key");
         }
-        sessions.put(session.GetId(), session);
+        sessions.put(session.getId(), session);
         return session;
     }
 

@@ -66,11 +66,11 @@ public class TcpNetServer {
         this.writeIdleTime = writeIdleTime;
     }
 
-    public void SetProcessHandler(Consumer<TcpNetProtocol> process) {
+    public void setProcessHandler(Consumer<TcpNetProtocol> process) {
         this.process = process;
     }
 
-    public void SetErrorHandler(Consumer<Throwable> error) {
+    public void setErrorHandler(Consumer<Throwable> error) {
         this.error = error;
     }
 
@@ -107,7 +107,7 @@ public class TcpNetServer {
                                 ctx.fireChannelUnregistered();
                             }
                         });
-                        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 8, 0));
+                        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
                         //连接成功调度到工作线程进行连接绑定
                         Mono.just(connection)
                                 .map(c -> SessionManager.GetInstance().AddSession(SessionManager.GetInstance().NewTcpSession(c)))
@@ -118,7 +118,11 @@ public class TcpNetServer {
                     .port(port)
                     .handle((in, out) -> {
                         in.withConnection((connection) -> {
-                            in.receive().map((bb) -> TcpNetProtocol.Parse(bb)
+                            in.receive().map((bb) -> {
+                                        TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
+                                        protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
+                                        return protocol;
+                                    }
                             ).subscribe(process, error);
                         });
                         return Flux.never();
@@ -136,7 +140,7 @@ public class TcpNetServer {
         }
     };
 
-    public void CreateServer() throws InterruptedException {
+    public void createServer() throws InterruptedException {
         latch = new CountDownLatch(1);
         new Thread(createRun).start();
         if (!latch.await(5, TimeUnit.SECONDS)) {
@@ -144,7 +148,7 @@ public class TcpNetServer {
         }
     }
 
-    public Scheduler GetSingleWorkScheduler() {
+    public Scheduler getSingleWorkScheduler() {
         return scheduler;
     }
 
@@ -153,7 +157,7 @@ public class TcpNetServer {
      *
      * @param doOnConnection
      */
-    public void DoOnConnection(Consumer<? super ISession> doOnConnection) {
+    public void doOnConnection(Consumer<? super ISession> doOnConnection) {
         this.doOnConnection = doOnConnection;
     }
 
@@ -162,14 +166,14 @@ public class TcpNetServer {
      *
      * @param doOnDisconnection
      */
-    public void DoOnDisconnection(Consumer<? super ISession> doOnDisconnection) {
+    public void doOnDisconnection(Consumer<? super ISession> doOnDisconnection) {
         this.doOnDisconnection = doOnDisconnection;
     }
 
-    public void Send(long id, byte[] data) {
+    public void send(long id, byte[] data) {
         Mono.just(id)
                 .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
                 .subscribeOn(scheduler)
-                .subscribe(session -> session.Send(data), error);
+                .subscribe(session -> session.send(data), error);
     }
 }

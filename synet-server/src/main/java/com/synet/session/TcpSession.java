@@ -19,12 +19,12 @@ public class TcpSession implements ISession {
     }
 
     @Override
-    public long GetId() {
+    public long getId() {
         return id;
     }
 
     @Override
-    public void Send(byte[] data) {
+    public void send(byte[] data) {
         ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
         connection.outbound().send(f).then().subscribe();
     }

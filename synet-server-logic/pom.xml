@@ -35,6 +35,11 @@
         </dependency>
 
         <dependency>
+            <groupId>com.synet.server</groupId>
+            <artifactId>synet-server</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>com.synet.protobuf</groupId>
             <artifactId>synet-protobuf</artifactId>
         </dependency>

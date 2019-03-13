@@ -1,7 +1,10 @@
 package com.synet;
 
+import com.synet.protocol.TcpNetProtocol;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
@@ -11,6 +14,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+@Slf4j
 public class TcpNetClient {
 
     private String ip = "";
@@ -20,14 +24,22 @@ public class TcpNetClient {
 
     CountDownLatch latch;
 
-    Consumer<Bootstrap> OnConnect = (param) -> {
+    Consumer<Bootstrap> OnConnect = (bootstrap) -> {
     };
-    Consumer<Connection> OnConnected = (param) -> {
+    Consumer<Connection> OnConnected = (connection) -> {
+        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
         latch.countDown();
     };
-    Consumer<Connection> OnDisconnected = (param) -> {
+    Consumer<Connection> OnDisconnected = (connection) -> {
         System.err.println("Disconnected");
     };
+
+    Consumer<TcpNetProtocol> process = (protocol) -> {
+        log.warn("process need implement and protocol need release");
+        protocol.release();
+    };
+
+    Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());
 
     public TcpNetClient(String ip, int port) {
         this.ip = ip;
@@ -42,6 +54,13 @@ public class TcpNetClient {
                     .doOnDisconnected(OnDisconnected)
                     .host(ip)
                     .port(port)
+                    .handle((in, out) ->{
+                        in.withConnection((connection) -> {
+                            in.receive().map((bb) -> TcpNetProtocol.parse(bb)
+                            ).subscribe(process, error);
+                        });
+                        return Flux.never();
+                    })
                     .connect()
                     .block();
 
@@ -68,5 +87,13 @@ public class TcpNetClient {
 
     public Connection getConnection() {
         return client;
+    }
+
+    public void setProcessHandler(Consumer<TcpNetProtocol> process) {
+        this.process = process;
+    }
+
+    public void setErrorHandler(Consumer<Throwable> error) {
+        this.error = error;
     }
 }
