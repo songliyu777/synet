@@ -2,6 +2,8 @@ package com.synet.protocol;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.Objects;
+
 public class ProtocolHead {
 
     public static int headSize = TcpNetProtocol.protobuf_index;
@@ -9,6 +11,7 @@ public class ProtocolHead {
     ByteBuf byteBuf;
 
     public ProtocolHead(ByteBuf byteBuf) {
+        Objects.requireNonNull(byteBuf);
         this.byteBuf = byteBuf;
     }
 
@@ -87,7 +90,7 @@ public class ProtocolHead {
 
     public void setSession(long session) {
         if(byteBuf == null){
-            System.err.println("byteBuf == null");
+            System.err.println("==>byteBuf == null");
         }
         byteBuf.setLong(TcpNetProtocol.session_index, session);
     }

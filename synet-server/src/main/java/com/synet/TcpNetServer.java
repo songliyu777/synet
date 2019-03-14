@@ -17,6 +17,7 @@ import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.tcp.TcpServer;
 
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -100,17 +101,20 @@ public class TcpNetServer {
                             public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
                                 //连接中断通道关闭调度到工作线程进行ISession的移除
                                 Connection c = () -> ctx.channel();
-                                Mono.just(c)
-                                        .map(ct -> SessionManager.GetInstance().RemoveSession(ct.channel().attr(SessionManager.channel_session_id).get()))
+                                long session = c.channel().attr(SessionManager.channel_session_id).get();
+                                Mono.just(session)
+                                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
                                         .subscribeOn(scheduler)
                                         .subscribe(doOnDisconnection, error);
                                 ctx.fireChannelUnregistered();
                             }
                         });
                         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
+                        //先生成session,再投递到工作线程
+                        ISession session = SessionManager.GetInstance().NewTcpSession(connection);
                         //连接成功调度到工作线程进行连接绑定
                         Mono.just(connection)
-                                .map(c -> SessionManager.GetInstance().AddSession(SessionManager.GetInstance().NewTcpSession(c)))
+                                .map(c -> SessionManager.GetInstance().AddSession(session))
                                 .subscribeOn(scheduler)
                                 .subscribe(doOnConnection, error);
                     })
@@ -120,18 +124,6 @@ public class TcpNetServer {
                         in.withConnection((connection) -> {
                             in.receive().map((bb) -> {
                                         TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
-                                        if (protocol == null) {
-                                            System.err.println("protocol == null");
-                                        }
-
-                                        if (connection == null) {
-                                            System.err.println("protocol == null");
-                                        }
-
-                                        if (connection.channel() == null) {
-                                            System.err.println("connection.channel()");
-                                        }
-
                                         protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
                                         return protocol;
                                     }

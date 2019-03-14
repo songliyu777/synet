@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 public class TcpNetProtocol implements IProtocol {
 
@@ -21,8 +22,10 @@ public class TcpNetProtocol implements IProtocol {
     protected ByteBuf protocolBuf;
 
     public static TcpNetProtocol parse(ByteBuf recvbuf) throws RuntimeException {
-
         ByteBuf protocolBuf = Unpooled.buffer(recvbuf.readableBytes());
+        if(protocolBuf == null){
+            System.err.println("==>protocolBuf == null");
+        }
         recvbuf.readBytes(protocolBuf);
         TcpNetProtocol protocol = new TcpNetProtocol(protocolBuf);
         //解密

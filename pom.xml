@@ -34,6 +34,7 @@
         <module>synet-eureka-register</module>
         <module>synet-server-gateway</module>
         <module>synet-server-logic</module>
+        <module>synet-test-jmeter</module>
     </modules>
 
     <dependencyManagement>

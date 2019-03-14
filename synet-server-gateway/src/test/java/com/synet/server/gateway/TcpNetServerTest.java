@@ -20,7 +20,7 @@ public class TcpNetServerTest {
 
     @Test
     public void TcpClientTest() throws InterruptedException {
-        int connection_count = 500;
+        int connection_count = 10000;
         CountDownLatch latch_all = new CountDownLatch(connection_count);
         AtomicInteger revccount = new AtomicInteger();
         AtomicInteger sendcount = new AtomicInteger();
@@ -41,6 +41,7 @@ public class TcpNetServerTest {
                     e.printStackTrace();
                 }
                 latch_all.countDown();
+                client.getConnection().disposeNow();
                 tmp.release();
                 protocol.release();
             });
@@ -61,6 +62,6 @@ public class TcpNetServerTest {
         }
 
 
-        Assert.assertTrue("finished", latch_all.await(30, TimeUnit.SECONDS));
+        Assert.assertTrue("finished", latch_all.await(60, TimeUnit.SECONDS));
     }
 }
