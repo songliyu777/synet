@@ -21,7 +21,7 @@
  * For example, character data or binary data with character length or binary length
  *
  */
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 public abstract class TCPClientDecorator extends AbstractTCPClient {
 

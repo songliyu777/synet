@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.InputStream;
 
@@ -82,7 +82,7 @@ public abstract class AbstractTCPClient implements TCPClient {
 
     /**
      * Default implementation calls {@link TCPClient#read(InputStream)} for backward compatibility
-     * @see org.apache.jmeter.protocol.tcp.sampler.TCPClient#read(java.io.InputStream, org.apache.jmeter.samplers.SampleResult)
+     * @see org.apache.jmeter.protocol.gametcp.sampler.TCPClient#read(java.io.InputStream, org.apache.jmeter.samplers.SampleResult)
      */
     @Override
     public String read(InputStream is, SampleResult sampleResult) throws ReadException {

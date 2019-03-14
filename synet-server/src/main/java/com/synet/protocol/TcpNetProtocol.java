@@ -99,10 +99,10 @@ public class TcpNetProtocol implements IProtocol {
     }
 
     public short decode(byte[] bytes) throws ProtocolExcetion {
-        throw new ProtocolExcetion("tcp decode");
+        throw new ProtocolExcetion("gametcp decode");
     }
 
     public short encode(byte[] bytes) throws ProtocolExcetion {
-        throw new ProtocolExcetion("tcp encode");
+        throw new ProtocolExcetion("gametcp encode");
     }
 }

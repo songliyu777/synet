@@ -22,7 +22,7 @@
  * Interface for generic TCP protocol handler
  *
  */
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import org.apache.jmeter.samplers.SampleResult;
 
 /**
- * Interface required by TCPSampler for TCPClient implementations.
+ * Interface required by GameTCPSampler for TCPClient implementations.
  */
 public interface TCPClient {
 

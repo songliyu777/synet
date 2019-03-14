@@ -23,10 +23,10 @@
  *
  * 2-Byte or 4-Byte length prefixes are supported.
  *
- * Length prefix is binary of length specified by property "tcp.length.prefix.length".
+ * Length prefix is binary of length specified by property "gametcp.length.prefix.length".
  *
  */
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class LengthPrefixedBinaryTCPClientImpl extends TCPClientDecorator {
     private static final Logger log = LoggerFactory.getLogger(LengthPrefixedBinaryTCPClientImpl.class);
 
-    private final int lengthPrefixLen = JMeterUtils.getPropDefault("tcp.binarylength.prefix.length", 2); // $NON-NLS-1$
+    private final int lengthPrefixLen = JMeterUtils.getPropDefault("gametcp.binarylength.prefix.length", 2); // $NON-NLS-1$
 
     public LengthPrefixedBinaryTCPClientImpl() {
         super(new BinaryTCPClientImpl());

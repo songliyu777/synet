@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.jmeter.protocol.tcp.config.gui;
+package org.apache.jmeter.protocol.gametcp.config.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -37,7 +37,7 @@ import org.apache.jmeter.gui.util.JSyntaxTextArea;
 import org.apache.jmeter.gui.util.JTextScrollPane;
 import org.apache.jmeter.gui.util.TristateCheckBox;
 import org.apache.jmeter.gui.util.VerticalPanel;
-import org.apache.jmeter.protocol.tcp.sampler.TCPSampler;
+import org.apache.jmeter.protocol.gametcp.sampler.GameTCPSampler;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
 import org.apache.jorphan.gui.JLabeledTextField;
@@ -82,19 +82,19 @@ public class TCPConfigGui extends AbstractConfigGui {
     public void configure(TestElement element) {
         super.configure(element);
         // N.B. this will be a config element, so we cannot use the getXXX() methods
-        classname.setText(element.getPropertyAsString(TCPSampler.CLASSNAME));
-        serverPanel.setServer(element.getPropertyAsString(TCPSampler.SERVER));
+        classname.setText(element.getPropertyAsString(GameTCPSampler.CLASSNAME));
+        serverPanel.setServer(element.getPropertyAsString(GameTCPSampler.SERVER));
         // Default to original behaviour, i.e. re-use connection
-        reUseConnection.setSelected(element.getPropertyAsBoolean(TCPSampler.RE_USE_CONNECTION, TCPSampler.RE_USE_CONNECTION_DEFAULT));
-        serverPanel.setPort(element.getPropertyAsString(TCPSampler.PORT));
-        serverPanel.setResponseTimeout(element.getPropertyAsString(TCPSampler.TIMEOUT));
-        serverPanel.setConnectTimeout(element.getPropertyAsString(TCPSampler.TIMEOUT_CONNECT));
-        setNoDelay.setTristateFromProperty(element, TCPSampler.NODELAY);
-        requestData.setInitialText(element.getPropertyAsString(TCPSampler.REQUEST));
+        reUseConnection.setSelected(element.getPropertyAsBoolean(GameTCPSampler.RE_USE_CONNECTION, GameTCPSampler.RE_USE_CONNECTION_DEFAULT));
+        serverPanel.setPort(element.getPropertyAsString(GameTCPSampler.PORT));
+        serverPanel.setResponseTimeout(element.getPropertyAsString(GameTCPSampler.TIMEOUT));
+        serverPanel.setConnectTimeout(element.getPropertyAsString(GameTCPSampler.TIMEOUT_CONNECT));
+        setNoDelay.setTristateFromProperty(element, GameTCPSampler.NODELAY);
+        requestData.setInitialText(element.getPropertyAsString(GameTCPSampler.REQUEST));
         requestData.setCaretPosition(0);
-        closeConnection.setTristateFromProperty(element, TCPSampler.CLOSE_CONNECTION);
-        soLinger.setText(element.getPropertyAsString(TCPSampler.SO_LINGER));
-        eolByte.setText(element.getPropertyAsString(TCPSampler.EOL_BYTE));
+        closeConnection.setTristateFromProperty(element, GameTCPSampler.CLOSE_CONNECTION);
+        soLinger.setText(element.getPropertyAsString(GameTCPSampler.SO_LINGER));
+        eolByte.setText(element.getPropertyAsString(GameTCPSampler.EOL_BYTE));
     }
 
     @Override
@@ -113,17 +113,17 @@ public class TCPConfigGui extends AbstractConfigGui {
     public void modifyTestElement(TestElement element) {
         configureTestElement(element);
         // N.B. this will be a config element, so we cannot use the setXXX() methods
-        element.setProperty(TCPSampler.CLASSNAME, classname.getText(), "");
-        element.setProperty(TCPSampler.SERVER, serverPanel.getServer());
-        element.setProperty(TCPSampler.RE_USE_CONNECTION, reUseConnection.isSelected());
-        element.setProperty(TCPSampler.PORT, serverPanel.getPort());
-        setNoDelay.setPropertyFromTristate(element, TCPSampler.NODELAY);
-        element.setProperty(TCPSampler.TIMEOUT, serverPanel.getResponseTimeout());
-        element.setProperty(TCPSampler.TIMEOUT_CONNECT, serverPanel.getConnectTimeout(),"");
-        element.setProperty(TCPSampler.REQUEST, requestData.getText());
-        closeConnection.setPropertyFromTristate(element, TCPSampler.CLOSE_CONNECTION); // Don't use default for saving tristates
-        element.setProperty(TCPSampler.SO_LINGER, soLinger.getText(), "");
-        element.setProperty(TCPSampler.EOL_BYTE, eolByte.getText(), "");
+        element.setProperty(GameTCPSampler.CLASSNAME, classname.getText(), "");
+        element.setProperty(GameTCPSampler.SERVER, serverPanel.getServer());
+        element.setProperty(GameTCPSampler.RE_USE_CONNECTION, reUseConnection.isSelected());
+        element.setProperty(GameTCPSampler.PORT, serverPanel.getPort());
+        setNoDelay.setPropertyFromTristate(element, GameTCPSampler.NODELAY);
+        element.setProperty(GameTCPSampler.TIMEOUT, serverPanel.getResponseTimeout());
+        element.setProperty(GameTCPSampler.TIMEOUT_CONNECT, serverPanel.getConnectTimeout(),"");
+        element.setProperty(GameTCPSampler.REQUEST, requestData.getText());
+        closeConnection.setPropertyFromTristate(element, GameTCPSampler.CLOSE_CONNECTION); // Don't use default for saving tristates
+        element.setProperty(GameTCPSampler.SO_LINGER, soLinger.getText(), "");
+        element.setProperty(GameTCPSampler.EOL_BYTE, eolByte.getText(), "");
     }
 
     /**
@@ -138,7 +138,7 @@ public class TCPConfigGui extends AbstractConfigGui {
         requestData.setInitialText(""); //$NON-NLS-1$
         reUseConnection.setSelected(true);
         setNoDelay.setSelected(false); // TODO should this be indeterminate?
-        closeConnection.setSelected(TCPSampler.CLOSE_CONNECTION_DEFAULT); // TODO should this be indeterminate?
+        closeConnection.setSelected(GameTCPSampler.CLOSE_CONNECTION_DEFAULT); // TODO should this be indeterminate?
         soLinger.setText(""); //$NON-NLS-1$
         eolByte.setText(""); //$NON-NLS-1$
     }
@@ -178,7 +178,7 @@ public class TCPConfigGui extends AbstractConfigGui {
     private JPanel createCloseConnectionPanel() {
         JLabel label = new JLabel(JMeterUtils.getResString("closeconnection")); // $NON-NLS-1$
 
-        closeConnection = new TristateCheckBox("", TCPSampler.CLOSE_CONNECTION_DEFAULT);
+        closeConnection = new TristateCheckBox("", GameTCPSampler.CLOSE_CONNECTION_DEFAULT);
         label.setLabelFor(closeConnection);
 
         JPanel closeConnectionPanel = new JPanel(new FlowLayout());

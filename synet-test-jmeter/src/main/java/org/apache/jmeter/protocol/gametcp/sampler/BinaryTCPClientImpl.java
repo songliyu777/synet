@@ -22,7 +22,7 @@
  * Input/Output strings are passed as hex-encoded binary strings.
  *
  */
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -41,14 +41,14 @@ import org.slf4j.LoggerFactory;
  * Reads data until the defined EOM byte is reached.
  * If there is no EOM byte defined, then reads until
  * the end of the stream is reached.
- * The EOM byte is defined by the property "tcp.BinaryTCPClient.eomByte".
+ * The EOM byte is defined by the property "gametcp.BinaryTCPClient.eomByte".
  *
  * Input data is assumed to be in hex, and is converted to binary
  */
 public class BinaryTCPClientImpl extends AbstractTCPClient {
     private static final Logger log = LoggerFactory.getLogger(BinaryTCPClientImpl.class);
 
-    private static final int EOM_INT = JMeterUtils.getPropDefault("tcp.BinaryTCPClient.eomByte", 1000); // $NON_NLS-1$
+    private static final int EOM_INT = JMeterUtils.getPropDefault("gametcp.BinaryTCPClient.eomByte", 1000); // $NON_NLS-1$
 
     public BinaryTCPClientImpl() {
         super();

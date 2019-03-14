@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -53,58 +53,58 @@ import org.slf4j.LoggerFactory;
  * A sampler which understands Tcp requests.
  *
  */
-public class TCPSampler extends AbstractSampler implements ThreadListener, Interruptible {
+public class GameTCPSampler extends AbstractSampler implements ThreadListener, Interruptible {
     private static final long serialVersionUID = 280L;
 
-    private static final Logger log = LoggerFactory.getLogger(TCPSampler.class);
+    private static final Logger log = LoggerFactory.getLogger(GameTCPSampler.class);
 
     private static final Set<String> APPLIABLE_CONFIG_CLASSES = new HashSet<>(
             Arrays.asList(
                     "org.apache.jmeter.config.gui.LoginConfigGui",
-                    "org.apache.jmeter.protocol.tcp.config.gui.TCPConfigGui",
+                    "org.apache.jmeter.protocol.gametcp.config.gui.TCPConfigGui",
                     "org.apache.jmeter.config.gui.SimpleConfigGui"
             ));
 
-    public static final String SERVER = "TCPSampler.server"; //$NON-NLS-1$
+    public static final String SERVER = "GameTCPSampler.server"; //$NON-NLS-1$
 
-    public static final String PORT = "TCPSampler.port"; //$NON-NLS-1$
+    public static final String PORT = "GameTCPSampler.port"; //$NON-NLS-1$
 
-    public static final String FILENAME = "TCPSampler.filename"; //$NON-NLS-1$
+    public static final String FILENAME = "GameTCPSampler.filename"; //$NON-NLS-1$
 
-    public static final String CLASSNAME = "TCPSampler.classname";//$NON-NLS-1$
+    public static final String CLASSNAME = "GameTCPSampler.classname";//$NON-NLS-1$
 
-    public static final String NODELAY = "TCPSampler.nodelay"; //$NON-NLS-1$
+    public static final String NODELAY = "GameTCPSampler.nodelay"; //$NON-NLS-1$
 
-    public static final String TIMEOUT = "TCPSampler.timeout"; //$NON-NLS-1$
+    public static final String TIMEOUT = "GameTCPSampler.timeout"; //$NON-NLS-1$
 
-    public static final String TIMEOUT_CONNECT = "TCPSampler.ctimeout"; //$NON-NLS-1$
+    public static final String TIMEOUT_CONNECT = "GameTCPSampler.ctimeout"; //$NON-NLS-1$
 
-    public static final String REQUEST = "TCPSampler.request"; //$NON-NLS-1$
+    public static final String REQUEST = "GameTCPSampler.request"; //$NON-NLS-1$
 
-    public static final String RE_USE_CONNECTION = "TCPSampler.reUseConnection"; //$NON-NLS-1$
+    public static final String RE_USE_CONNECTION = "GameTCPSampler.reUseConnection"; //$NON-NLS-1$
     public static final boolean RE_USE_CONNECTION_DEFAULT = true;
 
-    public static final String CLOSE_CONNECTION = "TCPSampler.closeConnection"; //$NON-NLS-1$
+    public static final String CLOSE_CONNECTION = "GameTCPSampler.closeConnection"; //$NON-NLS-1$
     public static final boolean CLOSE_CONNECTION_DEFAULT = false;
 
-    public static final String SO_LINGER = "TCPSampler.soLinger"; //$NON-NLS-1$
+    public static final String SO_LINGER = "GameTCPSampler.soLinger"; //$NON-NLS-1$
 
-    public static final String EOL_BYTE = "TCPSampler.EolByte"; //$NON-NLS-1$
+    public static final String EOL_BYTE = "GameTCPSampler.EolByte"; //$NON-NLS-1$
 
     private static final String TCPKEY = "TCP"; //$NON-NLS-1$ key for HashMap
 
     private static final String ERRKEY = "ERR"; //$NON-NLS-1$ key for HashMap
 
     // the response is scanned for these strings
-    private static final String STATUS_PREFIX = JMeterUtils.getPropDefault("tcp.status.prefix", ""); //$NON-NLS-1$
+    private static final String STATUS_PREFIX = JMeterUtils.getPropDefault("gametcp.status.prefix", ""); //$NON-NLS-1$
 
-    private static final String STATUS_SUFFIX = JMeterUtils.getPropDefault("tcp.status.suffix", ""); //$NON-NLS-1$
+    private static final String STATUS_SUFFIX = JMeterUtils.getPropDefault("gametcp.status.suffix", ""); //$NON-NLS-1$
 
-    private static final String STATUS_PROPERTIES = JMeterUtils.getPropDefault("tcp.status.properties", ""); //$NON-NLS-1$
+    private static final String STATUS_PROPERTIES = JMeterUtils.getPropDefault("gametcp.status.properties", ""); //$NON-NLS-1$
 
     private static final Properties STATUS_PROPS = new Properties();
 
-    private static final String PROTO_PREFIX = "org.apache.jmeter.protocol.tcp.sampler."; //$NON-NLS-1$
+    private static final String PROTO_PREFIX = "org.apache.jmeter.protocol.gametcp.sampler."; //$NON-NLS-1$
 
     private static final boolean HAVE_STATUS_PROPS;
 
@@ -138,7 +138,7 @@ public class TCPSampler extends AbstractSampler implements ThreadListener, Inter
 
     private transient volatile Socket currentSocket; // used for handling interrupt
 
-    public TCPSampler() {
+    public GameTCPSampler() {
         log.debug("Created {}", this); //$NON-NLS-1$
     }
 
@@ -297,7 +297,7 @@ public class TCPSampler extends AbstractSampler implements ThreadListener, Inter
     public String getClassname() {
         String clazz = getPropertyAsString(CLASSNAME,"");
         if (clazz==null || clazz.length()==0){
-            clazz = JMeterUtils.getPropDefault("tcp.handler", "TCPClientImpl"); //$NON-NLS-1$ $NON-NLS-2$
+            clazz = JMeterUtils.getPropDefault("gametcp.handler", "TCPClientImpl"); //$NON-NLS-1$ $NON-NLS-2$
         }
         return clazz;
     }
@@ -309,7 +309,7 @@ public class TCPSampler extends AbstractSampler implements ThreadListener, Inter
      * @return a formatted string label describing this sampler
      */
     public String getLabel() {
-        return "tcp://" + this.getServer() + ":" + this.getPort();//$NON-NLS-1$ $NON-NLS-2$
+        return "gametcp://" + this.getServer() + ":" + this.getPort();//$NON-NLS-1$ $NON-NLS-2$
     }
 
     private Class<?> getClass(String className) {

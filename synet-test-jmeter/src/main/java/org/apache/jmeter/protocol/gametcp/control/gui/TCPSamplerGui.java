@@ -16,7 +16,7 @@
  *
  */
 
-package org.apache.jmeter.protocol.tcp.control.gui;
+package org.apache.jmeter.protocol.gametcp.control.gui;
 
 import java.awt.BorderLayout;
 
@@ -24,8 +24,8 @@ import javax.swing.BorderFactory;
 
 import org.apache.jmeter.config.gui.LoginConfigGui;
 import org.apache.jmeter.gui.util.VerticalPanel;
-import org.apache.jmeter.protocol.tcp.config.gui.TCPConfigGui;
-import org.apache.jmeter.protocol.tcp.sampler.TCPSampler;
+import org.apache.jmeter.protocol.gametcp.config.gui.TCPConfigGui;
+import org.apache.jmeter.protocol.gametcp.sampler.GameTCPSampler;
 import org.apache.jmeter.samplers.gui.AbstractSamplerGui;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
@@ -50,7 +50,7 @@ public class TCPSamplerGui extends AbstractSamplerGui {
 
     @Override
     public TestElement createTestElement() {
-        TCPSampler sampler = new TCPSampler();
+        GameTCPSampler sampler = new GameTCPSampler();
         modifyTestElement(sampler);
         return sampler;
     }
@@ -81,7 +81,7 @@ public class TCPSamplerGui extends AbstractSamplerGui {
 
     @Override
     public String getLabelResource() {
-        return "tcp_sample_title"; // $NON-NLS-1$
+        return "Game Tcp Tester"; // $NON-NLS-1$
     }
 
     private void init() { // WARNING: called from ctor so must not be overridden (i.e. must be private or final)

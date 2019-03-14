@@ -21,10 +21,10 @@
  *
  * Can be used to test the TCP Sampler against an HTTP server
  *
- * The protocol handler class name is defined by the property tcp.handler
+ * The protocol handler class name is defined by the property gametcp.handler
  *
  */
-package org.apache.jmeter.protocol.tcp.sampler;
+package org.apache.jmeter.protocol.gametcp.sampler;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
  * Reads data until the defined EOL byte is reached.
  * If there is no EOL byte defined, then reads until
  * the end of the stream is reached.
- * The EOL byte is defined by the property "tcp.eolByte".
+ * The EOL byte is defined by the property "gametcp.eolByte".
  */
 public class TCPClientImpl extends AbstractTCPClient {
     private static final Logger log = LoggerFactory.getLogger(TCPClientImpl.class);
 
-    private static final int EOL_INT = JMeterUtils.getPropDefault("tcp.eolByte", 1000); // $NON-NLS-1$
-    private static final String CHARSET = JMeterUtils.getPropDefault("tcp.charset", Charset.defaultCharset().name()); // $NON-NLS-1$
+    private static final int EOL_INT = JMeterUtils.getPropDefault("gametcp.eolByte", 1000); // $NON-NLS-1$
+    private static final String CHARSET = JMeterUtils.getPropDefault("gametcp.charset", Charset.defaultCharset().name()); // $NON-NLS-1$
     // default is not in range of a byte
 
     public TCPClientImpl() {
@@ -59,7 +59,7 @@ public class TCPClientImpl extends AbstractTCPClient {
             log.info("Using eolByte={}", eolByte);
         }
         setCharset(CHARSET);
-        String configuredCharset = JMeterUtils.getProperty("tcp.charset");
+        String configuredCharset = JMeterUtils.getProperty("gametcp.charset");
         if(StringUtils.isEmpty(configuredCharset)) {
             log.info("Using platform default charset:{}",CHARSET);
         } else {
