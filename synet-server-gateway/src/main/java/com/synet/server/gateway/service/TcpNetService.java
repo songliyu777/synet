@@ -83,6 +83,7 @@ public class TcpNetService {
                     .andCommandKey(commandKey)
                     .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
                                     .withExecutionIsolationSemaphoreMaxConcurrentRequests(1000)
+                                    .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
 //                            .withCircuitBreakerRequestVolumeThreshold(0)
 //                            .withExecutionTimeoutEnabled(false)
 

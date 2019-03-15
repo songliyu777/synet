@@ -32,6 +32,18 @@
             <scope>provided</scope>
             <version>5.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.synet.protobuf</groupId>
+            <artifactId>synet-protobuf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.synet.server</groupId>
+            <artifactId>synet-server</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
