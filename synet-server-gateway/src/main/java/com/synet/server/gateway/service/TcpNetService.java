@@ -1,22 +1,15 @@
 package com.synet.server.gateway.service;
 
-import com.netflix.client.ClientFactory;
-import com.netflix.client.config.CommonClientConfigKey;
-import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixObservableCommand;
-import com.netflix.loadbalancer.BaseLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.Server;
 import com.synet.TcpNetServer;
 import com.synet.protocol.TcpNetProtocol;
 import com.synet.server.gateway.feign.MessageClient;
 import com.synet.session.ISession;
-import feign.MethodMetadata;
-import feign.Target;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactor.core.publisher.Mono;
@@ -24,19 +17,18 @@ import reactor.core.publisher.Mono;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
-import static java.util.Arrays.asList;
-
 @Slf4j
 @Service
 public class TcpNetService {
 
-    MessageClient feignclient;
+    @Autowired
+    MessageClient messageClient;
 
     TcpNetServer server;
 
     Consumer<TcpNetProtocol> process = protocol -> {
 
-        Mono<ByteBuffer> buf = feignclient.test(ByteBuffer.wrap(protocol.toArray()));
+        Mono<ByteBuffer> buf = messageClient.test(ByteBuffer.wrap(protocol.toArray()));
         buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
             server.send(t.getHead().getSession(), t.toArray(), () -> t.release());
             protocol.release();
@@ -54,17 +46,17 @@ public class TcpNetService {
 
     public TcpNetService() throws Exception {
 
-        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
-        clientConfig.loadDefaultValues();
-        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
-        ILoadBalancer lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-logic", clientConfig);
-        lb.addServers(asList(new Server("localhost", 8000)));
+//        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
+//        clientConfig.loadDefaultValues();
+//        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
+//        ILoadBalancer lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-logic", clientConfig);
+//        lb.addServers(asList(new Server("localhost", 8000)));
 
 
-        feignclient = CloudReactiveFeign.<MessageClient>builder()
-                .enableLoadBalancer()
-                .setHystrixCommandSetterFactory(getHystrixCommandSetterFactory())
-                .target(MessageClient.class, "http://server-logic");
+//        feignclient = CloudReactiveFeign.<MessageClient>builder()
+//                .enableLoadBalancer()
+//                .setHystrixCommandSetterFactory(getHystrixCommandSetterFactory())
+//                .target(MessageClient.class, "http://server-logic");
 
 
         server = new TcpNetServer("", 7000, 60000, 120000);
