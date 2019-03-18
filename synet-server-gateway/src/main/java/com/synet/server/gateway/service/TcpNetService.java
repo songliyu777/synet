@@ -46,19 +46,6 @@ public class TcpNetService {
 
     public TcpNetService() throws Exception {
 
-//        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
-//        clientConfig.loadDefaultValues();
-//        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
-//        ILoadBalancer lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-logic", clientConfig);
-//        lb.addServers(asList(new Server("localhost", 8000)));
-
-
-//        feignclient = CloudReactiveFeign.<MessageClient>builder()
-//                .enableLoadBalancer()
-//                .setHystrixCommandSetterFactory(getHystrixCommandSetterFactory())
-//                .target(MessageClient.class, "http://server-logic");
-
-
         server = new TcpNetServer("", 7000, 60000, 120000);
         server.setProcessHandler(process);
         server.setErrorHandler(error);
@@ -66,22 +53,4 @@ public class TcpNetService {
         server.createServer();
     }
 
-    private CloudReactiveFeign.SetterFactory getHystrixCommandSetterFactory() {
-        return (target, methodMetadata) -> {
-            String groupKey = target.name();
-            HystrixCommandKey commandKey = HystrixCommandKey.Factory.asKey(methodMetadata.configKey());
-            return HystrixObservableCommand.Setter
-                    .withGroupKey(HystrixCommandGroupKey.Factory.asKey(groupKey))
-                    .andCommandKey(commandKey)
-                    .andCommandPropertiesDefaults(HystrixCommandProperties.Setter()
-                                    .withExecutionIsolationSemaphoreMaxConcurrentRequests(1000)
-                                    .withExecutionIsolationStrategy(HystrixCommandProperties.ExecutionIsolationStrategy.SEMAPHORE)
-//                            .withCircuitBreakerRequestVolumeThreshold(0)
-//                            .withExecutionTimeoutEnabled(false)
-
-//                            .withCircuitBreakerSleepWindowInMilliseconds(SLEEP_WINDOW)
-//                            .withMetricsHealthSnapshotIntervalInMilliseconds(10)
-                    );
-        };
-    }
 }

@@ -1,5 +1,6 @@
 package com.synet.server.gateway;
 
+import com.synet.server.gateway.configuration.FeignDefaultConfiguration;
 import com.synet.server.gateway.service.TcpNetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -10,7 +11,7 @@ import reactivefeign.spring.config.EnableReactiveFeignClients;
 
 @SpringBootApplication(exclude = ReactiveLoadBalancerAutoConfiguration.class)
 @EnableEurekaClient
-@EnableReactiveFeignClients
+@EnableReactiveFeignClients(defaultConfiguration = FeignDefaultConfiguration.class)
 public class SynetServerGatewayApplication {
 
 	@Autowired
