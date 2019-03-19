@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.synet</groupId>
 	<artifactId>synet-eureka-register</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>synet-eureka-register</name>
 	<description>eureka register</description>
 
