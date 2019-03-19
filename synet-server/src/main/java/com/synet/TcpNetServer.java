@@ -9,17 +9,20 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
+import reactor.netty.NettyInbound;
+import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpServer;
 
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -34,12 +37,12 @@ public class TcpNetServer {
 
     ChannelFuture closeFuture = null;
 
-    Consumer<ServerBootstrap> OnBind = (param) -> {
+    Consumer<ServerBootstrap> onBind = (param) -> {
     };
-    Consumer<DisposableServer> OnBound = (param) -> {
+    Consumer<DisposableServer> onBound = (param) -> {
 
     };
-    Consumer<DisposableServer> OnUnbound = (param) -> {
+    Consumer<DisposableServer> onUnbound = (param) -> {
     };
 
     Consumer<TcpNetProtocol> process = (protocol) -> {
@@ -79,61 +82,79 @@ public class TcpNetServer {
         return server;
     }
 
+    Consumer<? super Connection> onConnection = (connection) -> {
+        if (readIdleTime > 0) {
+            connection.onReadIdle(readIdleTime, () -> {
+                connection.disposeNow();
+            });
+        }
+        if (writeIdleTime > 0) {
+            connection.onWriteIdle(writeIdleTime, () -> {
+                connection.disposeNow();
+            });
+        }
+        connection.addHandler("server controller", new ChannelInboundHandlerAdapter() {
+            @Override
+            public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+                //连接中断通道关闭调度到工作线程进行ISession的移除
+                Connection c = () -> ctx.channel();
+                long session = c.channel().attr(SessionManager.channel_session_id).get();
+                Mono.just(session)
+                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
+                        .subscribeOn(scheduler)
+                        .subscribe(doOnDisconnection, error);
+                ctx.fireChannelUnregistered();
+            }
+        });
+        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
+        //先生成session,再投递到工作线程
+        ISession session = SessionManager.GetInstance().NewTcpSession(connection);
+        //连接成功调度到工作线程进行连接绑定
+        Mono.just(connection)
+                .map(c -> SessionManager.GetInstance().AddSession(session))
+                .subscribeOn(scheduler)
+                .subscribe(doOnConnection, error);
+    };
+
+    BiFunction<? super NettyInbound, ? super
+            NettyOutbound, ? extends Publisher<Void>> handler = (in, out) -> {
+        in.withConnection((connection) -> {
+            in.receive().map((bb) -> {
+                        TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
+                        protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
+                        return protocol;
+                    }
+            ).subscribe(process, error);
+        });
+        return Flux.never();
+    };
+
     Runnable createRun = () -> {
 
         try {
-            server = TcpServer.create().doOnBind(OnBind)
-                    .doOnBound(OnBound)
-                    .doOnUnbound(OnUnbound)
-                    .doOnConnection((connection) -> {
-                        if (readIdleTime > 0) {
-                            connection.onReadIdle(readIdleTime, () -> {
-                                connection.disposeNow();
-                            });
-                        }
-                        if (writeIdleTime > 0) {
-                            connection.onWriteIdle(writeIdleTime, () -> {
-                                connection.disposeNow();
-                            });
-                        }
-                        connection.addHandler("server controller", new ChannelInboundHandlerAdapter() {
-                            @Override
-                            public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-                                //连接中断通道关闭调度到工作线程进行ISession的移除
-                                Connection c = () -> ctx.channel();
-                                long session = c.channel().attr(SessionManager.channel_session_id).get();
-                                Mono.just(session)
-                                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
-                                        .subscribeOn(scheduler)
-                                        .subscribe(doOnDisconnection, error);
-                                ctx.fireChannelUnregistered();
-                            }
-                        });
-                        connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
-                        //先生成session,再投递到工作线程
-                        ISession session = SessionManager.GetInstance().NewTcpSession(connection);
-                        //连接成功调度到工作线程进行连接绑定
-                        Mono.just(connection)
-                                .map(c -> SessionManager.GetInstance().AddSession(session))
-                                .subscribeOn(scheduler)
-                                .subscribe(doOnConnection, error);
-                    })
-                    .host(ip)
-                    .port(port)
-                    .handle((in, out) -> {
-                        in.withConnection((connection) -> {
-                            in.receive().map((bb) -> {
-                                        TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
-                                        protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
-                                        return protocol;
-                                    }
-                            ).subscribe(process, error);
-                        });
-                        return Flux.never();
-                    })
-                    .wiretap(true)
-                    .bind()
-                    .block();
+            if (ip.isEmpty()) {
+                server = TcpServer.create().doOnBind(onBind)
+                        .doOnBound(onBound)
+                        .doOnUnbound(onUnbound)
+                        .doOnConnection(onConnection)
+                        .port(port)
+                        .handle(handler)
+                        .wiretap(true)
+                        .bind()
+                        .block();
+            } else {
+                server = TcpServer.create().doOnBind(onBind)
+                        .doOnBound(onBound)
+                        .doOnUnbound(onUnbound)
+                        .doOnConnection(onConnection)
+                        .host(ip)
+                        .port(port)
+                        .handle(handler)
+                        .wiretap(true)
+                        .bind()
+                        .block();
+            }
+
             scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
             latch.countDown();
