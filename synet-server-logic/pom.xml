@@ -12,7 +12,7 @@
 
     <groupId>com.synet.server.logic</groupId>
     <artifactId>synet-server-logic</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>server-logic</name>
     <description>server logic</description>
 
