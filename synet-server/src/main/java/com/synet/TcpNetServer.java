@@ -154,7 +154,6 @@ public class TcpNetServer {
                         .bind()
                         .block();
             }
-
             scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
             latch.countDown();
