@@ -21,6 +21,7 @@
         <reactive-core.version>0.6.1</reactive-core.version>
         <reactor-webclient.version>1.0.0</reactor-webclient.version>
         <feign-reactor.version>1.0.22</feign-reactor.version>
+        <r2dbc.version>1.0.0.M6</r2dbc.version>
     </properties>
 
     <parent>
@@ -100,6 +101,30 @@
                 <version>8.18.0</version>
             </dependency>
 
+            <!-- https://mvnrepository.com/artifact/io.r2dbc/r2dbc-postgresql -->
+            <dependency>
+                <groupId>io.r2dbc</groupId>
+                <artifactId>r2dbc-postgresql</artifactId>
+                <version>${r2dbc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.r2dbc</groupId>
+                <artifactId>r2dbc-client</artifactId>
+                <version>${r2dbc.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>spring-milestones</id>
+            <name>Spring Milestones</name>
+            <url>https://repo.spring.io/milestone</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
