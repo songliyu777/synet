@@ -13,3 +13,14 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
+
+dbconfig:
+  host: 192.168.99.249
+  port: 5432
+  database: test
+  username: root
+  password: 6tfc^YHN
+
+#logging:
+#  level:
+#    root: DEBUG

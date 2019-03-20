@@ -101,16 +101,21 @@
                 <version>8.18.0</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/io.r2dbc/r2dbc-postgresql -->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-r2dbc</artifactId>
+                <version>1.0.0.M1</version>
+            </dependency>
+
             <dependency>
                 <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-postgresql</artifactId>
+                <artifactId>r2dbc-spi</artifactId>
                 <version>${r2dbc.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-client</artifactId>
+                <artifactId>r2dbc-postgresql</artifactId>
                 <version>${r2dbc.version}</version>
             </dependency>
 
