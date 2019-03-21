@@ -71,7 +71,7 @@ public class PostHandler {
     public Mono<ServerResponse> test(ServerRequest req) {
         return req.body(BodyExtractors.toMono(ByteBuffer.class))
                 .map(bufferToMessage)
-                .flatMap(transformer)
+                //.flatMap(transformer)
                 .flatMap(messageToResponse);
     }
 

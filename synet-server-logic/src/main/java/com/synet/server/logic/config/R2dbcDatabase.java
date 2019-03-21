@@ -1,22 +1,26 @@
 package com.synet.server.logic.config;
 
+import io.r2dbc.client.R2dbc;
 import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
-import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
+import org.springframework.stereotype.Service;
 
-@Configuration
-public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
+@Service
+public class R2dbcDatabase{
 
-    @Autowired
     DBConfig dbConfig;
 
-    @Bean
-    @Override
-    public PostgresqlConnectionFactory connectionFactory() {
+    private R2dbc r2dbc;
+
+    @Autowired
+    public R2dbcDatabase(DBConfig dbConfig){
+        r2dbc = new R2dbc(connectionFactory(dbConfig));
+    }
+
+
+    public PostgresqlConnectionFactory connectionFactory(DBConfig dbConfig) {
 
         PostgresqlConnectionConfiguration config = PostgresqlConnectionConfiguration.builder() //
                 .host(dbConfig.getHost())
@@ -27,5 +31,9 @@ public class R2dbcConfiguration extends AbstractR2dbcConfiguration {
                 .build();
 
         return new PostgresqlConnectionFactory(config);
+    }
+
+    public R2dbc getR2dbc() {
+        return r2dbc;
     }
 }

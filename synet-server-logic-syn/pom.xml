@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>synet</artifactId>
+        <groupId>com.synet</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.synet</groupId>
-        <artifactId>synet</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
-    <groupId>com.synet.server.logic</groupId>
-    <artifactId>synet-server-logic</artifactId>
+    <groupId>com.synet.server.logic.syn</groupId>
+    <artifactId>synet-server-logic-syn</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <name>server-logic</name>
-    <description>server logic</description>
 
     <dependencies>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
@@ -30,8 +28,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -52,26 +57,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-r2dbc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-client</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-spi</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.r2dbc</groupId>
-            <artifactId>r2dbc-postgresql</artifactId>
         </dependency>
 
     </dependencies>
