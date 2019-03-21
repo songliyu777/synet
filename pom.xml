@@ -21,7 +21,7 @@
         <reactive-core.version>0.6.1</reactive-core.version>
         <reactor-webclient.version>1.0.0</reactor-webclient.version>
         <feign-reactor.version>1.0.22</feign-reactor.version>
-        <r2dbc.version>1.0.0.M6</r2dbc.version>
+        <r2dbc.version>1.0.0.M7</r2dbc.version>
     </properties>
 
     <parent>

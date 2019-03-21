@@ -34,12 +34,12 @@ public class TcpNetService {
             server.send(t.getHead().getSession(), t.toArray(), () -> t.release());
             protocol.release();
         }, (e) -> {
-            e.printStackTrace();
+            System.err.println(e);
             protocol.release();
         });
 
     };
-    Consumer<Throwable> error = error -> error.printStackTrace();
+    Consumer<Throwable> error = error -> System.err.println(error);
     Consumer<? super ISession> doOnConnection = session -> {
 
         //TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF, ProtocolHeadDefine.VERSION, 0, 0, (short) 0, null, 0);
