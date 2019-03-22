@@ -20,6 +20,7 @@ import reactor.netty.NettyInbound;
 import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpServer;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
@@ -202,6 +203,15 @@ public class TcpNetServer {
                 .subscribe(session -> {
                     session.send(data);
                     onComplete.run();
+                }, error);
+    }
+
+    public void send(long id, ByteBuffer buffer) {
+        Mono.just(id)
+                .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
+                .subscribeOn(scheduler)
+                .subscribe(session -> {
+                    session.send(buffer.array());
                 }, error);
     }
 }

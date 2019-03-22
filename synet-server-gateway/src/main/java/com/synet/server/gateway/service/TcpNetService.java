@@ -31,7 +31,7 @@ public class TcpNetService {
 
         Mono<ByteBuffer> buf = messageClient.test(ByteBuffer.wrap(protocol.toArray()));
         buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
-            server.send(t.getHead().getSession(), t.toArray(), () -> t.release());
+            //server.send(t.getHead().getSession(), t.toArray(), () -> t.release());
             protocol.release();
         }, (e) -> {
             System.err.println(e);
@@ -51,6 +51,10 @@ public class TcpNetService {
         server.setErrorHandler(error);
         server.doOnConnection(doOnConnection);
         server.createServer();
+    }
+
+    public TcpNetServer GetServer() {
+        return server;
     }
 
 }

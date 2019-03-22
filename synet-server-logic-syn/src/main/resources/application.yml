@@ -1,5 +1,5 @@
 server:
-  port: 8002
+  port: 8000
 
 spring:
   application:
@@ -17,6 +17,9 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
+  tomcat:
+    maxThreads: 500
+    minSpareThreads: 10
 
 eureka:
   instance:
