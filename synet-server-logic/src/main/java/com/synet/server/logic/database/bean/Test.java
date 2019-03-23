@@ -1,11 +1,8 @@
 package com.synet.server.logic.database.bean;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 
-@Entity
-@Table(name = "test")
+import org.springframework.data.annotation.Id;
+
 public class Test {
     @Id
     private Long id;

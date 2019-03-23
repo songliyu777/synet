@@ -39,7 +39,7 @@ public class TestProcess {
 //    @Autowired
 //    DatabaseClient client;
 
-    Scheduler[] scheduler = new Scheduler[32];
+//    Scheduler[] scheduler = new Scheduler[32];
 
     GatewayInterface client;
 
@@ -48,9 +48,9 @@ public class TestProcess {
     }
 
     public TestProcess() {
-        for (int i = 0; i < 32; i++) {
-            scheduler[i] = Schedulers.newSingle("Database Single Work" + i);
-        }
+//        for (int i = 0; i < 32; i++) {
+//            scheduler[i] = Schedulers.newSingle("Database Single Work" + i);
+//        }
         DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
         clientConfig.loadDefaultValues();
         clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
@@ -79,7 +79,7 @@ public class TestProcess {
         t.setId(l.getAndIncrement());
         t.setName("test123");
         t.setPassword("test123");
-        Scheduler scheduler_choose = scheduler[(int) (t.getId() % 32)];
+       // Scheduler scheduler_choose = scheduler[(int) (t.getId() % 32)];
 
         TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD,
                 ProtocolHeadDefine.VERSION,
@@ -89,15 +89,16 @@ public class TestProcess {
                 message.getMessage() == null ? null : message.getMessage().toByteArray());
 
 
-        client.test(ByteBuffer.wrap(protocol.toArray()))
-                .subscribeOn(scheduler_choose)
-                .doOnSuccess((buff)->{
-                        protocol.release();
-                        testRepository.saveAndFlush(t);
-                }).subscribe();
+        //testRepository.save(t).flatMap((tt)-> client.test(ByteBuffer.wrap(protocol.toArray()))).subscribe();
+        return testRepository.save(t).flatMap((tt)->Mono.just(message));
+//        client.test(ByteBuffer.wrap(protocol.toArray()))
+//                .doOnSuccess((buff)->{
+//                        protocol.release();
+//                        testRepository.saveAndFlush(t);
+//                }).subscribe();
         //Mono.just(t).map((temp) -> testRepository.saveAndFlush(temp)).flatMap((tt) -> Mono.just(message)).subscribeOn(scheduler_choose);
 
-        return Mono.just(message);
+        //return Mono.just(message);
 
         //return Mono.just(t).map((temp) -> testRepository.saveAndFlush(temp)).flatMap((tt) -> Mono.just(message)).subscribeOn(scheduler_choose);
 

@@ -11,5 +11,5 @@ public interface GatewayInterface {
 
     @RequestLine("POST /test")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Mono<ByteBuffer> test(ByteBuffer body);
+    Mono<Void> test(ByteBuffer body);
 }

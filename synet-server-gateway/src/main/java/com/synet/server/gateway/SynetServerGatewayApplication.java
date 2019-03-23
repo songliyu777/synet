@@ -13,12 +13,8 @@ import reactivefeign.spring.config.EnableReactiveFeignClients;
 @EnableEurekaClient
 @EnableReactiveFeignClients(defaultConfiguration = FeignDefaultConfiguration.class)
 public class SynetServerGatewayApplication {
-
-	@Autowired
-	TcpNetService tcpNetService;
-
-	public static void main(String[] args) {
-		SpringApplication.run(SynetServerGatewayApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(SynetServerGatewayApplication.class, args);
+    }
 }
 
