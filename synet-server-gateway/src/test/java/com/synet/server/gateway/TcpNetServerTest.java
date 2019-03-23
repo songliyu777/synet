@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,8 +31,8 @@ public class TcpNetServerTest {
 
             TcpNetClient client = new TcpNetClient("127.0.0.1", 7000);
             client.setProcessHandler((protocol) -> {
-                ByteBuf tmp = Unpooled.buffer(protocol.getSize() - protocol.getHead().headSize);
-                protocol.getBody().getProtobuf(tmp);
+                ByteBuffer tmp = ByteBuffer.allocate(protocol.getSize() - protocol.getHead().headSize);
+                protocol.getBody().getProtobuf(tmp.array());
                 try {
                     TestOuterClass.Test t = TestOuterClass.Test.parseFrom(tmp.array());
                     System.err.println("recv:" + revccount.incrementAndGet() + " " + t.getName() + " " + t.getPassword());
@@ -40,14 +41,11 @@ public class TcpNetServerTest {
                 }
                 latch_all.countDown();
                 client.getConnection().disposeNow();
-                tmp.release();
-                protocol.release();
             });
             client.connectServer();
 
             TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
             client.send(protocol.toArray());
-            protocol.release();
 
 //            Mono<TcpNetClient> m = Mono.just(client);
 //            m.delaySubscription(Duration.ofMillis(i*10))

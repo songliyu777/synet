@@ -35,7 +35,6 @@ public class TcpNetClient {
 
     Consumer<TcpNetProtocol> process = (protocol) -> {
         log.warn("process need implement and protocol need release");
-        protocol.release();
     };
 
     Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());

@@ -1,24 +1,24 @@
 package com.synet.protocol;
 
-import io.netty.buffer.ByteBuf;
+import java.nio.ByteBuffer;
 
 public class ProtocolBody {
 
-    ByteBuf byteBuf = null;
+    ByteBuffer byteBuffer = null;
 
-    public ProtocolBody(ByteBuf byteBuf) {
-        this.byteBuf = byteBuf;
+    public ProtocolBody(ByteBuffer byteBuffer) {
+        this.byteBuffer = byteBuffer;
     }
 
     /**
      * protobuf 数据
      */
-    public void getProtobuf(ByteBuf protobuf) {
-        byteBuf.getBytes(TcpNetProtocol.protobuf_index, protobuf);
+    public void getProtobuf(byte[] protobuf) {
+        byteBuffer.get(protobuf, TcpNetProtocol.protobuf_index, byteBuffer.remaining() - ProtocolHead.headSize);
     }
 
     public void setProtobuf(byte[] protobuf) {
-        byteBuf.setBytes(TcpNetProtocol.protobuf_index, protobuf);
+        byteBuffer.put(protobuf, TcpNetProtocol.protobuf_index, protobuf.length);
     }
 
 

@@ -48,7 +48,6 @@ public class TcpNetServer {
 
     Consumer<TcpNetProtocol> process = (protocol) -> {
         log.warn("process need implement and protocol need release");
-        protocol.release();
     };
 
     Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());
@@ -194,16 +193,6 @@ public class TcpNetServer {
      */
     public void doOnDisconnection(Consumer<? super ISession> doOnDisconnection) {
         this.doOnDisconnection = doOnDisconnection;
-    }
-
-    public void send(long id, byte[] data, Runnable onComplete) {
-        Mono.just(id)
-                .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
-                .subscribeOn(scheduler)
-                .subscribe(session -> {
-                    session.send(data);
-                    onComplete.run();
-                }, error);
     }
 
     public void send(long id, ByteBuffer buffer) {
