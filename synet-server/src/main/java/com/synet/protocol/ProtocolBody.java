@@ -18,7 +18,8 @@ public class ProtocolBody {
     }
 
     public void setProtobuf(byte[] protobuf) {
-        byteBuffer.put(protobuf, TcpNetProtocol.protobuf_index, protobuf.length);
+        byteBuffer.position(TcpNetProtocol.protobuf_index);
+        byteBuffer.put(protobuf);
     }
 
 

@@ -23,7 +23,7 @@ public class TcpNetService {
 
     Consumer<TcpNetProtocol> process = protocol -> {
 
-        Mono<ByteBuffer> buf = messageClient.test(ByteBuffer.wrap(protocol.toArray()));
+        Mono<ByteBuffer> buf = messageClient.test(protocol.getByteBuffer());
         buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
             server.send(t.getHead().getSession(), t.getByteBuffer());
         }, (e) -> {

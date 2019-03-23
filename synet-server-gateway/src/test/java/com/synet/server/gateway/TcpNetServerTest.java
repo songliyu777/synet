@@ -19,7 +19,7 @@ public class TcpNetServerTest {
 
     @Test
     public void TcpClientTest() throws InterruptedException {
-        int connection_count = 10000;
+        int connection_count = 1;
         CountDownLatch latch_all = new CountDownLatch(connection_count);
         AtomicInteger revccount = new AtomicInteger();
         AtomicInteger sendcount = new AtomicInteger();
