@@ -39,7 +39,6 @@
         <module>synet-server-gateway</module>
         <module>synet-server-logic</module>
         <module>synet-test-jmeter</module>
-        <module>synet-server-logic-syn</module>
     </modules>
 
     <dependencyManagement>
@@ -100,30 +99,6 @@
                 <groupId>com.netflix.feign</groupId>
                 <artifactId>feign-slf4j</artifactId>
                 <version>8.18.0</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-r2dbc</artifactId>
-                <version>1.0.0.M1</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-client</artifactId>
-                <version>${r2dbc.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-spi</artifactId>
-                <version>${r2dbc.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.r2dbc</groupId>
-                <artifactId>r2dbc-postgresql</artifactId>
-                <version>${r2dbc.version}</version>
             </dependency>
 
         </dependencies>

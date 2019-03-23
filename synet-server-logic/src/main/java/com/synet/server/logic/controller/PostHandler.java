@@ -60,11 +60,7 @@ public class PostHandler {
                 message.getCmd(),
                 message.getSession(),
                 message.getMessage() == null ? null : message.getMessage().toByteArray());
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(BodyInserters.fromObject(ByteBuffer.wrap(protocol.toArray())))
-                .doOnSuccess((response) -> protocol.release()).doOnError((e) -> {
-                    System.err.println(e);
-                    protocol.release();
-                });
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(BodyInserters.fromObject(protocol.getByteBuffer()));
     };
 
 

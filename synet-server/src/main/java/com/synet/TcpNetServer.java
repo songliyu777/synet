@@ -84,14 +84,10 @@ public class TcpNetServer {
 
     Consumer<? super Connection> onConnection = (connection) -> {
         if (readIdleTime > 0) {
-            connection.onReadIdle(readIdleTime, () -> {
-                connection.disposeNow();
-            });
+            connection.onReadIdle(readIdleTime, () -> connection.disposeNow());
         }
         if (writeIdleTime > 0) {
-            connection.onWriteIdle(writeIdleTime, () -> {
-                connection.disposeNow();
-            });
+            connection.onWriteIdle(writeIdleTime, () -> connection.disposeNow());
         }
         connection.addHandler("server controller", new ChannelInboundHandlerAdapter() {
             @Override
@@ -116,6 +112,7 @@ public class TcpNetServer {
                 .subscribe(doOnConnection, error);
     };
 
+    //封包处理handler
     BiFunction<? super NettyInbound, ? super
             NettyOutbound, ? extends Publisher<Void>> handler = (in, out) -> {
         in.withConnection((connection) -> {
@@ -195,12 +192,15 @@ public class TcpNetServer {
         this.doOnDisconnection = doOnDisconnection;
     }
 
+    /**
+     * send byte on work thread
+     * @param id
+     * @param buffer
+     */
     public void send(long id, ByteBuffer buffer) {
         Mono.just(id)
-                .map((d) -> SessionManager.GetInstance().GetTcpSession(id))
+                .map((d) -> SessionManager.GetInstance().GetTcpSession(d))
                 .subscribeOn(scheduler)
-                .subscribe(session -> {
-                    session.send(buffer.array());
-                }, error);
+                .subscribe(session -> session.send(buffer.array()), error);
     }
 }

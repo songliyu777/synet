@@ -46,7 +46,6 @@ public class GameTcpClientTest implements TCPClient {
         TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("input 1").setPassword("input 2").build();
         TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, test.toByteArray());
         os.write(protocol.toArray());
-        protocol.release();
     }
 
     @Deprecated
@@ -77,11 +76,11 @@ public class GameTcpClientTest implements TCPClient {
                         readBuffer.compact();
                     }
                     protocol = TcpNetProtocol.parse(buf);
+                    buf.release();
                     break;
                 }
             }
             final String hexString = JOrphanUtils.baToHexString(protocol.toArray());
-            protocol.release();
             sampleResult.latencyEnd();
             return hexString;
         } catch (IOException e) {
