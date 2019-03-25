@@ -14,7 +14,8 @@ public class ProtocolBody {
      * protobuf 数据
      */
     public void getProtobuf(byte[] protobuf) {
-        byteBuffer.get(protobuf, TcpNetProtocol.protobuf_index, byteBuffer.remaining() - ProtocolHead.headSize);
+        byteBuffer.position(TcpNetProtocol.protobuf_index);
+        byteBuffer.get(protobuf);
     }
 
     public void setProtobuf(byte[] protobuf) {

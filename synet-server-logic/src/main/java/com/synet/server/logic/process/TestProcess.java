@@ -88,7 +88,6 @@ public class TestProcess {
                 message.getSession(),
                 message.getMessage() == null ? null : message.getMessage().toByteArray());
 
-
         //testRepository.save(t).flatMap((tt)-> client.test(ByteBuffer.wrap(protocol.toArray()))).subscribe();
         return testRepository.save(t).flatMap((tt)->Mono.just(message));
 //        client.test(ByteBuffer.wrap(protocol.toArray()))

@@ -7,7 +7,7 @@ spring:
     serviceId: server-logic
   data:
     mongodb:
-      host: 192.168.99.107
+      host: 192.168.99.249
       database: test
       port: 27017
 #      username: admin
