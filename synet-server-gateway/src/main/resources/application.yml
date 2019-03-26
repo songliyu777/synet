@@ -15,6 +15,11 @@ eureka:
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
 
+reactive:
+  feign:
+    hystrix:
+      enabled: false
+
 #logging:
 #  level:
 #    root: DEBUG

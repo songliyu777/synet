@@ -64,7 +64,6 @@ public class PostHandler {
         return ServerResponse.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(BodyInserters.fromObject(protocol.getByteBuffer()));
     };
 
-
     public Mono<ServerResponse> test(ServerRequest req) {
         return req.body(BodyExtractors.toMono(ByteBuffer.class))
                 .map(bufferToMessage)
