@@ -1,9 +1,9 @@
 package org.apache.jmeter.protocol.gametcp.test;
 
+import com.synet.net.protocol.ProtocolHead;
+import com.synet.net.protocol.ProtocolHeadDefine;
+import com.synet.net.tcp.TcpNetProtocol;
 import com.synet.protobuf.TestOuterClass;
-import com.synet.protocol.ProtocolHead;
-import com.synet.protocol.ProtocolHeadDefine;
-import com.synet.protocol.TcpNetProtocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.jmeter.protocol.gametcp.sampler.ReadException;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 
 public class GameTcpClientTest implements TCPClient {

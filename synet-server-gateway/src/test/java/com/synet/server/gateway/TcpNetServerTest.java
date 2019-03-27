@@ -1,12 +1,10 @@
 package com.synet.server.gateway;
 
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.synet.TcpNetClient;
+import com.synet.net.tcp.TcpNetClient;
 import com.synet.protobuf.TestOuterClass;
-import com.synet.protocol.ProtocolHeadDefine;
-import com.synet.protocol.TcpNetProtocol;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import com.synet.net.protocol.ProtocolHeadDefine;
+import com.synet.net.tcp.TcpNetProtocol;
 import org.junit.Assert;
 import org.junit.Test;
 

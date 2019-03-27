@@ -3,10 +3,10 @@ package com.synet.server.logic.controller;
 
 import com.google.protobuf.AbstractMessage;
 import com.google.protobuf.InvalidProtocolBufferException;
-import com.synet.message.IMessage;
+import com.synet.net.message.IMessage;
 import com.synet.protobuf.TestOuterClass;
-import com.synet.protocol.ProtocolHeadDefine;
-import com.synet.protocol.TcpNetProtocol;
+import com.synet.net.protocol.ProtocolHeadDefine;
+import com.synet.net.tcp.TcpNetProtocol;
 import com.synet.server.logic.message.PBMessage;
 import com.synet.server.logic.process.TestProcess;
 import org.springframework.beans.factory.annotation.Autowired;

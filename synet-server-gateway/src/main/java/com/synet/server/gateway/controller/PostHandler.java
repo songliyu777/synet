@@ -1,18 +1,11 @@
 package com.synet.server.gateway.controller;
 
 
-import com.google.protobuf.AbstractMessage;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.synet.message.IMessage;
-import com.synet.protobuf.TestOuterClass;
-import com.synet.protocol.ProtocolHeadDefine;
-import com.synet.protocol.TcpNetProtocol;
+import com.synet.net.tcp.TcpNetProtocol;
 import com.synet.server.gateway.service.TcpNetService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyExtractors;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;

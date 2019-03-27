@@ -1,9 +1,9 @@
 package com.synet.server.gateway.service;
 
-import com.synet.TcpNetServer;
-import com.synet.protocol.TcpNetProtocol;
+import com.synet.net.tcp.TcpNetServer;
+import com.synet.net.tcp.TcpNetProtocol;
 import com.synet.server.gateway.feign.MessageClient;
-import com.synet.session.ISession;
+import com.synet.net.session.ISession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

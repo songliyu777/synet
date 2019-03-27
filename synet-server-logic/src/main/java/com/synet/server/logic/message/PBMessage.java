@@ -1,7 +1,7 @@
 package com.synet.server.logic.message;
 
 import com.google.protobuf.AbstractMessage;
-import com.synet.message.IMessage;
+import com.synet.net.message.IMessage;
 
 public class PBMessage implements IMessage<AbstractMessage> {
 

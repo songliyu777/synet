@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>synet</artifactId>
+        <groupId>com.synet</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.synet</groupId>
+    <artifactId>synet-dependencies</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <synet.version>1.0-SNAPSHOT</synet.version>
+        <spring.cloud.version>Greenwich.RELEASE</spring.cloud.version>
+        <lombok.version>1.16.10</lombok.version>
+        <jsonwebtoken.version>0.7.0</jsonwebtoken.version>
+        <springsite.util.version>5.0.0-RC1</springsite.util.version>
+        <orika.core.version>1.5.0</orika.core.version>
+        <commons.lang3.version>3.8.1</commons.lang3.version>
+        <jackson.version>2.9.7</jackson.version>
+        <easypoi.version>2.4.0</easypoi.version>
+        <joda.time.version>2.10</joda.time.version>
+        <clickhouse.version>1.5-stable</clickhouse.version>
+        <commons.dbutils.version>1.7</commons.dbutils.version>
+        <druidry.version>2.3</druidry.version>
+        <google.andriodpublisher>v3-rev31-1.25.0</google.andriodpublisher>
+        <commons.beanutils.version>1.9.3</commons.beanutils.version>
+        <commons.codec.version>1.11</commons.codec.version>
+        <aliyun.oss.version>3.1.0</aliyun.oss.version>
+        <zxing.version>3.3.3</zxing.version>
+        <swagger2.version>2.9.2</swagger2.version>
+        <guava.version>20.0</guava.version>
+        <spring.boot.admin.version>2.0.4</spring.boot.admin.version>
+        <google.cloud.storage.version>1.55.0</google.cloud.storage.version>
+        <mail.version>1.4.7</mail.version>
+        <protobuf.version>3.7.0-rc1</protobuf.version>
+        <feign-reactor.version>1.0.22</feign-reactor.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--spring cloud-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!--spring data r2dbc-->
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-releasetrain</artifactId>
+                <version>Moore-M1</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <!--synet-->
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>synet-core</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>synet-protobuf</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+            <!--<dependency>-->
+                <!--<groupId>com.yuyan</groupId>-->
+                <!--<artifactId>lightning-reactor-protobuf-service-starter</artifactId>-->
+                <!--<version>${project.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>com.yuyan</groupId>-->
+                <!--<artifactId>lightning-reactor-tcp-gateway-starter</artifactId>-->
+                <!--<version>${project.version}</version>-->
+            <!--</dependency>-->
+            <!--lombok-->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.springside</groupId>
+                <artifactId>springside-utils</artifactId>
+                <version>${springsite.util.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ma.glasnost.orika</groupId>
+                <artifactId>orika-core</artifactId>
+                <version>${orika.core.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons.lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+
+            <!--bean utils-->
+            <dependency>
+                <groupId>commons-beanutils</groupId>
+                <artifactId>commons-beanutils</artifactId>
+                <version>${commons.beanutils.version}</version>
+            </dependency>
+
+            <!--guava-->
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+            </dependency>
+
+            <!--protobuf-->
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>${protobuf.version}</version>
+            </dependency>
+
+            <!--reactive feign-->
+            <dependency>
+                <groupId>com.playtika.reactivefeign</groupId>
+                <artifactId>feign-reactor-webclient</artifactId>
+                <version>${feign-reactor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.playtika.reactivefeign</groupId>
+                <artifactId>feign-reactor-cloud</artifactId>
+                <version>${feign-reactor.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.playtika.reactivefeign</groupId>
+                <artifactId>feign-reactor-spring-configuration</artifactId>
+                <version>${feign-reactor.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>spring-libs-snapshot</id>
+            <url>https://repo.spring.io/libs-milestone</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-libs-snapshot</id>
+            <url>https://repo.spring.io/libs-milestone</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

@@ -34,20 +34,15 @@ spring:
 
 
 
-## eureka 配置
 eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:17000/eureka/
-      registry-fetch-interval-seconds: 5
   instance:
-    lease-renewal-interval-in-seconds: 20
-    lease-expiration-duration-in-seconds: 40
-    metadata-map:
-      startup: ${random.int}
+    hostname: localhost
+    port: 17000
     preferIpAddress: true
-    # instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${spring.application.instance_id:${random.value}}:${server.port}
     instance-id: ${spring.application.name}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
 
 
 dbconfig:
