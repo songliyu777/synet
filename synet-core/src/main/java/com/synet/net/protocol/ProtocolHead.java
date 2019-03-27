@@ -1,12 +1,10 @@
 package com.synet.net.protocol;
 
-import com.synet.net.tcp.TcpNetProtocol;
-
 import java.nio.ByteBuffer;
 
 public class ProtocolHead {
 
-    public static int headSize = TcpNetProtocol.protobuf_index;
+    public static int headSize = NetProtocol.protobuf_index;
 
     ByteBuffer byteBuffer;
 
@@ -18,77 +16,77 @@ public class ProtocolHead {
      * 识别头
      */
     public byte getHead() {
-        return byteBuffer.get(TcpNetProtocol.head_index);
+        return byteBuffer.get(NetProtocol.head_index);
     }
 
     public void setHead(byte head) {
-        byteBuffer.put(TcpNetProtocol.head_index, head);
+        byteBuffer.put(NetProtocol.head_index, head);
     }
 
     /**
      * 版本号
      */
     public byte getVersion() {
-        return byteBuffer.get(TcpNetProtocol.version_index);
+        return byteBuffer.get(NetProtocol.version_index);
     }
 
     public void setVersion(byte version) {
-        byteBuffer.put(TcpNetProtocol.version_index, version);
+        byteBuffer.put(NetProtocol.version_index, version);
     }
 
     /**
      * 长度
      */
     public int getLength() {
-        return byteBuffer.getInt(TcpNetProtocol.length_index);
+        return byteBuffer.getInt(NetProtocol.length_index);
     }
 
     public void setLength(int length) {
-        byteBuffer.putInt(TcpNetProtocol.length_index, length);
+        byteBuffer.putInt(NetProtocol.length_index, length);
     }
 
     /**
      * 校验和
      */
     public short getChecksum() {
-        return byteBuffer.getShort(TcpNetProtocol.checksum_index);
+        return byteBuffer.getShort(NetProtocol.checksum_index);
     }
 
     public void setChecksum(short checksum) {
-        byteBuffer.putShort(TcpNetProtocol.checksum_index, checksum);
+        byteBuffer.putShort(NetProtocol.checksum_index, checksum);
     }
 
     /**
      * 序列号
      */
     public int getSerial() {
-        return byteBuffer.getInt(TcpNetProtocol.serial_index);
+        return byteBuffer.getInt(NetProtocol.serial_index);
     }
 
     public void setSerial(int serial) {
-        byteBuffer.putInt(TcpNetProtocol.serial_index, serial);
+        byteBuffer.putInt(NetProtocol.serial_index, serial);
     }
 
     /**
      * 命令
      */
     public short getCmd() {
-        return byteBuffer.getShort(TcpNetProtocol.cmd_index);
+        return byteBuffer.getShort(NetProtocol.cmd_index);
     }
 
     public void setCmd(short cmd) {
-        byteBuffer.putShort(TcpNetProtocol.cmd_index, cmd);
+        byteBuffer.putShort(NetProtocol.cmd_index, cmd);
     }
 
     /**
      * Session
      */
     public long getSession() {
-        return byteBuffer.getLong(TcpNetProtocol.session_index);
+        return byteBuffer.getLong(NetProtocol.session_index);
     }
 
     public void setSession(long session) {
-        byteBuffer.putLong(TcpNetProtocol.session_index, session);
+        byteBuffer.putLong(NetProtocol.session_index, session);
     }
 
 }

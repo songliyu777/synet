@@ -65,14 +65,22 @@
                 <artifactId>synet-core</artifactId>
                 <version>${synet.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.synet</groupId>
                 <artifactId>synet-protobuf</artifactId>
                 <version>${synet.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>com.synet</groupId>
                 <artifactId>synet-tcpservice-starter</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>synet-protobufservice-starter</artifactId>
                 <version>${synet.version}</version>
             </dependency>
 

@@ -3,6 +3,8 @@ package com.synet.net.http;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
+import com.synet.net.protocol.NetProtocol;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.codec.DecodingException;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -11,6 +13,7 @@ import org.springframework.util.ConcurrentReferenceHashMap;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentMap;
 
 public class ProtobufProtocolDecoder implements ProtocolDecoder<Message> {
@@ -24,22 +27,21 @@ public class ProtobufProtocolDecoder implements ProtocolDecoder<Message> {
     }
 
     @Override
-    public Message decode(DataBuffer dataBuffer, Class<?> elementType) {
+    public Message decode(ByteBuffer byteBuffer, MethodParameter bodyParameter) {
         try {
-            Message.Builder builder = getMessageBuilder(elementType);
-            ByteBuffer buffer = dataBuffer.asByteBuffer();
-            buffer.position(CodecUtils.protobuf_index);
-            builder.mergeFrom(CodedInputStream.newInstance(buffer), this.extensionRegistry);
+            if (Objects.isNull(bodyParameter)) {
+                return null;
+            }
+            Message.Builder builder = getMessageBuilder(bodyParameter.getParameterType());
+            byteBuffer.position(NetProtocol.protobuf_index);
+            builder.mergeFrom(CodedInputStream.newInstance(byteBuffer), this.extensionRegistry);
             return builder.build();
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             throw new DecodingException("I/O error while parsing input stream", ex);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new DecodingException("Could not read Protobuf message: " + ex.getMessage(), ex);
-        }
-        finally {
-            DataBufferUtils.release(dataBuffer);
+        } finally {
+            byteBuffer.position(0);
         }
     }
 

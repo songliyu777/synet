@@ -1,10 +1,10 @@
 package com.synet.server.gateway;
 
 import com.google.protobuf.InvalidProtocolBufferException;
+import com.synet.net.protocol.NetProtocol;
 import com.synet.net.tcp.TcpNetClient;
 import com.synet.protobuf.TestOuterClass;
 import com.synet.net.protocol.ProtocolHeadDefine;
-import com.synet.net.tcp.TcpNetProtocol;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,13 +42,13 @@ public class TcpNetServerTest {
             });
             client.connectServer();
 
-            TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
+            NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
             client.send(protocol.toArray());
 
 //            Mono<TcpNetClient> m = Mono.just(client);
 //            m.delaySubscription(Duration.ofMillis(i*10))
 //                    .doOnSuccess((c) -> {
-//                        TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
+//                        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
 //                        c.send(protocol.toArray());
 //                        protocol.release();
 //                    })

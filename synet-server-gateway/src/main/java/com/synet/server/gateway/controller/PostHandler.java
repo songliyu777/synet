@@ -1,7 +1,7 @@
 package com.synet.server.gateway.controller;
 
 
-import com.synet.net.tcp.TcpNetProtocol;
+import com.synet.net.protocol.NetProtocol;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -18,7 +18,7 @@ public class PostHandler {
 //    TcpNetService tcpNetService;
 
     Function<? super ByteBuffer, ? extends Mono<ServerResponse>> bufferToSend = (buffer) -> {
-        long session = buffer.getLong(TcpNetProtocol.session_index);
+        long session = buffer.getLong(NetProtocol.session_index);
         //tcpNetService.GetServer().send(session, buffer);
         return ServerResponse.ok().build();
     };

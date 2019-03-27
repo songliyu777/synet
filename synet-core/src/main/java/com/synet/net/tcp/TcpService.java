@@ -1,5 +1,6 @@
 package com.synet.net.tcp;
 
+import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
@@ -29,9 +30,9 @@ public class TcpService implements ApplicationListener {
         return server;
     }
 
-    void process(TcpNetProtocol protocol) {
+    void process(NetProtocol protocol) {
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
-        buf.map((b) -> TcpNetProtocol.create(b)).subscribe(t -> {
+        buf.map((b) -> NetProtocol.create(b)).subscribe(t -> {
             server.send(t.getHead().getSession(), t.getByteBuffer());
         }, (e) -> System.err.println(e));
     }

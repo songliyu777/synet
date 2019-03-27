@@ -1,5 +1,6 @@
 package com.synet.net.tcp;
 
+import com.synet.net.protocol.NetProtocol;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
@@ -32,7 +33,7 @@ public class TcpNetClient {
         System.err.println("Disconnected");
     };
 
-    Consumer<TcpNetProtocol> process = (protocol) -> {
+    Consumer<NetProtocol> process = (protocol) -> {
         log.warn("process need implement and protocol need release");
     };
 
@@ -53,7 +54,7 @@ public class TcpNetClient {
                     .port(port)
                     .handle((in, out) ->{
                         in.withConnection((connection) -> {
-                            in.receive().map((bb) -> TcpNetProtocol.parse(bb)
+                            in.receive().map((bb) -> NetProtocol.parse(bb)
                             ).subscribe(process, error);
                         });
                         return Flux.never();
@@ -88,7 +89,7 @@ public class TcpNetClient {
         return client;
     }
 
-    public void setProcessHandler(Consumer<TcpNetProtocol> process) {
+    public void setProcessHandler(Consumer<NetProtocol> process) {
         this.process = process;
     }
 

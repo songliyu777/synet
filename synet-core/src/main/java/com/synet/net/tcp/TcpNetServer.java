@@ -1,5 +1,6 @@
 package com.synet.net.tcp;
 
+import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
 import com.synet.net.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
@@ -45,7 +46,7 @@ public class TcpNetServer {
     Consumer<DisposableServer> onUnbound = (param) -> {
     };
 
-    Consumer<TcpNetProtocol> process = (protocol) -> {
+    Consumer<NetProtocol> process = (protocol) -> {
         log.warn("process need implement and protocol need release");
     };
 
@@ -69,7 +70,7 @@ public class TcpNetServer {
         this.writeIdleTime = writeIdleTime;
     }
 
-    public void setProcessHandler(Consumer<TcpNetProtocol> process) {
+    public void setProcessHandler(Consumer<NetProtocol> process) {
         this.process = process;
     }
 
@@ -116,7 +117,7 @@ public class TcpNetServer {
             NettyOutbound, ? extends Publisher<Void>> handler = (in, out) -> {
         in.withConnection((connection) -> {
             in.receive().map((bb) -> {
-                        TcpNetProtocol protocol = TcpNetProtocol.parse(bb);
+                        NetProtocol protocol = NetProtocol.parse(bb);
                         protocol.getHead().setSession(connection.channel().attr(SessionManager.channel_session_id).get());
                         return protocol;
                     }

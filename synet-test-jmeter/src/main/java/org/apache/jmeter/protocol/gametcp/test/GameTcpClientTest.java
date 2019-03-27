@@ -2,7 +2,7 @@ package org.apache.jmeter.protocol.gametcp.test;
 
 import com.synet.net.protocol.ProtocolHead;
 import com.synet.net.protocol.ProtocolHeadDefine;
-import com.synet.net.tcp.TcpNetProtocol;
+import com.synet.net.protocol.NetProtocol;
 import com.synet.protobuf.TestOuterClass;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -43,7 +43,7 @@ public class GameTcpClientTest implements TCPClient {
     @Override
     public void write(OutputStream os, String s) throws IOException {
         TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("input 1").setPassword("input 2").build();
-        TcpNetProtocol protocol = TcpNetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, test.toByteArray());
+        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, test.toByteArray());
         os.write(protocol.toArray());
     }
 
@@ -57,11 +57,11 @@ public class GameTcpClientTest implements TCPClient {
         try {
             int x = 0;
             int bodysize = 0;
-            TcpNetProtocol protocol = null;
+            NetProtocol protocol = null;
             while ((x = is.read(readBuffer.array())) > -1) {
                 if (readBuffer.remaining() >= ProtocolHead.headSize) {
 
-                    bodysize = readBuffer.getInt(TcpNetProtocol.length_index);
+                    bodysize = readBuffer.getInt(NetProtocol.length_index);
 
                     log.info("bodysize:" + bodysize);
                 }
@@ -74,7 +74,7 @@ public class GameTcpClientTest implements TCPClient {
                         readBuffer.position(packsize);
                         readBuffer.compact();
                     }
-                    protocol = TcpNetProtocol.parse(buf);
+                    protocol = NetProtocol.parse(buf);
                     buf.release();
                     break;
                 }

@@ -16,7 +16,7 @@ public class RemoteServiceHandler extends TcpServiceHandler {
 
     @Override
     public Mono<ByteBuffer> invoke(ByteBuffer byteBuffer) {
-        return messageClient.test(byteBuffer);
+        return messageClient.protocol(byteBuffer);
     }
 
 }

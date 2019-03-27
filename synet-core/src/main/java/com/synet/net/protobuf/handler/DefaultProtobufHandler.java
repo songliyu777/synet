@@ -4,6 +4,7 @@ import com.google.protobuf.Message;
 import com.synet.net.http.ProtocolDecoder;
 import com.synet.net.http.ProtocolEncoder;
 import com.synet.net.protobuf.mapping.*;
+import com.synet.net.protocol.NetProtocol;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -18,6 +19,7 @@ import reactor.core.publisher.Mono;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +28,7 @@ import java.util.stream.Stream;
 /**
  * 默认的处理器
  */
-public class DefaultProtobufHandler implements ProtobufHandler{
+public class DefaultProtobufHandler implements ProtobufHandler {
 
     private ProtobufMappingHandlerMapping protobufMappingHandlerMapping;
 
@@ -50,39 +52,30 @@ public class DefaultProtobufHandler implements ProtobufHandler{
 
     @Override
     public Mono<ServerResponse> handle(ServerRequest request) {
-        return request.body(BodyExtractors.toMono(DataBuffer.class)).map(dataBuffer -> {
+        return request.body(BodyExtractors.toMono(ByteBuffer.class)).map(byteBuffer -> {
 
-            //解析协议头
-            ProtoHeader header = decoder.decode(dataBuffer);
+            NetProtocol protocol = NetProtocol.wrap(byteBuffer);
 
             //找到调用方法
-            ProtobufMethod protobufMethod = protobufMappingHandlerMapping.getProtobufMethod(header.getCmd());
+            ProtobufMethod protobufMethod = protobufMappingHandlerMapping.getProtobufMethod(protocol.getHead().getCmd());
             if (Objects.isNull(protobufMethod)) {
                 throw new RuntimeException("未找到命令");
             }
 
             MethodParameter bodyParameter = null;
             MethodParameter[] methodParameters = protobufMethod.getMethodParameters();
-            for (MethodParameter methodParameter: methodParameters) {
+            for (MethodParameter methodParameter : methodParameters) {
                 if (methodParameter.hasParameterAnnotation(Body.class)) {
                     bodyParameter = methodParameter;
                 }
             }
 
-            //找到协议body，protobuf对象类
-//            Body bodyAnnotaiion = protobufMethod.getMethodAnnotation(Body.class);
-            if (Objects.isNull(bodyParameter)) {
-                throw new RuntimeException("未找到body注解");
-            }
-
-            //解析
-            Message message = decoder.decode(dataBuffer, bodyParameter.getParameterType());
-
-            //构建上下文
+            Message message = decoder.decode(byteBuffer, bodyParameter);
             ProtoRequest protoRequest = ProtoRequest.builder()
-                    .protoHeader(header)
+                    .header(protocol.getProtoHeader())
                     .message(message)
                     .build();
+
             ReactiveExchangeContext context = ReactiveExchangeContext.builder()
                     .request(protoRequest)
                     .build();
@@ -90,44 +83,40 @@ public class DefaultProtobufHandler implements ProtobufHandler{
             return context;
         }).flatMap(context -> {
             ProtoRequest protoRequest = context.getRequest();
-            ProtobufMethod protobufMethod = protobufMappingHandlerMapping.getProtobufMethod(protoRequest.getProtoHeader().getCmd());
+            ProtobufMethod protobufMethod = protobufMappingHandlerMapping.getProtobufMethod(protoRequest.getHeader().getCmd());
             if (Objects.isNull(protobufMethod)) {
-                throw new RuntimeException("未找到命令");
+                throw new RuntimeException("not find cmd:" + protoRequest.getHeader().getCmd());
             }
             Object[] args = getMethodArgumentValues(protobufMethod, context);
             Object value = null;
+
             try {
                 value = protobufMethod.getMethod().invoke(protobufMethod.getBean(), args);
-            } catch (InvocationTargetException ex) {
-                ex.printStackTrace();
-            } catch (Throwable ex) {
-                ex.printStackTrace();
-                // Unlikely to ever get here, but it must be handled...
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
             }
+
             if (Objects.isNull(value)) {
                 throw new RuntimeException("需要考虑的");
             }
 
-            Mono<Message> mono = null;
+            Mono<ProtoResponse> mono = null;
             if (!(value instanceof Mono)) {
-                mono = Mono.just((Message) value);
-            }else {
-                mono = (Mono<Message>)value;
+                mono = Mono.just((ProtoResponse) value);
+            } else {
+                mono = (Mono<ProtoResponse>) value;
             }
 
-            return mono.map(message -> {
-                ProtoHeader header = ProtoHeader.builder()
-                        .cmd((short) 1)
-                        .serial(1)
-                        .session(context.getRequest().getProtoHeader().getSession())
-                        .build();
-                return encoder.encode(header, message);
+            return mono.map(response -> {
+                return encoder.encode(response.getProtoHeader(), response.getMessage());
             });
         }).flatMap(this::sendServerResponse);
     }
 
-    private Mono<ServerResponse> sendServerResponse(DataBuffer dataBuffer) {
-        return ServerResponse.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(BodyInserters.fromObject(dataBuffer.asByteBuffer().array()));
+    private Mono<ServerResponse> sendServerResponse(ByteBuffer dataBuffer) {
+        return ServerResponse.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(BodyInserters.fromObject(dataBuffer));
     }
 
     private Object[] getMethodArgumentValues(ProtobufMethod protobufMethod, ReactiveExchangeContext context) {
@@ -141,7 +130,7 @@ public class DefaultProtobufHandler implements ProtobufHandler{
             Annotation[] parameterAnnotations = parameter.getParameterAnnotations();
             Stream.of(parameterAnnotations).forEach(annotation -> {
                 if (annotation instanceof Header) {
-                    args.add(context.getRequest().getProtoHeader());
+                    args.add(context.getRequest().getHeader());
                 } else if (annotation instanceof Body) {
                     args.add(context.getRequest().getMessage());
                 }
