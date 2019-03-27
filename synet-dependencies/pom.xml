@@ -70,17 +70,12 @@
                 <artifactId>synet-protobuf</artifactId>
                 <version>${synet.version}</version>
             </dependency>
-            <!--<dependency>-->
-                <!--<groupId>com.yuyan</groupId>-->
-                <!--<artifactId>lightning-reactor-protobuf-service-starter</artifactId>-->
-                <!--<version>${project.version}</version>-->
-            <!--</dependency>-->
-            <!--<dependency>-->
-                <!--<groupId>com.yuyan</groupId>-->
-                <!--<artifactId>lightning-reactor-tcp-gateway-starter</artifactId>-->
-                <!--<version>${project.version}</version>-->
-            <!--</dependency>-->
-            <!--lombok-->
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>synet-tcpservice-starter</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>

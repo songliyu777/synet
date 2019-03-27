@@ -77,7 +77,7 @@ public class TcpNetServer {
         this.error = error;
     }
 
-    public DisposableServer GetServer() {
+    public DisposableServer getServer() {
         return server;
     }
 
@@ -128,7 +128,7 @@ public class TcpNetServer {
     Runnable createRun = () -> {
 
         try {
-            if (ip.isEmpty()) {
+            if (ip == null || ip.isEmpty()) {
                 server = TcpServer.create().doOnBind(onBind)
                         .doOnBound(onBound)
                         .doOnUnbound(onUnbound)
@@ -154,7 +154,6 @@ public class TcpNetServer {
             closeFuture = server.channel().closeFuture();
             latch.countDown();
             closeFuture.sync();
-            server.disposeNow();
             scheduler.dispose();
         } catch (Exception e) {
             e.printStackTrace();

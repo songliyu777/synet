@@ -2,8 +2,6 @@ package com.synet.server.gateway.controller;
 
 
 import com.synet.net.tcp.TcpNetProtocol;
-import com.synet.server.gateway.service.TcpNetService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -16,12 +14,12 @@ import java.util.function.Function;
 @Component
 public class PostHandler {
 
-    @Autowired
-    TcpNetService tcpNetService;
+//    @Autowired
+//    TcpNetService tcpNetService;
 
     Function<? super ByteBuffer, ? extends Mono<ServerResponse>> bufferToSend = (buffer) -> {
         long session = buffer.getLong(TcpNetProtocol.session_index);
-        tcpNetService.GetServer().send(session, buffer);
+        //tcpNetService.GetServer().send(session, buffer);
         return ServerResponse.ok().build();
     };
 

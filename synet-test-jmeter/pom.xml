@@ -35,6 +35,12 @@
         <dependency>
             <groupId>com.synet</groupId>
             <artifactId>synet-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-to-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.synet</groupId>

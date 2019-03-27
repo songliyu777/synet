@@ -23,6 +23,12 @@ reactive:
     hystrix:
       enabled: false
 
+synet:
+  tcpservice:
+    port: 7000
+    readIdleTime: 60000
+    writeIdleTime: 60000
+
 #logging:
 #  level:
 #    root: DEBUG
