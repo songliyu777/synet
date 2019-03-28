@@ -127,30 +127,20 @@ public class TcpNetServer {
     };
 
     Runnable createRun = () -> {
-
         try {
-            if (ip == null || ip.isEmpty()) {
-                server = TcpServer.create().doOnBind(onBind)
-                        .doOnBound(onBound)
-                        .doOnUnbound(onUnbound)
-                        .doOnConnection(onConnection)
-                        .port(port)
-                        .handle(handler)
-                        .wiretap(true)
-                        .bind()
-                        .block();
-            } else {
-                server = TcpServer.create().doOnBind(onBind)
-                        .doOnBound(onBound)
-                        .doOnUnbound(onUnbound)
-                        .doOnConnection(onConnection)
-                        .host(ip)
-                        .port(port)
-                        .handle(handler)
-                        .wiretap(true)
-                        .bind()
-                        .block();
+            TcpServer tcpServer = TcpServer.create().doOnBind(onBind)
+                    .doOnBound(onBound)
+                    .doOnUnbound(onUnbound)
+                    .doOnConnection(onConnection)
+                    .port(port)
+                    .handle(handler)
+                    .wiretap(true);
+
+            if (ip != null && !ip.isEmpty()) {
+                tcpServer = tcpServer.host(ip);
             }
+
+            server = tcpServer.bind().block();
             scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
             latch.countDown();
@@ -193,6 +183,7 @@ public class TcpNetServer {
 
     /**
      * send byte on work thread
+     *
      * @param id
      * @param buffer
      */
