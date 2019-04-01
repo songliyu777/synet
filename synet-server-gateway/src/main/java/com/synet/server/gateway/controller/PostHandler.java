@@ -17,14 +17,19 @@ public class PostHandler {
 //    @Autowired
 //    TcpNetService tcpNetService;
 
-    Function<? super ByteBuffer, ? extends Mono<ServerResponse>> bufferToSend = (buffer) -> {
-        long session = buffer.getLong(NetProtocol.session_index);
-        //tcpNetService.GetServer().send(session, buffer);
+//    Function<? super ByteBuffer, ? extends Mono<ServerResponse>> bufferToSend = (buffer) -> {
+//        //long session = buffer.getLong(NetProtocol.session_index);
+//        //tcpNetService.GetServer().send(session, buffer);
+//        return ServerResponse.ok().build();
+//    };
+
+    Mono<ServerResponse> bufferToSend(ByteBuffer byteBuffer) {
+        System.err.println("recv from logic");
         return ServerResponse.ok().build();
-    };
+    }
 
     public Mono<ServerResponse> test(ServerRequest req) {
-        return req.body(BodyExtractors.toMono(ByteBuffer.class)).flatMap(bufferToSend);
+        return req.body(BodyExtractors.toMono(ByteBuffer.class)).flatMap(this::bufferToSend);
     }
 
 }
