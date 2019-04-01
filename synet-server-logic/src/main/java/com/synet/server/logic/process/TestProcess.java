@@ -40,22 +40,22 @@ public class TestProcess {
 //        for (int i = 0; i < 32; i++) {
 //            scheduler[i] = Schedulers.newSingle("Database Single Work" + i);
 //        }
-        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
-        clientConfig.loadDefaultValues();
-        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
-        ILoadBalancer lb = null;
-        try {
-            lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-gateway", clientConfig);
-            lb.addServers(asList(new Server("localhost", 9000)));
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
-
-
-        client = TestProcess.<GatewayInterface>cloudBuilder()
-                .enableLoadBalancer()
-                .disableHystrix()
-                .target(GatewayInterface.class, "http://server-gateway");
+//        DefaultClientConfigImpl clientConfig = new DefaultClientConfigImpl();
+//        clientConfig.loadDefaultValues();
+//        clientConfig.setProperty(CommonClientConfigKey.NFLoadBalancerClassName, BaseLoadBalancer.class.getName());
+//        ILoadBalancer lb = null;
+//        try {
+//            lb = ClientFactory.registerNamedLoadBalancerFromclientConfig("server-gateway", clientConfig);
+//            lb.addServers(asList(new Server("localhost", 9000)));
+//        } catch (ClientException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//        client = TestProcess.<GatewayInterface>cloudBuilder()
+//                .enableLoadBalancer()
+//                .disableHystrix()
+//                .target(GatewayInterface.class, "http://server-gateway");
     }
 
     @Autowired

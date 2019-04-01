@@ -31,7 +31,10 @@ spring:
 #  spring.data.mongodb.port=27017
 #  spring.data.mongodb.username=admin
 #  spring.data.mongodb.password=admin
-
+reactive:
+  feign:
+    hystrix:
+      enabled: false
 
 
 eureka:
