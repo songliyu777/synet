@@ -152,13 +152,6 @@
                 <version>${feign-reactor.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/com.netflix.servo/servo-core -->
-            <dependency>
-                <groupId>com.netflix.servo</groupId>
-                <artifactId>servo-core</artifactId>
-                <version>${servo-core.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 

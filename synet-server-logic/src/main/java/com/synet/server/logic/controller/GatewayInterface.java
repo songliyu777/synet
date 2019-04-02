@@ -24,6 +24,6 @@ import java.nio.ByteBuffer;
 public interface GatewayInterface {
 
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Mono<ByteBuffer> test(ByteBuffer body, @RequestParam("ip") String ip);
+    Mono<ByteBuffer> test(ByteBuffer body, @RequestParam("remote") String remote);
 }
 

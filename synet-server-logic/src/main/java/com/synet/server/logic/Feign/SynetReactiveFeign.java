@@ -32,7 +32,6 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
 
         private ReactiveFeignBuilder<T> builder;
         private LoadBalancerCommandFactory loadBalancerCommandFactory = s -> null;
-        private SynetLoadBalancerComandFactory synetLoadBalancerCommandFactory = s -> null;
 
         protected SynetBuilder(ReactiveFeignBuilder<T> builder) {
             super(builder);
@@ -78,23 +77,12 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
         }
 
         @Override
-        public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory){
+        public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory) {
             return setLoadBalancerCommandFactory(serviceName ->
                     LoadBalancerCommand.builder()
                             .withLoadBalancer(clientFactory.loadBalancer(serviceName))
                             .withClientConfig(clientFactory.clientConfig(serviceName))
                             .build());
         }
-
-//        @Override
-//        public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory) {
-//            synetLoadBalancerCommandFactory = serviceName -> {
-//                return SynetLoadBalancerCommand.builder()
-//                        .withLoadBalancer(clientFactory.loadBalancer(serviceName))
-//                        .withClientConfig(clientFactory.clientConfig(serviceName))
-//                        .build();
-//            };
-//            return this;
-//        }
     }
 }

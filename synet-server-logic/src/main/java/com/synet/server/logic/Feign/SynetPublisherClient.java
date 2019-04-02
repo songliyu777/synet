@@ -37,6 +37,13 @@ public class SynetPublisherClient implements PublisherHttpClient {
 
     @Override
     public Publisher<Object> executeRequest(ReactiveHttpRequest request) {
+
+        if (request.uri().getQuery().startsWith("remote=")) {
+            String[] host_port = request.uri().getQuery().substring(7, request.uri().getQuery().length()).split(":");
+            ReactiveHttpRequest lbRequest = loadBalanceRequest(request, host_port[0], host_port[1]);
+            return publisherClient.executeRequest(lbRequest);
+        }
+
         LoadBalancerCommand<Object> loadBalancerCommand = this.loadBalancerCommand.get();
         if (loadBalancerCommand != null) {
             Observable<?> observable = loadBalancerCommand.submit(server -> {
@@ -49,9 +56,9 @@ public class SynetPublisherClient implements PublisherHttpClient {
 
             Publisher<?> publisher = RxReactiveStreams.toPublisher(observable);
 
-            if(publisherType == Mono.class){
+            if (publisherType == Mono.class) {
                 return Mono.from(publisher);
-            } else if(publisherType == Flux.class){
+            } else if (publisherType == Flux.class) {
                 return Flux.from(publisher);
             } else {
                 throw new IllegalArgumentException("Unknown publisherType: " + publisherType);
@@ -65,6 +72,17 @@ public class SynetPublisherClient implements PublisherHttpClient {
         URI uri = request.uri();
         try {
             URI lbUrl = new URI(uri.getScheme(), uri.getUserInfo(), server.getHost(), server.getPort(),
+                    uri.getPath(), uri.getQuery(), uri.getFragment());
+            return new ReactiveHttpRequest(request.method(), lbUrl, request.headers(), request.body());
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    protected ReactiveHttpRequest loadBalanceRequest(ReactiveHttpRequest request, String host, String port) {
+        URI uri = request.uri();
+        try {
+            URI lbUrl = new URI(uri.getScheme(), uri.getUserInfo(), host, Integer.valueOf(port),
                     uri.getPath(), uri.getQuery(), uri.getFragment());
             return new ReactiveHttpRequest(request.method(), lbUrl, request.headers(), request.body());
         } catch (URISyntaxException e) {

@@ -24,7 +24,7 @@ public class PostHandler {
 //    };
 
     Mono<ServerResponse> bufferToSend(ByteBuffer byteBuffer) {
-        System.err.println("recv from logic");
+        //System.err.println("recv from logic");
         return ServerResponse.ok().build();
     }
 
