@@ -1,15 +1,24 @@
 package com.synet.server.logic.Feign;
 
+import com.netflix.client.ClientFactory;
+import com.netflix.client.DefaultLoadBalancerRetryHandler;
+import com.netflix.client.RetryHandler;
+import com.netflix.client.config.DefaultClientConfigImpl;
+import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import feign.MethodMetadata;
 import feign.Target;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactivefeign.cloud.LoadBalancerCommandFactory;
 import reactivefeign.cloud.ReactiveFeignClientFactory;
 import reactivefeign.publisher.PublisherClientFactory;
 import reactivefeign.publisher.PublisherHttpClient;
+import reactivefeign.spring.config.ReactiveFeignContext;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -31,7 +40,7 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
     public static class SynetBuilder<T> extends CloudReactiveFeign.Builder<T> {
 
         private ReactiveFeignBuilder<T> builder;
-        private LoadBalancerCommandFactory loadBalancerCommandFactory = s -> null;
+        private SynetLoadBalancerCommandFactory loadBalancerCommandFactory = s -> null;
 
         protected SynetBuilder(ReactiveFeignBuilder<T> builder) {
             super(builder);
@@ -61,13 +70,6 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
             };
         }
 
-        @Override
-        public Builder<T> setLoadBalancerCommandFactory(LoadBalancerCommandFactory loadBalancerCommandFactory) {
-            super.setLoadBalancerCommandFactory(loadBalancerCommandFactory);
-            this.loadBalancerCommandFactory = loadBalancerCommandFactory;
-            return this;
-        }
-
         private String extractServiceName(String url) {
             try {
                 return new URI(url).getHost();
@@ -76,13 +78,46 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
             }
         }
 
+        @Autowired
+        ReactiveFeignContext context;
+
         @Override
         public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory) {
-            return setLoadBalancerCommandFactory(serviceName ->
-                    LoadBalancerCommand.builder()
-                            .withLoadBalancer(clientFactory.loadBalancer(serviceName))
-                            .withClientConfig(clientFactory.clientConfig(serviceName))
-                            .build());
+
+            this.loadBalancerCommandFactory = serviceName -> {
+                SpringClientFactory springClientFactory = context.getInstance(serviceName, SpringClientFactory.class);
+
+                IClientConfig clientConfig;
+                ILoadBalancer namedLoadBalancer;
+
+                if (springClientFactory != null) {
+                    clientConfig = springClientFactory.getClientConfig(serviceName);
+                    namedLoadBalancer = springClientFactory.getLoadBalancer(serviceName);
+                } else {
+                    clientConfig = DefaultClientConfigImpl.getClientConfigWithDefaultValues(serviceName);
+                    namedLoadBalancer = ClientFactory.getNamedLoadBalancer(serviceName);
+                }
+
+                RetryHandler retryHandler = getOrInstantiateRetryHandler(context, serviceName, clientConfig);
+
+                return SynetLoadBalancerCommand.builder()
+                        .withLoadBalancer(namedLoadBalancer)
+                        .withRetryHandler(retryHandler)
+                        .withClientConfig(clientConfig)
+                        .build();
+            };
+            return this;
+        }
+
+        private RetryHandler getOrInstantiateRetryHandler(ReactiveFeignContext context, String clientName, IClientConfig clientConfig) {
+            RetryHandler retryHandler = context.getInstance(clientName, RetryHandler.class);
+            if(retryHandler == null){
+                retryHandler = new DefaultLoadBalancerRetryHandler(clientConfig);
+            }
+            return retryHandler;
         }
     }
+
+
+
 }

@@ -22,11 +22,11 @@ import java.net.URISyntaxException;
 
 public class SynetPublisherClient implements PublisherHttpClient {
 
-    private final LazyInitialized<LoadBalancerCommand<Object>> loadBalancerCommand;
+    private final LazyInitialized<SynetLoadBalancerCommand<Object>> loadBalancerCommand;
     private final PublisherHttpClient publisherClient;
     private final Type publisherType;
 
-    public SynetPublisherClient(LoadBalancerCommandFactory loadBalancerCommandFactory,
+    public SynetPublisherClient(SynetLoadBalancerCommandFactory loadBalancerCommandFactory,
                                 String serviceName,
                                 PublisherHttpClient publisherClient,
                                 Type publisherType) {
@@ -38,13 +38,13 @@ public class SynetPublisherClient implements PublisherHttpClient {
     @Override
     public Publisher<Object> executeRequest(ReactiveHttpRequest request) {
 
-        if (request.uri().getQuery().startsWith("remote=")) {
-            String[] host_port = request.uri().getQuery().substring(7, request.uri().getQuery().length()).split(":");
-            ReactiveHttpRequest lbRequest = loadBalanceRequest(request, host_port[0], host_port[1]);
-            return publisherClient.executeRequest(lbRequest);
-        }
+//        if (request.uri().getQuery().startsWith("remote=")) {
+//            String[] host_port = request.uri().getQuery().substring(7, request.uri().getQuery().length()).split(":");
+//            ReactiveHttpRequest lbRequest = loadBalanceRequest(request, host_port[0], host_port[1]);
+//            return publisherClient.executeRequest(lbRequest);
+//        }
 
-        LoadBalancerCommand<Object> loadBalancerCommand = this.loadBalancerCommand.get();
+        SynetLoadBalancerCommand<Object> loadBalancerCommand = this.loadBalancerCommand.get();
         if (loadBalancerCommand != null) {
             Observable<?> observable = loadBalancerCommand.submit(server -> {
 
