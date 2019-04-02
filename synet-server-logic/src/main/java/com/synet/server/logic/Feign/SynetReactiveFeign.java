@@ -1,11 +1,13 @@
 package com.synet.server.logic.Feign;
 
+import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import feign.MethodMetadata;
 import feign.Target;
 import lombok.extern.slf4j.Slf4j;
 import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactivefeign.cloud.LoadBalancerCommandFactory;
+import reactivefeign.cloud.ReactiveFeignClientFactory;
 import reactivefeign.publisher.PublisherClientFactory;
 import reactivefeign.publisher.PublisherHttpClient;
 
@@ -16,7 +18,6 @@ import static reactivefeign.utils.FeignUtils.returnPublisherType;
 
 /**
  * 继承 CloudReactiveFeign 实现消息的指定服务器转发
- *
  */
 
 @Slf4j
@@ -31,6 +32,7 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
 
         private ReactiveFeignBuilder<T> builder;
         private LoadBalancerCommandFactory loadBalancerCommandFactory = s -> null;
+        private SynetLoadBalancerComandFactory synetLoadBalancerCommandFactory = s -> null;
 
         protected SynetBuilder(ReactiveFeignBuilder<T> builder) {
             super(builder);
@@ -40,7 +42,7 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
         @Override
         public PublisherClientFactory buildReactiveClientFactory() {
             PublisherClientFactory publisherClientFactory = builder.buildReactiveClientFactory();
-            return new PublisherClientFactory(){
+            return new PublisherClientFactory() {
 
                 private Target target;
 
@@ -67,12 +69,32 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
             return this;
         }
 
-        private String extractServiceName(String url){
+        private String extractServiceName(String url) {
             try {
                 return new URI(url).getHost();
             } catch (URISyntaxException e) {
-                throw new IllegalArgumentException("Can't extract service name from url:"+url, e);
+                throw new IllegalArgumentException("Can't extract service name from url:" + url, e);
             }
         }
+
+        @Override
+        public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory){
+            return setLoadBalancerCommandFactory(serviceName ->
+                    LoadBalancerCommand.builder()
+                            .withLoadBalancer(clientFactory.loadBalancer(serviceName))
+                            .withClientConfig(clientFactory.clientConfig(serviceName))
+                            .build());
+        }
+
+//        @Override
+//        public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory) {
+//            synetLoadBalancerCommandFactory = serviceName -> {
+//                return SynetLoadBalancerCommand.builder()
+//                        .withLoadBalancer(clientFactory.loadBalancer(serviceName))
+//                        .withClientConfig(clientFactory.clientConfig(serviceName))
+//                        .build();
+//            };
+//            return this;
+//        }
     }
 }

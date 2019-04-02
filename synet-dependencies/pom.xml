@@ -39,6 +39,7 @@
         <mail.version>1.4.7</mail.version>
         <protobuf.version>3.7.0-rc1</protobuf.version>
         <feign-reactor.version>1.0.22</feign-reactor.version>
+        <servo-core.version>0.12.21</servo-core.version>
     </properties>
 
     <dependencyManagement>
@@ -150,6 +151,14 @@
                 <artifactId>feign-reactor-spring-configuration</artifactId>
                 <version>${feign-reactor.version}</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.netflix.servo/servo-core -->
+            <dependency>
+                <groupId>com.netflix.servo</groupId>
+                <artifactId>servo-core</artifactId>
+                <version>${servo-core.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
