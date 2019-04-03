@@ -1,5 +1,6 @@
 package com.synet.net.tcp;
 
+import com.synet.net.net.NetServive;
 import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import reactor.core.publisher.Mono;
 import java.nio.ByteBuffer;
 
 @Slf4j
-public class TcpService implements ApplicationListener {
+public class TcpService implements ApplicationListener, NetServive {
 
     TcpServiceHandler handler;
 
@@ -51,5 +52,10 @@ public class TcpService implements ApplicationListener {
         if (event instanceof ContextStoppedEvent) {
             server.getServer().dispose();
         }
+    }
+
+    @Override
+    public void send(long id, ByteBuffer buffer) {
+        server.send(id, buffer);
     }
 }

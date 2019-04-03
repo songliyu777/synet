@@ -44,4 +44,5 @@ public class ProtobufServiceConfiguration {
     public ProtobufProtocolDecoder protobufProtocolDecoder() {
         return new ProtobufProtocolDecoder();
     }
+
 }

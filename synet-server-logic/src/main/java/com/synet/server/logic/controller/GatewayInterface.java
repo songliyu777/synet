@@ -1,5 +1,6 @@
 package com.synet.server.logic.controller;
 
+import com.synet.net.protobuf.mapping.ProtoHeader;
 import feign.Body;
 import feign.Param;
 import feign.RequestLine;

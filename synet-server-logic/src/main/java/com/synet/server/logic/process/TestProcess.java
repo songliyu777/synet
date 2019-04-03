@@ -1,14 +1,6 @@
 package com.synet.server.logic.process;
 
-import com.netflix.client.ClientException;
-import com.netflix.client.ClientFactory;
-import com.netflix.client.config.CommonClientConfigKey;
-import com.netflix.client.config.DefaultClientConfigImpl;
-import com.netflix.loadbalancer.BaseLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.Server;
 import com.synet.server.logic.config.R2dbcDatabase;
-import com.synet.server.logic.controller.GatewayInterface;
 import com.synet.server.logic.database.dao.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,8 +8,6 @@ import reactivefeign.cloud.CloudReactiveFeign;
 import reactivefeign.webclient.WebReactiveFeign;
 
 import java.util.concurrent.atomic.AtomicLong;
-
-import static java.util.Arrays.asList;
 
 @Service
 public class TestProcess {
@@ -30,7 +20,7 @@ public class TestProcess {
 
 //    Scheduler[] scheduler = new Scheduler[32];
 
-    GatewayInterface client;
+    //GatewayInterface client;
 
     static <T> CloudReactiveFeign.Builder<T> cloudBuilder() {
         return CloudReactiveFeign.builder(WebReactiveFeign.builder());

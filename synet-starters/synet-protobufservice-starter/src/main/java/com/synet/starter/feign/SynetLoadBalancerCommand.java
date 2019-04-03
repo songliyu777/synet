@@ -28,18 +28,19 @@ public class SynetLoadBalancerCommand<T> {
     private static final Logger logger = LoggerFactory.getLogger(SynetLoadBalancerCommand.class);
 
     public static class Builder<T> {
-        private RetryHandler        retryHandler;
-        private ILoadBalancer       loadBalancer;
-        private IClientConfig       config;
+        private RetryHandler retryHandler;
+        private ILoadBalancer loadBalancer;
+        private IClientConfig config;
         private LoadBalancerContext loadBalancerContext;
         private List<? extends ExecutionListener<?, T>> listeners;
-        private Object              loadBalancerKey;
+        private Object loadBalancerKey;
         private ExecutionContext<?> executionContext;
         private ExecutionContextListenerInvoker invoker;
-        private URI                 loadBalancerURI;
-        private Server              server;
+        private URI loadBalancerURI;
+        private Server server;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         public Builder<T> withLoadBalancer(ILoadBalancer loadBalancer) {
             this.loadBalancer = loadBalancer;
@@ -120,7 +121,7 @@ public class SynetLoadBalancerCommand<T> {
         return new Builder<T>();
     }
 
-    private final URI    loadBalancerURI;
+    private final URI loadBalancerURI;
     private final Object loadBalancerKey;
 
     private final LoadBalancerContext loadBalancerContext;
@@ -131,12 +132,12 @@ public class SynetLoadBalancerCommand<T> {
     private final ExecutionContextListenerInvoker<?, T> listenerInvoker;
 
     private SynetLoadBalancerCommand(Builder<T> builder) {
-        this.loadBalancerURI     = builder.loadBalancerURI;
-        this.loadBalancerKey     = builder.loadBalancerKey;
+        this.loadBalancerURI = builder.loadBalancerURI;
+        this.loadBalancerKey = builder.loadBalancerKey;
         this.loadBalancerContext = builder.loadBalancerContext;
-        this.retryHandler        = builder.retryHandler != null ? builder.retryHandler : loadBalancerContext.getRetryHandler();
-        this.listenerInvoker     = builder.invoker;
-        this.server              = builder.server;
+        this.retryHandler = builder.retryHandler != null ? builder.retryHandler : loadBalancerContext.getRetryHandler();
+        this.listenerInvoker = builder.invoker;
+        this.server = builder.server;
     }
 
     /**
@@ -147,6 +148,7 @@ public class SynetLoadBalancerCommand<T> {
         return Observable.unsafeCreate(new Observable.OnSubscribe<Server>() {
             @Override
             public void call(Subscriber<? super Server> next) {
+                //指定IP调用
                 try {
                     if (host.isEmpty()) {
                         Server server = loadBalancerContext.getServerFromLoadBalancer(loadBalancerURI, loadBalancerKey);
@@ -155,13 +157,17 @@ public class SynetLoadBalancerCommand<T> {
 
                     } else {
                         List<Server> servers = loadBalancerContext.getLoadBalancer().getReachableServers();
-                        for (Server server : servers){
+                        for (int i = 0; i < servers.size(); i++) {
+                            Server server = servers.get(i);
                             if (server.getHost().equals(host)) {
                                 next.onNext(server);
                                 next.onCompleted();
-                                break;
+                                return;
                             }
                         }
+                        throw new ClientException(ClientException.ErrorType.GENERAL,
+                                "Load balancer does not have available server for client: "
+                                        + host);
                     }
                 } catch (Exception e) {
                     next.onError(e);
@@ -171,9 +177,9 @@ public class SynetLoadBalancerCommand<T> {
     }
 
     class ExecutionInfoContext {
-        Server      server;
-        int         serverAttemptCount = 0;
-        int         attemptCount = 0;
+        Server server;
+        int serverAttemptCount = 0;
+        int attemptCount = 0;
 
         public void setServer(Server server) {
             this.server = server;
@@ -199,11 +205,11 @@ public class SynetLoadBalancerCommand<T> {
         }
 
         public ExecutionInfo toExecutionInfo() {
-            return ExecutionInfo.create(server, attemptCount-1, serverAttemptCount-1);
+            return ExecutionInfo.create(server, attemptCount - 1, serverAttemptCount - 1);
         }
 
         public ExecutionInfo toFinalExecutionInfo() {
-            return ExecutionInfo.create(server, attemptCount, serverAttemptCount-1);
+            return ExecutionInfo.create(server, attemptCount, serverAttemptCount - 1);
         }
 
     }
@@ -281,6 +287,7 @@ public class SynetLoadBalancerCommand<T> {
 
                                                 return operation.call(server).doOnEach(new Observer<T>() {
                                                     private T entity;
+
                                                     @Override
                                                     public void onCompleted() {
                                                         recordStats(tracer, stats, entity, null);
@@ -318,7 +325,8 @@ public class SynetLoadBalancerCommand<T> {
                             }
                         });
 
-        if (maxRetrysNext > 0 && server == null)
+        //当指定服务器调用时，不尝试其他服务器
+        if (maxRetrysNext > 0 && server == null && host.isEmpty())
             o = o.retry(retryPolicy(maxRetrysNext, false));
 
         return o.onErrorResumeNext(new Func1<Throwable, Observable<T>>() {
@@ -329,8 +337,7 @@ public class SynetLoadBalancerCommand<T> {
                         e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED,
                                 "Number of retries on next server exceeded max " + maxRetrysNext
                                         + " retries, while making a call for: " + context.getServer(), e);
-                    }
-                    else if (maxRetrysSame > 0 && context.getAttemptCount() == (maxRetrysSame + 1)) {
+                    } else if (maxRetrysSame > 0 && context.getAttemptCount() == (maxRetrysSame + 1)) {
                         e = new ClientException(ClientException.ErrorType.NUMBEROF_RETRIES_EXEEDED,
                                 "Number of retries exceeded max " + maxRetrysSame
                                         + " retries, while making a call for: " + context.getServer(), e);

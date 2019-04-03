@@ -10,9 +10,6 @@ import java.nio.ByteBuffer;
 @ReactiveFeignClient(name = "server-logic")
 public interface MessageClient {
 
-    @PostMapping(value = "/test", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Mono<ByteBuffer> test(ByteBuffer body);
-
     @PostMapping(value = "/pb/protocol", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     Mono<ByteBuffer> protocol(ByteBuffer body);
 }
