@@ -1,6 +1,7 @@
 package com.synet.server.logic.controller;
 
 import com.synet.net.protobuf.mapping.ProtoHeader;
+import com.synet.starter.feign.RemoteInterface;
 import feign.Body;
 import feign.Param;
 import feign.RequestLine;
@@ -22,15 +23,15 @@ import java.nio.ByteBuffer;
 //}
 
 @ReactiveFeignClient(name = "server-gateway")
-public interface GatewayInterface {
+public interface GatewayInterface extends RemoteInterface {
 
-    /**
-     * Gateway remote query
-     * @param body
-     * @param remote 127.0.0.1 or 127.0.0.1:9000
-     * @return
-     */
-    @PostMapping(value = "/test", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Mono<ByteBuffer> test(ByteBuffer body, @RequestParam("remote") String remote);
+//    /**
+//     * Gateway remote query
+//     * @param body
+//     * @param remote 127.0.0.1 or 127.0.0.1:9000
+//     * @return
+//     */
+//    @PostMapping(value = "/test", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+//    Mono<ByteBuffer> test(ByteBuffer body, @RequestParam("remote") String remote);
 }
 
