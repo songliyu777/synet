@@ -1,4 +1,4 @@
-package com.synet.server.logic.Feign;
+package com.synet.starter.feign;
 
 import com.netflix.client.ClientException;
 import com.netflix.client.RetryHandler;

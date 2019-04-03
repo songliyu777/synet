@@ -1,10 +1,8 @@
-package com.synet.server.logic.Feign;
+package com.synet.starter.feign;
 
 import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import org.reactivestreams.Publisher;
 import reactivefeign.client.ReactiveHttpRequest;
-import reactivefeign.cloud.LoadBalancerCommandFactory;
 import reactivefeign.publisher.PublisherHttpClient;
 import reactivefeign.utils.LazyInitialized;
 import reactor.core.publisher.Flux;

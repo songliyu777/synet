@@ -1,16 +1,12 @@
-package com.synet.server.logic.config;
+package com.synet.starter.feign;
 
-import com.synet.server.logic.Feign.SynetReactiveFeign;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
-import reactivefeign.spring.config.ReactiveFeignRibbonConfigurator;
 
 @Configuration
 public class FeignClientsConfiguration {

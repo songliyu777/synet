@@ -1,4 +1,4 @@
-package com.synet.server.logic.Feign;
+package com.synet.starter.feign;
 
 import com.netflix.client.ClientFactory;
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
@@ -6,7 +6,6 @@ import com.netflix.client.RetryHandler;
 import com.netflix.client.config.DefaultClientConfigImpl;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.reactive.LoadBalancerCommand;
 import feign.MethodMetadata;
 import feign.Target;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
-import reactivefeign.cloud.LoadBalancerCommandFactory;
 import reactivefeign.cloud.ReactiveFeignClientFactory;
 import reactivefeign.publisher.PublisherClientFactory;
 import reactivefeign.publisher.PublisherHttpClient;
