@@ -2,6 +2,7 @@ package com.synet.starter.gatewayservice.controller;
 
 
 import com.synet.net.net.NetServive;
+import com.synet.net.protocol.NetProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.BodyExtractors;
 import org.springframework.web.reactive.function.server.ServerRequest;
@@ -16,8 +17,8 @@ public class PostController {
     NetServive netServive;
 
     Mono<ServerResponse> bufferToSend(ByteBuffer byteBuffer) {
-//        long session = byteBuffer.getLong(NetProtocol.session_index);
-//        tcpService.GetServer().send(session,byteBuffer);
+        long session = byteBuffer.getLong(NetProtocol.session_index);
+        netServive.send(session,byteBuffer);
         return ServerResponse.ok().build();
     }
 

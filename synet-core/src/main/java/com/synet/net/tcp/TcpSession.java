@@ -28,7 +28,9 @@ public class TcpSession implements ISession {
 
     @Override
     public void send(byte[] data) {
-        ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
-        connection.outbound().send(f).then().subscribe();
+        if (!connection.isDisposed()) {
+            ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
+            connection.outbound().send(f).then().subscribe();
+        }
     }
 }

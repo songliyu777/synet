@@ -21,12 +21,13 @@ public class FeignClientsConfiguration {
             @Value("${reactive.feign.ribbon.enabled:true}")
                     boolean enableLoadBalancer) {
         SynetReactiveFeign.Builder cloudBuilder = SynetReactiveFeign.builder(reactiveFeignBuilder);
-        if(enableLoadBalancer){
+        if (enableLoadBalancer) {
             cloudBuilder = cloudBuilder.enableLoadBalancer();
         }
-        if(!enableHystrix){
+        if (!enableHystrix) {
             cloudBuilder = cloudBuilder.disableHystrix();
         }
         return cloudBuilder;
     }
+
 }

@@ -2,6 +2,7 @@ package com.synet.server.logic.controller;
 
 import com.synet.net.protobuf.mapping.*;
 import com.synet.protobuf.TestOuterClass;
+import com.synet.starter.feign.RemoteDelegation;
 import org.springframework.beans.factory.annotation.Autowired;
 import reactor.core.publisher.Mono;
 
@@ -9,14 +10,14 @@ import reactor.core.publisher.Mono;
 public class TestController {
 
     @Autowired
-    GatewayDelegation gatewayDelegation;
+    RemoteDelegation remoteDelegation;
 
     @ProtobufMapping(cmd = 1)
     public Mono<ProtoResponse> test(@Header ProtoHeader head, @Body TestOuterClass.Test test) {
 
         ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(test).build();
 
-        gatewayDelegation.query(head, test, head.getRemoteAddress()).subscribe();
+        remoteDelegation.query(head, test, head.getRemoteAddress()).subscribe();
         //gatewayInterface.test(ByteBuffer.wrap(test.toByteArray()), head.getRemoteAddress()).subscribe();
 
         return Mono.just(response);
