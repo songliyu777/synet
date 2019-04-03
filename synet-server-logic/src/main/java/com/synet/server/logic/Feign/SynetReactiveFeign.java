@@ -117,7 +117,4 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
             return retryHandler;
         }
     }
-
-
-
 }
