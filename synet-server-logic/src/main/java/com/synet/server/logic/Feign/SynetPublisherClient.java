@@ -37,12 +37,19 @@ public class SynetPublisherClient implements PublisherHttpClient {
 
     @Override
     public Publisher<Object> executeRequest(ReactiveHttpRequest request) {
-
-//        if (request.uri().getQuery().startsWith("remote=")) {
-//            String[] host_port = request.uri().getQuery().substring(7, request.uri().getQuery().length()).split(":");
-//            ReactiveHttpRequest lbRequest = loadBalanceRequest(request, host_port[0], host_port[1]);
-//            return publisherClient.executeRequest(lbRequest);
-//        }
+        
+        String host = "";
+        if (request.uri().getQuery().startsWith("remote=")) {
+            String[] host_port = request.uri().getQuery().substring(7, request.uri().getQuery().length()).split(":");
+            if (host_port.length == 1) {
+                host = host_port[0];
+            } else if (host_port.length == 2) {
+                ReactiveHttpRequest lbRequest = loadBalanceRequest(request, host_port[0], host_port[1]);
+                return publisherClient.executeRequest(lbRequest);
+            } else {
+                throw new IllegalArgumentException("Unknown Query remote: " + request.uri().getQuery());
+            }
+        }
 
         SynetLoadBalancerCommand<Object> loadBalancerCommand = this.loadBalancerCommand.get();
         if (loadBalancerCommand != null) {
@@ -52,7 +59,7 @@ public class SynetPublisherClient implements PublisherHttpClient {
 
                 Publisher<Object> publisher = publisherClient.executeRequest(lbRequest);
                 return RxReactiveStreams.toObservable(publisher);
-            });
+            }, host);
 
             Publisher<?> publisher = RxReactiveStreams.toPublisher(observable);
 

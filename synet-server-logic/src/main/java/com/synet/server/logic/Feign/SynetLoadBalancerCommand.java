@@ -143,14 +143,26 @@ public class SynetLoadBalancerCommand<T> {
      * Return an Observable that either emits only the single requested server
      * or queries the load balancer for the next server on each subscription
      */
-    private Observable<Server> selectServer() {
-        return Observable.create(new Observable.OnSubscribe<Server>() {
+    private Observable<Server> selectServer(String host) {
+        return Observable.unsafeCreate(new Observable.OnSubscribe<Server>() {
             @Override
             public void call(Subscriber<? super Server> next) {
                 try {
-                    Server server = loadBalancerContext.getServerFromLoadBalancer(loadBalancerURI, loadBalancerKey);
-                    next.onNext(server);
-                    next.onCompleted();
+                    if (host.isEmpty()) {
+                        Server server = loadBalancerContext.getServerFromLoadBalancer(loadBalancerURI, loadBalancerKey);
+                        next.onNext(server);
+                        next.onCompleted();
+
+                    } else {
+                        List<Server> servers = loadBalancerContext.getLoadBalancer().getReachableServers();
+                        for (Server server : servers){
+                            if (server.getHost().equals(host)) {
+                                next.onNext(server);
+                                next.onCompleted();
+                                break;
+                            }
+                        }
+                    }
                 } catch (Exception e) {
                     next.onError(e);
                 }
@@ -224,7 +236,7 @@ public class SynetLoadBalancerCommand<T> {
      * exceeds the maximal allowed, a final error will be emitted by the returned {@link Observable}. Otherwise, the first successful
      * result during execution and retries will be emitted.
      */
-    public Observable<T> submit(final ServerOperation<T> operation) {
+    public Observable<T> submit(final ServerOperation<T> operation, String host) {
         final ExecutionInfoContext context = new ExecutionInfoContext();
 
         if (listenerInvoker != null) {
@@ -240,7 +252,7 @@ public class SynetLoadBalancerCommand<T> {
 
         // Use the load balancer
         Observable<T> o =
-                (server == null ? selectServer() : Observable.just(server))
+                (server == null ? selectServer(host) : Observable.just(server))
                         .concatMap(new Func1<Server, Observable<T>>() {
                             @Override
                             // Called for each server being selected

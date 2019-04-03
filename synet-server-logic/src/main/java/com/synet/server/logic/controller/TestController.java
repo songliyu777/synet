@@ -18,7 +18,7 @@ public class TestController {
 
         ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(test).build();
 
-        gatewayInterface.test(ByteBuffer.wrap(test.toByteArray()), head.getHost() + ":9000").subscribe();
+        gatewayInterface.test(ByteBuffer.wrap(test.toByteArray()), head.getHost()).subscribe();
 
         return Mono.just(response);
     }
