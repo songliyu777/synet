@@ -108,9 +108,7 @@ public class TcpNetServer {
                     return;
                 }
                 ctx.close();
-                //ctx.fireExceptionCaught(cause);
             }
-
         });
         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
         //先生成session,再投递到工作线程
