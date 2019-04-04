@@ -5,6 +5,7 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import reactor.netty.Connection;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,7 +18,7 @@ public class SessionManager {
         return instance;
     }
 
-    protected ConcurrentHashMap<Long, ISession> sessions = new ConcurrentHashMap<Long, ISession>();
+    protected HashMap<Long, ISession> sessions = new HashMap<Long, ISession>();
 
     protected AtomicLong id_gen = new AtomicLong(0);
 
