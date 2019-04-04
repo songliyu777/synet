@@ -9,8 +9,8 @@ import java.nio.ByteBuffer;
 
 public interface RemoteDelegation {
 
-    default Mono<ByteBuffer> query(ProtoHeader head, Message message, String remote){
-        return getRemote().test(getEncoder().encode(head,message), remote);
+    default Mono<ByteBuffer> query(ProtoHeader head, Message message, String remote) {
+        return getRemote().test(getEncoder().encode(head, message), remote);
     }
 
     ProtocolEncoder<Message> getEncoder();
