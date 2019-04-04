@@ -9,6 +9,8 @@ import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
 import reactor.netty.channel.AbortedException;
 
+import java.io.IOException;
+
 @Slf4j
 public class TcpSession implements ISession {
 
@@ -34,7 +36,7 @@ public class TcpSession implements ISession {
         if (!connection.isDisposed()) {
             ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
             connection.outbound().send(f).then().doOnError((e) -> {
-                if (e instanceof AbortedException) {
+                if (e instanceof AbortedException || e instanceof IOException) {
                     return;
                 }
                 e.printStackTrace();

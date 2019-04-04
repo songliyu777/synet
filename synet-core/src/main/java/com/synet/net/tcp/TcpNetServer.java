@@ -4,9 +4,7 @@ import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
 import com.synet.net.session.SessionManager;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.*;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
@@ -20,6 +18,7 @@ import reactor.netty.NettyInbound;
 import reactor.netty.NettyOutbound;
 import reactor.netty.tcp.TcpServer;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -101,6 +100,17 @@ public class TcpNetServer {
                         .subscribe(doOnDisconnection, error);
                 ctx.fireChannelUnregistered();
             }
+
+            @Override
+            public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+                    throws Exception {
+                if(cause instanceof IOException){
+                    return;
+                }
+                ctx.close();
+                //ctx.fireExceptionCaught(cause);
+            }
+
         });
         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
         //先生成session,再投递到工作线程
