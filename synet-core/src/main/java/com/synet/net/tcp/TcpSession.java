@@ -3,10 +3,13 @@ package com.synet.net.tcp;
 import com.synet.net.session.ISession;
 import com.synet.net.session.SessionException;
 import com.synet.net.session.SessionManager;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.netty.ByteBufFlux;
 import reactor.netty.Connection;
+import reactor.netty.channel.AbortedException;
 
+@Slf4j
 public class TcpSession implements ISession {
 
     long id;
@@ -30,7 +33,12 @@ public class TcpSession implements ISession {
     public void send(byte[] data) {
         if (!connection.isDisposed()) {
             ByteBufFlux f = ByteBufFlux.fromInbound(Flux.just(data));
-            connection.outbound().send(f).then().subscribe();
+            connection.outbound().send(f).then().doOnError((e) -> {
+                if (e instanceof AbortedException) {
+                    return;
+                }
+                e.printStackTrace();
+            }).subscribe();
         }
     }
 }

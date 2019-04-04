@@ -23,6 +23,9 @@ reactive:
   feign:
     hystrix:
       enabled: false
+    clients:
+      readTimeoutMillis: 100000
+      writeTimeoutMillis: 100000
 
 synet:
   tcpservice:

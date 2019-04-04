@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextStoppedEvent;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 @Slf4j
@@ -35,7 +36,7 @@ public class TcpService implements ApplicationListener, NetServive {
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
         buf.map((b) -> NetProtocol.create(b)).subscribe(t -> {
             server.send(t.getHead().getSession(), t.getByteBuffer());
-        }, (e) -> System.err.println(e));
+        }, (e) -> log.error(e.toString()));
     }
 
     void connection(ISession session) {
@@ -43,7 +44,10 @@ public class TcpService implements ApplicationListener, NetServive {
     }
 
     void error(Throwable e) {
-        System.err.println(e);
+        if (e instanceof IOException) {
+            return;
+        }
+        e.printStackTrace();
     }
 
     @Override
