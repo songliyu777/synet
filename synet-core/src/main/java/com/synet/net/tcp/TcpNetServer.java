@@ -104,6 +104,7 @@ public class TcpNetServer {
             @Override
             public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
                     throws Exception {
+                //异常处理kqueue上必须处理关闭掉，不然kqueque无法释放
                 if(cause instanceof IOException){
                     return;
                 }
