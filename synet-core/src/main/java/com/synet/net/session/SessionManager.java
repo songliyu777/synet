@@ -5,7 +5,6 @@ import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
 import reactor.netty.Connection;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -18,7 +17,7 @@ public class SessionManager {
         return instance;
     }
 
-    protected HashMap<Long, ISession> sessions = new HashMap<Long, ISession>();
+    protected ConcurrentHashMap<Long, ISession> sessions = new ConcurrentHashMap<Long, ISession>();
 
     protected AtomicLong id_gen = new AtomicLong(0);
 
@@ -54,10 +53,13 @@ public class SessionManager {
     }
 
     public ISession GetTcpSession(long id) throws RuntimeException {
-        if (!sessions.containsKey(id)) {
+//        if (!sessions.containsKey(id)) {
+//            return emptySession;
+//        }
+        ISession session = sessions.get(id);
+        if(session == null){
             return emptySession;
         }
-        ISession session = sessions.get(id);
         if (session instanceof TcpSession) {
             return sessions.get(id);
         }

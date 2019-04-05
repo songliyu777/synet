@@ -1,5 +1,6 @@
 package com.synet.server.gateway;
 
+import com.synet.server.gateway.configuration.FeignDefaultConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

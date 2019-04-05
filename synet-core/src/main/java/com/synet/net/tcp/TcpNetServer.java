@@ -94,10 +94,11 @@ public class TcpNetServer {
                 //连接中断通道关闭调度到工作线程进行ISession的移除
                 Connection c = () -> ctx.channel();
                 long session = c.channel().attr(SessionManager.channel_session_id).get();
-                Mono.just(session)
-                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
-                        .subscribeOn(scheduler)
-                        .subscribe(doOnDisconnection, error);
+                doOnConnection.accept(SessionManager.GetInstance().RemoveSession(session));
+//                Mono.just(session)
+//                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
+//                        .subscribeOn(scheduler)
+//                        .subscribe(doOnDisconnection, error);
                 ctx.fireChannelUnregistered();
             }
 
@@ -114,11 +115,12 @@ public class TcpNetServer {
         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
         //先生成session,再投递到工作线程
         ISession session = SessionManager.GetInstance().NewTcpSession(connection);
+        doOnConnection.accept(SessionManager.GetInstance().AddSession(session));
         //连接成功调度到工作线程进行连接绑定
-        Mono.just(connection)
-                .map(c -> SessionManager.GetInstance().AddSession(session))
-                .subscribeOn(scheduler)
-                .subscribe(doOnConnection, error);
+//        Mono.just(connection)
+//                .map(c -> SessionManager.GetInstance().AddSession(session))
+//                .subscribeOn(scheduler)
+//                .subscribe(doOnConnection, error);
     };
 
     //封包处理handler
@@ -197,9 +199,11 @@ public class TcpNetServer {
      * @param buffer
      */
     public void send(long id, ByteBuffer buffer) {
-        Mono.just(id)
-                .map((d) -> SessionManager.GetInstance().GetTcpSession(d))
-                .subscribeOn(scheduler)
-                .subscribe(session -> session.send(buffer.array()), error);
+        ISession session = SessionManager.GetInstance().GetTcpSession(id);
+        session.send(buffer.array());
+//        Mono.just(id)
+//                .map((d) -> SessionManager.GetInstance().GetTcpSession(d))
+//                .subscribeOn(scheduler)
+//                .subscribe(session -> session.send(buffer.array()), error);
     }
 }
