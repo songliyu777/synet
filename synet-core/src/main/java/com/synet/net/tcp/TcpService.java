@@ -11,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.Duration;
 
 @Slf4j
 public class TcpService implements ApplicationListener, NetServive {
@@ -35,7 +36,7 @@ public class TcpService implements ApplicationListener, NetServive {
     void process(NetProtocol protocol) {
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
         buf.map((b) -> NetProtocol.create(b)).subscribe(t -> {
-            server.send(t.getHead().getSession(), t.getByteBuffer());
+            //server.send(t.getHead().getSession(), t.getByteBuffer());
         }, (e) -> log.error(e.toString()));
     }
 

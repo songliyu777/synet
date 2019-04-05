@@ -94,7 +94,7 @@ public class TcpNetServer {
                 //连接中断通道关闭调度到工作线程进行ISession的移除
                 Connection c = () -> ctx.channel();
                 long session = c.channel().attr(SessionManager.channel_session_id).get();
-                doOnConnection.accept(SessionManager.GetInstance().RemoveSession(session));
+                doOnDisconnection.accept(SessionManager.GetInstance().RemoveSession(session));
 //                Mono.just(session)
 //                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
 //                        .subscribeOn(scheduler)
