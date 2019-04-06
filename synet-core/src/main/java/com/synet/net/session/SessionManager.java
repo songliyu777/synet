@@ -40,9 +40,8 @@ public class SessionManager {
 
     public ISession RemoveSession(long id) throws RuntimeException {
         log.debug("RemoveSession id[" + id + "]");
-        if (sessions.containsKey(id)) {
-            ISession session = sessions.get(id);
-            sessions.remove(id);
+        ISession session = sessions.remove(id);
+        if(session != null){
             return session;
         }
         throw new SessionException("no session key");
@@ -53,17 +52,13 @@ public class SessionManager {
     }
 
     public ISession GetTcpSession(long id) throws RuntimeException {
-//        if (!sessions.containsKey(id)) {
-//            return emptySession;
-//        }
         ISession session = sessions.get(id);
         if(session == null){
             return emptySession;
         }
         if (session instanceof TcpSession) {
-            return sessions.get(id);
+            return session;
         }
-
         throw new SessionException("session is not TcpSession" + session);
     }
 }

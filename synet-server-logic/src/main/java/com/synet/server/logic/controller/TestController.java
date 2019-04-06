@@ -17,9 +17,9 @@ public class TestController {
 
         ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(test).build();
 
-        remoteDelegation.query(head, test, head.getRemoteAddress()).subscribe();
-        //gatewayInterface.test(ByteBuffer.wrap(test.toByteArray()), head.getRemoteAddress()).subscribe();
 
+        //remoteDelegation.query(head, test, head.getRemoteAddress()).subscribe();
         return Mono.just(response);
+        //return Mono.just(response).doOnSuccess((r) -> remoteDelegation.query(head, test, head.getRemoteAddress()).subscribe());
     }
 }

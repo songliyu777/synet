@@ -34,10 +34,13 @@ public class TcpService implements ApplicationListener, NetServive {
     }
 
     void process(NetProtocol protocol) {
+        server.send(protocol.getHead().getSession(), protocol.getByteBuffer());
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
-        buf.map((b) -> NetProtocol.create(b)).subscribe(t -> {
-            //server.send(t.getHead().getSession(), t.getByteBuffer());
-        }, (e) -> log.error(e.toString()));
+//        buf.map((b) -> NetProtocol.create(b))
+//                .subscribe(t -> server.send(t.getHead().getSession(), t.getByteBuffer()),
+//                        e -> log.error(e.toString()));
+        buf.map((b) -> NetProtocol.create(b)).doOnError(e -> log.error(e.toString()))
+                .subscribe();
     }
 
     void connection(ISession session) {

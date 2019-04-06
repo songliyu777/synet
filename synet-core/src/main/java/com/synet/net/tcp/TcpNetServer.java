@@ -201,9 +201,5 @@ public class TcpNetServer {
     public void send(long id, ByteBuffer buffer) {
         ISession session = SessionManager.GetInstance().GetTcpSession(id);
         session.send(buffer.array());
-//        Mono.just(id)
-//                .map((d) -> SessionManager.GetInstance().GetTcpSession(d))
-//                .subscribeOn(scheduler)
-//                .subscribe(session -> session.send(buffer.array()), error);
     }
 }
