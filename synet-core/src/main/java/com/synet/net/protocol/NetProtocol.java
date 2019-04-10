@@ -62,7 +62,7 @@ public class NetProtocol implements IProtocol {
         if (protobuf_length > 0) {
             protocol.body.setProtobuf(protobuf);
         }
-        protocolBuffer.clear();
+        protocolBuffer.rewind();
         return protocol;
     }
 
