@@ -18,7 +18,7 @@ public class PostController {
 
     Mono<ServerResponse> bufferToSend(ByteBuffer byteBuffer) {
         long session = byteBuffer.getLong(NetProtocol.session_index);
-        netServive.send(session, ByteBuffer.allocate(byteBuffer.capacity()).put(byteBuffer));
+        netServive.send(session, byteBuffer);
         return ServerResponse.ok().build();
     }
 
