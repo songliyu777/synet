@@ -23,9 +23,6 @@ reactive:
   feign:
     hystrix:
       enabled: false
-    clients:
-      readTimeoutMillis: 100000
-      writeTimeoutMillis: 100000
 
 synet:
   tcpservice:
@@ -33,6 +30,6 @@ synet:
     readIdleTime: 60000
     writeIdleTime: 60000
 
-logging:
-  level:
-    root: DEBUG
+#logging:
+#  level:
+#    root: DEBUG
