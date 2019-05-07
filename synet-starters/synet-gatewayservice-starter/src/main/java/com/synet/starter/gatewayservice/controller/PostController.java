@@ -1,7 +1,7 @@
 package com.synet.starter.gatewayservice.controller;
 
 
-import com.synet.net.net.NetServive;
+import com.synet.net.service.NetService;
 import com.synet.net.protocol.NetProtocol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.reactive.function.BodyExtractors;
@@ -14,11 +14,11 @@ import java.nio.ByteBuffer;
 public class PostController {
 
     @Autowired
-    NetServive netServive;
+    NetService netService;
 
     Mono<ServerResponse> bufferToSend(ByteBuffer byteBuffer) {
         long session = byteBuffer.getLong(NetProtocol.session_index);
-        netServive.send(session, byteBuffer);
+        netService.send(session, byteBuffer);
         return ServerResponse.ok().build();
     }
 

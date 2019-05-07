@@ -33,6 +33,6 @@ synet:
     readIdleTime: 60000
     writeIdleTime: 60000
 
-#logging:
-#  level:
-#    root: DEBUG
+logging:
+  level:
+    root: DEBUG

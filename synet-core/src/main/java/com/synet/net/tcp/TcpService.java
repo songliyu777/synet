@@ -1,6 +1,6 @@
 package com.synet.net.tcp;
 
-import com.synet.net.net.NetServive;
+import com.synet.net.service.NetService;
 import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
 import lombok.extern.slf4j.Slf4j;
@@ -11,10 +11,9 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.time.Duration;
 
 @Slf4j
-public class TcpService implements ApplicationListener, NetServive {
+public class TcpService implements ApplicationListener, NetService {
 
     TcpServiceHandler handler;
 
@@ -34,13 +33,13 @@ public class TcpService implements ApplicationListener, NetServive {
     }
 
     void process(NetProtocol protocol) {
-        server.send(protocol.getHead().getSession(), protocol.getByteBuffer());
+        //server.send(protocol.getHead().getSession(), protocol.getByteBuffer());
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
-//        buf.map((b) -> NetProtocol.create(b))
-//                .subscribe(t -> server.send(t.getHead().getSession(), t.getByteBuffer()),
-//                        e -> log.error(e.toString()));
-        buf.map((b) -> NetProtocol.create(b)).doOnError(e -> log.error(e.toString()))
-                .subscribe();
+        buf.map((b) -> NetProtocol.create(b))
+                .subscribe(t -> server.send(t.getHead().getSession(), t.getByteBuffer()),
+                        e -> log.error(e.toString()));
+//        buf.map((b) -> NetProtocol.create(b)).doOnError(e -> log.error(e.toString()))
+//                .subscribe();
     }
 
     void connection(ISession session) {

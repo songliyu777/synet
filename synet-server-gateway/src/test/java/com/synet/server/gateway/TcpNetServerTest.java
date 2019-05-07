@@ -27,7 +27,7 @@ public class TcpNetServerTest {
 
         for (int i = 0; i < connection_count; i++) {
 
-            TcpNetClient client = new TcpNetClient("127.0.0.1", 7000);
+            TcpNetClient client = new TcpNetClient("192.168.127.126", 8888);
             client.setProcessHandler((protocol) -> {
                 ByteBuffer tmp = ByteBuffer.allocate(protocol.getSize() - protocol.getHead().headSize);
                 protocol.getBody().getProtobuf(tmp.array());
@@ -43,7 +43,18 @@ public class TcpNetServerTest {
             client.connectServer();
 
             NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, protobuf);
-            client.send(protocol.toArray());
+            byte[] temp1 = new byte[10];
+            byte[] temp2 = new byte[30];
+            byte[] temp3 = new byte[80];
+            System.arraycopy(protocol.toArray(),0,temp1,0,10);
+            System.arraycopy(protocol.toArray(),10,temp2,0,30);
+            System.arraycopy(protocol.toArray(),0,temp3,0,40);
+            System.arraycopy(protocol.toArray(),0,temp3,40,40);
+            //client.send(protocol.toArray());
+            client.send(temp3);
+            client.send(temp1);
+            Thread.sleep(1000);
+            client.send(temp2);
 
 //            Mono<TcpNetClient> m = Mono.just(client);
 //            m.delaySubscription(Duration.ofMillis(i*10))

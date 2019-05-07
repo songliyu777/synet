@@ -106,7 +106,7 @@ public class TcpNetServer {
             public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
                     throws Exception {
                 //异常处理kqueue上必须处理关闭掉，不然kqueque无法释放
-                if(cause instanceof IOException){
+                if (cause instanceof IOException) {
                     return;
                 }
                 ctx.close();
@@ -124,8 +124,7 @@ public class TcpNetServer {
     };
 
     //封包处理handler
-    BiFunction<? super NettyInbound, ? super
-            NettyOutbound, ? extends Publisher<Void>> handler = (in, out) -> {
+    BiFunction<? super NettyInbound, ? super NettyOutbound, ? extends Publisher<Void>> handler = (in, out) -> {
         in.withConnection((connection) -> {
             in.receive().map((bb) -> {
                         NetProtocol protocol = NetProtocol.parse(bb);

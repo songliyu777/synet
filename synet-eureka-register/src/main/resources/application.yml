@@ -13,3 +13,7 @@ eureka:
 spring:
   application:
     name: eurka-register
+
+logging:
+  level:
+    root: DEBUG
