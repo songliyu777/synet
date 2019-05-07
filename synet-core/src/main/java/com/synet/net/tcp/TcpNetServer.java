@@ -95,10 +95,6 @@ public class TcpNetServer {
                 Connection c = () -> ctx.channel();
                 long session = c.channel().attr(SessionManager.channel_session_id).get();
                 doOnDisconnection.accept(SessionManager.GetInstance().RemoveSession(session));
-//                Mono.just(session)
-//                        .map(ct -> SessionManager.GetInstance().RemoveSession(session))
-//                        .subscribeOn(scheduler)
-//                        .subscribe(doOnDisconnection, error);
                 ctx.fireChannelUnregistered();
             }
 
@@ -116,11 +112,6 @@ public class TcpNetServer {
         //先生成session,再投递到工作线程
         ISession session = SessionManager.GetInstance().NewTcpSession(connection);
         doOnConnection.accept(SessionManager.GetInstance().AddSession(session));
-        //连接成功调度到工作线程进行连接绑定
-//        Mono.just(connection)
-//                .map(c -> SessionManager.GetInstance().AddSession(session))
-//                .subscribeOn(scheduler)
-//                .subscribe(doOnConnection, error);
     };
 
     //封包处理handler
