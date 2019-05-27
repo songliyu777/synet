@@ -27,6 +27,7 @@
         <module>synet-server-logic</module>
         <module>synet-test-jmeter</module>
         <module>synet-starters</module>
+        <module>synet-cache</module>
     </modules>
 
 </project>
