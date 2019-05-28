@@ -1,0 +1,11 @@
+spring:
+  redis:
+    host: 192.168.99.230
+    port: 6379
+    database: 0
+lightning:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3h
+      cache-null-values: false
