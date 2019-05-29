@@ -9,7 +9,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(ReactiveCachingConfigurationSelector.class)
+@Import(ReactiveCachingConfigurationSelector.class) /*注入关键代码*/
 public @interface EnableReactiveCaching {
 
     /**

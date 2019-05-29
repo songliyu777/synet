@@ -2,6 +2,10 @@ package com.yuyan.lightning.cache;
 
 import java.util.Collection;
 
+/**
+ * ReactiveCacheManager 可以通过名称来获取一个Cache对象
+ * 用于管理Cache集合，并提供通过Cache名称获取对应Cache对象的方法
+ */
 public interface ReactiveCacheManager {
 
     /**
