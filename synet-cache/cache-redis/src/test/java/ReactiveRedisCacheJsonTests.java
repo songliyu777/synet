@@ -16,7 +16,7 @@ import java.util.Objects;
 
 public class ReactiveRedisCacheJsonTests {
 
-    private final static String HOST = "192.168.99.230";
+    private final static String HOST = "192.168.99.108";
 
     @Test
     public void testReactiveRedisConnection() {

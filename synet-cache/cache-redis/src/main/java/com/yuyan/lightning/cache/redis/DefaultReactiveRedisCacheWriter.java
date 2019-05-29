@@ -4,6 +4,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStringCommands;
 import org.springframework.data.redis.core.types.Expiration;
+import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
@@ -33,7 +34,10 @@ public class DefaultReactiveRedisCacheWriter implements ReactiveRedisCacheWriter
     @Override
     public Mono<Boolean> put(String name, ByteBuffer key, ByteBuffer value, Duration ttl) {
         ReactiveRedisConnection reactiveConnection = reactiveRedisConnectionFactory.getReactiveConnection();
-        return reactiveConnection.stringCommands().set(key, value, Expiration.from(ttl.toMillis(), TimeUnit.MILLISECONDS), RedisStringCommands.SetOption.upsert());
+        if (shouldExpireWithin(ttl)) {
+            return reactiveConnection.stringCommands().set(key, value, Expiration.from(ttl.toMillis(), TimeUnit.MILLISECONDS), RedisStringCommands.SetOption.upsert());
+        }
+        return reactiveConnection.stringCommands().set(key, value);
     }
 
     @Override
@@ -53,5 +57,9 @@ public class DefaultReactiveRedisCacheWriter implements ReactiveRedisCacheWriter
         ReactiveRedisConnection reactiveConnection = reactiveRedisConnectionFactory.getReactiveConnection();
         Mono<List<ByteBuffer>> keys = reactiveConnection.keyCommands().keys(pattern);
         return keys.flatMap(byteBuffers -> CollectionUtils.isEmpty(byteBuffers) ? Mono.just(0L) : reactiveConnection.keyCommands().mDel(byteBuffers));
+    }
+
+    private static boolean shouldExpireWithin(@Nullable Duration ttl) {
+        return ttl != null && !ttl.isZero() && !ttl.isNegative();
     }
 }

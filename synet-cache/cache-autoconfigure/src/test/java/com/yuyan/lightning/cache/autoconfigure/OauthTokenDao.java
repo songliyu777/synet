@@ -5,6 +5,7 @@ import com.yuyan.lightning.cache.annotation.ReactiveCachePut;
 import com.yuyan.lightning.cache.annotation.ReactiveCacheable;
 import com.yuyan.lightning.cache.annotation.ReactiveCaching;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
@@ -57,6 +58,13 @@ public class OauthTokenDao {
         Map<String, OauthTokenEntity> entityMap = this.entities.stream().collect(Collectors.toMap(OauthTokenEntity::getRefreshToken, item -> item));
         OauthTokenEntity entity = entityMap.get(refreshToken);
         return Mono.just(entity);
+    }
+
+    @ReactiveCaching(cacheable = {
+            @ReactiveCacheable(value = "oauth:token:refresh_token", key = "#key", unless = "#result == null")
+    })
+    public Flux<OauthTokenEntity> findByAllTokens(String key){
+        return Flux.fromIterable(entities);
     }
 
     /**

@@ -259,10 +259,9 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
             if (isConditionPassing(context, CacheOperationExpressionEvaluator.NO_RESULT)) {
                 Object key = generateKey(context, CacheOperationExpressionEvaluator.NO_RESULT);
                 ReactiveCache cache = context.getCaches().iterator().next();
-                Mono<Object> valueLoader = Mono.defer(() -> {
-                    return (Mono<Object>)invokeOperation(invoker);
-                });
-                return cache.get(key, valueLoader);
+                Mono<Object> valueLoader = valueLoader(invoker);
+                Mono<Object> value = cache.get(key, valueLoader);
+                return unwrapValue(method, value);
             }
             else {
                 // No caching required, only call the underlying method
@@ -285,7 +284,7 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
                                                 .flatMap(cachePutRequest -> cachePutRequest.apply(cacheValue))
                                                 .collectList().then(Mono.just(cacheValue));
                                     })
-                                    .switchIfEmpty(Mono.defer(() -> (Mono<Object>) invokeOperation(invoker)))
+                                    .switchIfEmpty(valueLoader(invoker))
                                     .flatMap(cacheValue -> {
                                         Collection<CacheAspectSupport.CachePutRequest> cachePutRequests = new ArrayList<>();
                                         // Collect puts from any @Cacheable miss, if no cached item is found
@@ -297,10 +296,34 @@ public abstract class CacheAspectSupport extends AbstractCacheInvoker
                                                 .collectList().then(Mono.just(cacheValue));
                                     });
 
-        return evictsBeforeMono.then(cacheableAndPutMono).flatMap(cacheValue -> {
+        Mono<Object> lateMono = evictsBeforeMono.then(cacheableAndPutMono).flatMap(cacheValue -> {
             // Process any late evictions
             return processCacheEvicts(contexts.get(CacheEvictOperation.class), false, cacheValue).then(Mono.just(cacheValue));
         });
+        return unwrapValue(method, lateMono);
+    }
+
+    private Object unwrapValue(Method method, Mono<Object> value) {
+        Class<?> returnType = method.getReturnType();
+        if (returnType.equals(Mono.class)) {
+            return value;
+        } else if (returnType.equals(Flux.class)) {
+            return value.flatMapIterable(item -> (List<Object>) item);
+        }
+        throw new RuntimeException("not supported operator");
+    }
+
+    private Mono<Object> valueLoader(CacheOperationInvoker invoker) {
+        return Mono.defer(() -> {
+                        Object direct = invokeOperation(invoker);
+                        if (direct instanceof Mono) {
+                            return (Mono<Object>)direct;
+                        } else if (direct instanceof Flux) {
+                            Flux<Object> flux = (Flux<Object>)direct;
+                            return flux.collectList();
+                        }
+                        throw new RuntimeException("not supported operator");
+                    });
     }
 
     @Nullable
