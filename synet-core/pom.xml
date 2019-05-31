@@ -30,6 +30,11 @@
             <artifactId>protobuf-java</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.synet</groupId>
+            <artifactId>synet-protobuf</artifactId>
+        </dependency>
+
         <!--lombok-->
         <dependency>
             <groupId>org.projectlombok</groupId>

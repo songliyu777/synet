@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_package = "com.synet.protobuf";
+
+enum protocol_id
+{
+    default_msg = 0;
+    connect_msg = 1;
+    login_msg  = 2;
+}
+
+message stc_connect
+{
+    int64 session_id = 1;
+}
+
+message cts_Login
+{
+	string account = 1;
+	string password = 2;
+	string platform = 3;
+	string extends = 4;
+}
+
+message stc_Login
+{
+    int32 state = 1;
+}

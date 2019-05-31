@@ -1,6 +1,7 @@
 package com.synet.server.logic.controller;
 
 import com.synet.net.protobuf.mapping.*;
+import com.synet.protobuf.Syprotocol;
 import com.synet.protobuf.TestOuterClass;
 import com.synet.starter.feign.RemoteDelegation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,30 +10,16 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-class Player {
-    public Player setboat(Boat b) {
-        return this;
-    }
-
-}
-
-class Boat {
-
-}
-
 @ProtobufController
 public class TestController {
 
     @Autowired
     RemoteDelegation remoteDelegation;
 
-    @ProtobufMapping(cmd = 1)
-    public Mono<ProtoResponse> test(@Header ProtoHeader head, @Body TestOuterClass.Test test) {
-        Player player = new Player();
+    @ProtobufMapping(cmd = (short)Syprotocol.protocol_id.login_msg_VALUE)
+    public Mono<ProtoResponse> test(@Header ProtoHeader head, @Body Syprotocol.cts_Login test) {
         ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(test).build();
-        return Mono.just(player)
-                .flatMap(p->Mono.just(new Boat()).map(b->player.setboat(b)))
-                .flatMap(p->Mono.just(ProtoResponse.builder().protoHeader(head).message(test).build()));
+        return Mono.just(response);
 
         //remoteDelegation.query(head, test, head.getRemoteAddress()).subscribe();
         //return Mono.just(response);
