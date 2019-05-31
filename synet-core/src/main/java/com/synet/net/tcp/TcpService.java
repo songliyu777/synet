@@ -1,8 +1,10 @@
 package com.synet.net.tcp;
 
+import com.synet.net.protocol.ProtocolHeadDefine;
 import com.synet.net.service.NetService;
 import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
+import com.synet.protobuf.Syprotocol;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -11,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 @Slf4j
 public class TcpService implements ApplicationListener, NetService {
@@ -33,17 +36,21 @@ public class TcpService implements ApplicationListener, NetService {
     }
 
     void process(NetProtocol protocol) {
-        //server.send(protocol.getHead().getSession(), protocol.getByteBuffer());
         Mono<ByteBuffer> buf = handler.invoke(protocol.getByteBuffer());
         buf.map((b) -> NetProtocol.create(b))
-                .subscribe(t -> server.send(t.getHead().getSession(), t.getByteBuffer()),
-                        e -> log.error(e.toString()));
-//        buf.map((b) -> NetProtocol.create(b)).doOnError(e -> log.error(e.toString()))
-//                .subscribe();
+                .subscribe(t -> server.send(t.getHead().getSession(), t.getByteBuffer()), e -> log.error(e.toString()));
     }
 
     void connection(ISession session) {
         //明文发送sessionid用于加密
+        Syprotocol.stc_connect connect = Syprotocol.stc_connect.newBuilder().setSessionId(session.getId()).build();
+        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.NO_ENCRYPT_PROTOBUF_HEAD,
+                ProtocolHeadDefine.VERSION,
+                1,
+                (short) Syprotocol.protocol_id.connect_msg_VALUE,
+                session.getId(),
+                connect.toByteArray());
+        session.send(protocol.toArray());
     }
 
     void error(Throwable e) {
