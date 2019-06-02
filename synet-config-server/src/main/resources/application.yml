@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: synet-config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/songliyu777/synet.git
+#          username: ******
+#          password: ******
+          force-pull: true
+          searchPaths: "{application}"
+server:
+  port: 7777
