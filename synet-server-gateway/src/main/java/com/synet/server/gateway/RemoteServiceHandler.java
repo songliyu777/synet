@@ -9,12 +9,12 @@ import reactor.core.publisher.Mono;
 import java.nio.ByteBuffer;
 
 @Service
-public class RemoteServiceHandler extends TcpServiceHandler {
+public class RemoteServiceHandler{ //extends TcpServiceHandler {
 
     @Autowired
     MessageClient messageClient;
 
-    @Override
+
     public Mono<ByteBuffer> invoke(ByteBuffer byteBuffer) {
         return messageClient.protocol(byteBuffer);
     }

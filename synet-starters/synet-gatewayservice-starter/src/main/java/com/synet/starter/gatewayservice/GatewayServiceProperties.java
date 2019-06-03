@@ -1,6 +1,6 @@
-package com.synet.starter.tcpservice;
+package com.synet.starter.gatewayservice;
 
-import com.synet.net.tcp.TcpServiceConfig;
+import com.synet.net.gateway.GatewayServiceConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
  * 网关服务器配置
  */
 @EnableConfigurationProperties
-@ConfigurationProperties(prefix = "synet.tcpservice")
-public class TcpServiceProperties extends TcpServiceConfig {
-
+@ConfigurationProperties(prefix = "synet.gatewayservice")
+public class GatewayServiceProperties extends GatewayServiceConfig {
 }

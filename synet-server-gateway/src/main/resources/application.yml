@@ -29,6 +29,15 @@ synet:
     port: 7000
     readIdleTime: 60000
     writeIdleTime: 60000
+  gatewayservice:
+    routes:
+      - id: server-logic
+        uri: lb://server-logic
+        order: 9000
+        predicates:
+        - Cmd=1
+        - Cmd=2
+        - Cmd=100~300
 
 #logging:
 #  level:

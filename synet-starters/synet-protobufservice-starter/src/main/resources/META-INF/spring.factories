@@ -1,1 +1,3 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.synet.starter.protobufservice.ProtobufServiceConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.synet.starter.protobufservice.ProtobufServiceConfiguration,\
+                                                               com.synet.starter.feign.FeignClientsConfiguration
+

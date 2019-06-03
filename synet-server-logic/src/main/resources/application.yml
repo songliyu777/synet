@@ -10,8 +10,8 @@ spring:
       host: 192.168.99.249
       database: test
       port: 27017
-#      username: admin
-#      password: admin
+      username: admin
+      password: admin
 
 #  datasource:
 #    url: jdbc:postgresql://192.168.99.249:5432/test
@@ -31,13 +31,13 @@ spring:
 #  spring.data.mongodb.port=27017
 #  spring.data.mongodb.username=admin
 #  spring.data.mongodb.password=admin
-reactive:
-  feign:
-    hystrix:
-      enabled: false
-    clients:
-      readTimeoutMillis: 100000
-      writeTimeoutMillis: 100000
+#reactive:
+#  feign:
+#    hystrix:
+#      enabled: false
+#    clients:
+#      readTimeoutMillis: 100000
+#      writeTimeoutMillis: 100000
 
 
 eureka:
@@ -47,16 +47,16 @@ eureka:
     preferIpAddress: true
 #    instance-id: ${spring.application.name}:${server.port}
   client:
-    serviceUrl:
+    service-url:
       defaultZone: http://${eureka.instance.hostname}:${eureka.instance.port}/eureka/
 
 
-dbconfig:
-  host: 192.168.99.249
-  port: 5432
-  database: test
-  username: root
-  password: 6tfc^YHN
+#dbconfig:
+#  host: 192.168.99.249
+#  port: 5432
+#  database: test
+#  username: root
+#  password: 6tfc^YHN
 
 #logging:
 #  level:

@@ -7,7 +7,7 @@
 //import org.springframework.web.reactive.function.server.RouterFunction;
 //import org.springframework.web.reactive.function.server.ServerResponse;
 //import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM;
-//import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+//import static org.springframework.web.reactive.function.server.RouterFunctions.handler;
 //import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 //import static org.springframework.web.reactive.function.server.RequestPredicates.contentType;
 //
@@ -16,6 +16,6 @@
 //public class RouteConfig {
 //    @Bean
 //    public RouterFunction<ServerResponse> routes(PostHandler postHandler){
-//        return route(POST("/test").and(contentType(APPLICATION_OCTET_STREAM)), postHandler::test);
+//        return handler(POST("/test").and(contentType(APPLICATION_OCTET_STREAM)), postHandler::test);
 //    }
 //}

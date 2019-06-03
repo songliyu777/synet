@@ -1,1 +1,1 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.synet.starter.gatewayservice.route.PostRoute
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.synet.starter.gatewayservice.GatewayServiceConfiguration

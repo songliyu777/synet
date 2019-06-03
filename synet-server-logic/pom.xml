@@ -11,87 +11,83 @@
     </parent>
 
     <artifactId>synet-server-logic</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>synet-login-logic</module>
-    </modules>
+    <!--<packaging>pom</packaging>-->
+    <!--<modules>-->
+        <!--<module>synet-login-logic</module>-->
+    <!--</modules>-->
 
-    <!--<artifactId>synet-server-logic</artifactId>-->
-    <!--<name>server-logic</name>-->
-    <!--<description>server logic</description>-->
+    <dependencies>
 
-    <!--<dependencies>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-webflux</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.boot</groupId>-->
-            <!--<artifactId>spring-boot-starter-test</artifactId>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.springframework.cloud</groupId>-->
-            <!--<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.synet</groupId>
+            <artifactId>synet-core</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.synet</groupId>-->
-            <!--<artifactId>synet-core</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.synet</groupId>
+            <artifactId>synet-protobuf</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.synet</groupId>-->
-            <!--<artifactId>synet-protobuf</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.google.protobuf</groupId>-->
-            <!--<artifactId>protobuf-java</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.synet</groupId>
+            <artifactId>synet-protobufservice-starter</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.synet</groupId>-->
-            <!--<artifactId>synet-protobufservice-starter</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.projectlombok</groupId>-->
-            <!--<artifactId>lombok</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-webclient</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.playtika.reactivefeign</groupId>-->
-            <!--<artifactId>feign-reactor-webclient</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-cloud</artifactId>
+        </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>com.playtika.reactivefeign</groupId>-->
-            <!--<artifactId>feign-reactor-cloud</artifactId>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-            <!--<groupId>com.playtika.reactivefeign</groupId>-->
-            <!--<artifactId>feign-reactor-spring-configuration</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>com.playtika.reactivefeign</groupId>
+            <artifactId>feign-reactor-spring-configuration</artifactId>
+        </dependency>
 
         <!--<dependency>-->
             <!--<groupId>org.springframework.boot</groupId>-->
             <!--<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>-->
         <!--</dependency>-->
 
-    <!--</dependencies>-->
+    </dependencies>
 
-    <!--<build>-->
-        <!--<plugins>-->
-            <!--<plugin>-->
-                <!--<groupId>org.springframework.boot</groupId>-->
-                <!--<artifactId>spring-boot-maven-plugin</artifactId>-->
-            <!--</plugin>-->
-        <!--</plugins>-->
-    <!--</build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

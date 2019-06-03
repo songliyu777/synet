@@ -81,7 +81,7 @@ public class SynetReactiveFeign extends CloudReactiveFeign {
 
         @Override
         public Builder<T> enableLoadBalancer(ReactiveFeignClientFactory clientFactory) {
-
+            //这里是加入robbin配置，实现负载均衡
             this.loadBalancerCommandFactory = serviceName -> {
                 SpringClientFactory springClientFactory = context.getInstance(serviceName, SpringClientFactory.class);
 

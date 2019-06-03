@@ -9,7 +9,7 @@ import reactivefeign.spring.config.EnableReactiveFeignClients;
 
 @SpringBootApplication(exclude = ReactiveLoadBalancerAutoConfiguration.class)
 @EnableEurekaClient
-@EnableReactiveFeignClients(defaultConfiguration = FeignClientsConfiguration.class)
+@EnableReactiveFeignClients
 public class LoginApplication {
     public static void main(String[] args) {
         SpringApplication.run(LoginApplication.class, args);

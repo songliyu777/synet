@@ -1,7 +1,6 @@
 package com.synet.server.logic.process;
 
 import com.synet.server.logic.config.R2dbcDatabase;
-import com.synet.server.logic.database.dao.TestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactivefeign.cloud.CloudReactiveFeign;
@@ -12,8 +11,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class TestProcess {
 
-    @Autowired
-    TestRepository testRepository;
+//    @Autowired
+//    TestRepository testRepository;
 //
 //    @Autowired
 //    DatabaseClient client;
@@ -22,9 +21,9 @@ public class TestProcess {
 
     //GatewayInterface client;
 
-    static <T> CloudReactiveFeign.Builder<T> cloudBuilder() {
-        return CloudReactiveFeign.builder(WebReactiveFeign.builder());
-    }
+//    static <T> CloudReactiveFeign.Builder<T> cloudBuilder() {
+//        return CloudReactiveFeign.builder(WebReactiveFeign.builder());
+//    }
 
     public TestProcess() {
 //        for (int i = 0; i < 32; i++) {
