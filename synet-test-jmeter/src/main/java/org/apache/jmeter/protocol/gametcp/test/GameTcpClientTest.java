@@ -1,15 +1,13 @@
 package org.apache.jmeter.protocol.gametcp.test;
 
 import com.synet.net.protocol.ProtocolHead;
-import com.synet.net.protocol.ProtocolHeadDefine;
 import com.synet.net.protocol.NetProtocol;
-import com.synet.protobuf.TestOuterClass;
+import com.synet.protobuf.Syprotocol;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.apache.jmeter.protocol.gametcp.sampler.ReadException;
 import org.apache.jmeter.protocol.gametcp.sampler.TCPClient;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jorphan.util.JOrphanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +21,8 @@ public class GameTcpClientTest implements TCPClient {
     private static final Logger log = LoggerFactory.getLogger(GameTcpClientTest.class);
 
     ByteBuffer readBuffer = ByteBuffer.allocate(1024 * 1024);
+
+    MessageHandler messageHandler = new MessageHandler();
 
     @Override
     public void setupTest() {
@@ -42,9 +42,14 @@ public class GameTcpClientTest implements TCPClient {
 
     @Override
     public void write(OutputStream os, String s) throws IOException {
-        TestOuterClass.Test test = TestOuterClass.Test.newBuilder().setName("input 1").setPassword("input 2").build();
-        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) 1, 1, test.toByteArray());
-        os.write(protocol.toArray());
+        String[] commands = s.split("\n");
+        for(String command : commands)
+        {
+            messageHandler.send(os,command);
+        }
+//        Syprotocol.cts_Login cts = Syprotocol.cts_Login.newBuilder().setAccount("samuel1").setPassword("123456").build();
+//        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) Syprotocol.protocol_id.login_msg_VALUE, 0, cts.toByteArray());
+//        os.write(protocol.toArray());
     }
 
     @Deprecated
@@ -58,6 +63,7 @@ public class GameTcpClientTest implements TCPClient {
             int x = 0;
             int bodysize = 0;
             NetProtocol protocol = null;
+            final String hexString = "";
             while ((x = is.read(readBuffer.array())) > -1) {
                 if (readBuffer.remaining() >= ProtocolHead.headSize) {
 
@@ -76,10 +82,17 @@ public class GameTcpClientTest implements TCPClient {
                     }
                     protocol = NetProtocol.parse(buf);
                     buf.release();
-                    break;
+                    if(protocol.getHead().getCmd() != Syprotocol.protocol_id.connect_msg_VALUE)
+                    {
+                        break;
+                    }
                 }
             }
-            final String hexString = JOrphanUtils.baToHexString(protocol.toArray());
+//            final String hexString = JOrphanUtils.baToHexString(protocol.toArray());
+//            if(protocol.getHead().getCmd() != Syprotocol.protocol_id.connect_msg_VALUE)
+//            {
+//
+//            }
             sampleResult.latencyEnd();
             return hexString;
         } catch (IOException e) {

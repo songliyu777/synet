@@ -69,7 +69,6 @@ public class GatewayServiceConfiguration {
         return new RemoteInvokeHandler(routeMatcher, lightningServiceLocator);
     }
 
-
     @Bean
     public RouterFunction<ServerResponse> routes(PostController postController) {
         return route(POST("/test").and(contentType(APPLICATION_OCTET_STREAM)), postController::test);
@@ -84,10 +83,12 @@ public class GatewayServiceConfiguration {
     @Scope("prototype")
     @ConditionalOnClass(WebReactiveFeign.class)
     @ConditionalOnMissingBean(ignoredType = "reactivefeign.cloud.CloudReactiveFeign.Builder")
-    public ReactiveFeignBuilder reactiveFeignBuilder(@Autowired(required = false) WebClientFeignCustomizer webClientCustomizer) {
+    public ReactiveFeignBuilder reactiveFeignBuilder(
+            WebClient.Builder builder,
+            @Autowired(required = false) WebClientFeignCustomizer webClientCustomizer) {
         return webClientCustomizer != null
-                ? WebReactiveFeign.builder(webClientCustomizer)
-                : WebReactiveFeign.builder();
+                ? WebReactiveFeign.builder(builder, webClientCustomizer)
+                : WebReactiveFeign.builder(builder);
     }
 
     @AutoConfigureAfter(GatewayServiceConfiguration.class)

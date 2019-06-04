@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactivefeign.webclient.WebClientFeignCustomizer;
@@ -16,14 +17,17 @@ import reactivefeign.webclient.WebReactiveFeign;
 @Configuration
 public class FeignClientsConfiguration {
 
+
     @Bean
     @Scope("prototype")
     @ConditionalOnClass(WebReactiveFeign.class)
     @ConditionalOnMissingBean(ignoredType = "reactivefeign.cloud.CloudReactiveFeign.Builder")
-    public ReactiveFeignBuilder reactiveFeignBuilder(@Autowired(required = false) WebClientFeignCustomizer webClientCustomizer) {
+    public ReactiveFeignBuilder reactiveFeignBuilder(
+            WebClient.Builder builder,
+            @Autowired(required = false) WebClientFeignCustomizer webClientCustomizer) {
         return webClientCustomizer != null
-                ? WebReactiveFeign.builder(webClientCustomizer)
-                : WebReactiveFeign.builder();
+                ? WebReactiveFeign.builder(builder, webClientCustomizer)
+                : WebReactiveFeign.builder(builder);
     }
 
     @Bean

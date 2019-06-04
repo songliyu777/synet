@@ -14,14 +14,6 @@ import java.nio.ByteBuffer;
 @Service
 public class RemoteInvokeHandler extends TcpServiceHandler {
 
-    @Override
-    public Mono<ByteBuffer> invoke(ByteBuffer byteBuffer) {
-        short cmd = byteBuffer.getShort(NetProtocol.cmd_index);
-        Route route = routeMatcher.match(cmd);
-        LightningPbService pbService = lightningServiceLocator.match(route);
-        return pbService.protocol(byteBuffer);
-    }
-
     private LightningServiceLocator lightningServiceLocator;
 
     private RouteMatcher routeMatcher;
@@ -31,12 +23,11 @@ public class RemoteInvokeHandler extends TcpServiceHandler {
         this.routeMatcher = routeMatcher;
     }
 
-//    public Mono<ByteBuffer> invoke(ProtoHeader header, ByteBuffer byteBuffer){
-//        short cmd = header.getCmd();
-//        Route route = routeMatcher.match(cmd);
-//        LightningPbService pbService = lightningServiceLocator.match(route);
-//        return pbService.protocol(byteBuffer);
-//    }
-
-
+    @Override
+    public Mono<ByteBuffer> invoke(ByteBuffer byteBuffer) {
+        short cmd = byteBuffer.getShort(NetProtocol.cmd_index);
+        Route route = routeMatcher.match(cmd);
+        LightningPbService pbService = lightningServiceLocator.match(route);
+        return pbService.protocol(byteBuffer);
+    }
 }
