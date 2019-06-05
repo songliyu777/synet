@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,13 @@ public class MessageHandler {
 
     public MessageHandler() {
         protobufMappingHandler = new ProtobufMappingHandler();
-        protobufMappingHandler.initProtobufMethods();
+        try {
+            protobufMappingHandler.initProtobufMethods(this);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         decoder = new ProtobufProtocolDecoder();
         encoder = new ProtobufProtocolEncoder();
     }
@@ -123,8 +128,7 @@ public class MessageHandler {
         }
         CommandMethod commandMethod = protobufMappingHandler.getCommandMethod(commands[0]);
         if (commandMethod == null) {
-            log.error("no method");
-            return;
+            throw new RuntimeException("no command method");
         }
         Object[] args = getMethodArgumentValues(commandMethod, commands);
         Object value = null;

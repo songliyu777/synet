@@ -31,7 +31,7 @@ public class GameTcpClientTest implements TCPClient {
 
     MessageHandler messageHandler = new MessageHandler();
 
-    Queue<String> sendQueue = new LinkedList<String>();
+    Queue<String> sendQueue = new LinkedList();
 
     @Override
     public void setupTest() {
@@ -81,7 +81,6 @@ public class GameTcpClientTest implements TCPClient {
             int bodysize = 0;
             String result = "";
             if (sendQueue.size() == 0) {
-                sampleResult.setResponseCodeOK();
                 return ProcessDefine.END;
             }
             if ((x = is.read(readTmp)) > -1) {

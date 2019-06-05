@@ -5,12 +5,17 @@ import com.synet.net.protobuf.mapping.*;
 import com.synet.protobuf.Syprotocol;
 import org.apache.jmeter.protocol.gametcp.test.ProcessDefine;
 import org.apache.jmeter.protocol.gametcp.test.ProtobufCmd;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ProtobufController
-public class GameLogicTest {
+public class GameLogicHandler extends LogicHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GameLogicHandler.class);
 
     @ProtobufMapping(cmd = (short) Syprotocol.protocol_id.connect_msg_VALUE)
     public String connect(@Header ProtoHeader head, @Body Syprotocol.stc_connect stc) {
+        log.info(getHandler().toString());
         return ProcessDefine.NEXT;
     }
 

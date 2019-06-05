@@ -5,10 +5,11 @@ import com.synet.net.protobuf.mapping.ProtobufController;
 import com.synet.net.protobuf.mapping.ProtobufMapping;
 import com.synet.net.protobuf.mapping.ProtobufMappingInfo;
 import com.synet.net.protobuf.mapping.ProtobufMethod;
-import org.apache.jmeter.protocol.gametcp.test.logic.GameLogicTest;
+import org.apache.jmeter.protocol.gametcp.test.logic.GameLogicHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +26,10 @@ public class ProtobufMappingHandler {
     private Map<String, CommandMethod> commandMap = Maps.newHashMap();
 
     static {
-        PROTOBUF_ANNOTATIONS.add(GameLogicTest.class);
+        PROTOBUF_ANNOTATIONS.add(GameLogicHandler.class);
     }
 
-    public void initProtobufMethods() {
+    public void initProtobufMethods(MessageHandler handler) throws InvocationTargetException, IllegalAccessException {
         for (Class<?> c : PROTOBUF_ANNOTATIONS) {
             if (!c.isAnnotationPresent(ProtobufController.class)) {
                 log.error(c + ": no anotation");
@@ -50,6 +51,9 @@ public class ProtobufMappingHandler {
                 if (m.isAnnotationPresent(ProtobufCmd.class)) {
                     ProtobufCmd annotation = m.getDeclaredAnnotation(ProtobufCmd.class);
                     commandProtobufMethod(bean, m, annotation.name(), annotation.cmd());
+                }
+                if (m.getName().equals("setHandler")) {
+                    m.invoke(bean, handler);
                 }
             }
         }
