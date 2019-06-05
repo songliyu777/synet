@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.jmeter.protocol.gametcp.sampler.ReadException;
 import org.apache.jmeter.protocol.gametcp.sampler.TCPClient;
 import org.apache.jmeter.samplers.SampleResult;
+import org.apache.jorphan.util.JOrphanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +16,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 public class GameTcpClientTest implements TCPClient {
 
@@ -22,7 +27,11 @@ public class GameTcpClientTest implements TCPClient {
 
     ByteBuffer readBuffer = ByteBuffer.allocate(1024 * 1024);
 
+    byte[] readTmp = new byte[0xFFFF];
+
     MessageHandler messageHandler = new MessageHandler();
+
+    Queue<String> sendQueue = new LinkedList<String>();
 
     @Override
     public void setupTest() {
@@ -42,14 +51,22 @@ public class GameTcpClientTest implements TCPClient {
 
     @Override
     public void write(OutputStream os, String s) throws IOException {
-        String[] commands = s.split("\n");
-        for(String command : commands)
-        {
-            messageHandler.send(os,command);
+        if (s.startsWith(ProcessDefine.NEXT)) {
+            String command = sendQueue.poll();
+            String[] param = s.split(" ");
+            for (int i = 1; i < param.length; i++) {
+                command += " ";
+                command += param[i];
+            }
+            if (command != null) {
+                messageHandler.send(os, command);
+            }
+        } else {
+            String[] commands = s.split("\n");
+            for (String command : commands) {
+                sendQueue.add(command);
+            }
         }
-//        Syprotocol.cts_Login cts = Syprotocol.cts_Login.newBuilder().setAccount("samuel1").setPassword("123456").build();
-//        NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, 0xfffe, (short) Syprotocol.protocol_id.login_msg_VALUE, 0, cts.toByteArray());
-//        os.write(protocol.toArray());
     }
 
     @Deprecated
@@ -62,47 +79,38 @@ public class GameTcpClientTest implements TCPClient {
         try {
             int x = 0;
             int bodysize = 0;
-            NetProtocol protocol = null;
-            final String hexString = "";
-            while ((x = is.read(readBuffer.array())) > -1) {
-                if (readBuffer.remaining() >= ProtocolHead.headSize) {
-
+            String result = "";
+            if (sendQueue.size() == 0) {
+                sampleResult.setResponseCodeOK();
+                return ProcessDefine.END;
+            }
+            if ((x = is.read(readTmp)) > -1) {
+                readBuffer.put(readTmp, 0, x);
+                if (readBuffer.position() >= ProtocolHead.headSize) {
                     bodysize = readBuffer.getInt(NetProtocol.length_index);
-
-                    log.info("bodysize:" + bodysize);
                 }
                 int packsize = ProtocolHead.headSize + bodysize;
-                if (readBuffer.remaining() >= packsize) {
-                    ByteBuf buf = Unpooled.buffer(packsize);
-                    buf.writeBytes(readBuffer.array(), 0, packsize);
-                    int last = readBuffer.remaining() - packsize;
-                    if (last > 0) {
+                if (readBuffer.position() >= packsize) {
+                    ByteBuffer buf = ByteBuffer.allocate(packsize);
+                    buf.put(readBuffer.array(), 0, packsize);
+                    int last = readBuffer.position() - packsize;
+                    if (last >= 0) {
                         readBuffer.position(packsize);
                         readBuffer.compact();
+                        readBuffer.position(last);
                     }
-                    protocol = NetProtocol.parse(buf);
-                    buf.release();
-                    if(protocol.getHead().getCmd() != Syprotocol.protocol_id.connect_msg_VALUE)
-                    {
-                        break;
-                    }
+                    result = messageHandler.handle(buf);
                 }
             }
-//            final String hexString = JOrphanUtils.baToHexString(protocol.toArray());
-//            if(protocol.getHead().getCmd() != Syprotocol.protocol_id.connect_msg_VALUE)
-//            {
-//
-//            }
-            sampleResult.latencyEnd();
-            return hexString;
+            return result;
         } catch (IOException e) {
-            throw new ReadException("", e, "remaining:" + readBuffer.remaining());
+            throw new ReadException("", e, "position:" + readBuffer.position());
         }
     }
 
     @Override
     public byte getEolByte() {
-        return 0;
+        return (byte) messageHandler.getEndOfCommand();
     }
 
     @Override
@@ -112,6 +120,7 @@ public class GameTcpClientTest implements TCPClient {
 
     @Override
     public void setEolByte(int eolInt) {
-
+        messageHandler.setEndOfCommand((short) eolInt);
+        log.info("end of command:" + (short) eolInt);
     }
 }

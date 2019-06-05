@@ -5,6 +5,7 @@ import com.synet.net.protobuf.mapping.ProtobufController;
 import com.synet.net.protobuf.mapping.ProtobufMapping;
 import com.synet.net.protobuf.mapping.ProtobufMappingInfo;
 import com.synet.net.protobuf.mapping.ProtobufMethod;
+import org.apache.jmeter.protocol.gametcp.test.logic.GameLogicTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -201,7 +201,8 @@ public class TCPConfigGui extends AbstractConfigGui {
     }
 
     private JPanel createEolBytePanel() {
-        JLabel label = new JLabel(JMeterUtils.getResString("eolbyte")); //$NON-NLS-1$ 
+        JLabel label = new JLabel(JMeterUtils.getResString("eolbyte")); //$NON-NLS-1$
+        label.setText("end of command");
 
         eolByte = new JTextField(3); // 3 columns size
         eolByte.setMaximumSize(new Dimension(eolByte.getPreferredSize()));

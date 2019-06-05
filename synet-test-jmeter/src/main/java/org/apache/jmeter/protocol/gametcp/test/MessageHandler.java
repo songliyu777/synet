@@ -10,6 +10,7 @@ import com.synet.net.protobuf.mapping.Header;
 import com.synet.net.protobuf.mapping.ProtoHeader;
 import com.synet.net.protobuf.mapping.ProtobufMethod;
 import com.synet.net.protocol.NetProtocol;
+import com.synet.net.protocol.ProtocolHeadDefine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -17,7 +18,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.util.ObjectUtils;
 
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +47,12 @@ public class MessageHandler {
 
     private OutputStream os;
 
+    private int serial = 0;
+
+    private long session = 0;
+
+    private short endOfCommand = 0;
+
     public MessageHandler() {
         protobufMappingHandler = new ProtobufMappingHandler();
         protobufMappingHandler.initProtobufMethods();
@@ -53,18 +60,32 @@ public class MessageHandler {
         encoder = new ProtobufProtocolEncoder();
     }
 
-    public void handle(ByteBuffer byteBuffer) {
+    public void setEndOfCommand(short endOfCommand) {
+        this.endOfCommand = endOfCommand;
+    }
+
+    public short getEndOfCommand() {
+        return this.endOfCommand;
+    }
+
+    public String handle(ByteBuffer byteBuffer) {
 
         NetProtocol protocol = NetProtocol.wrap(byteBuffer);
 
         //找到调用方法
         ProtobufMethod protobufMethod = protobufMappingHandler.getProtobufMethod(protocol.getHead().getCmd());
         if (Objects.isNull(protobufMethod)) {
-            log.error("no method");
+            throw new RuntimeException("no method");
         }
+
+        log.info("handle command:" + protocol.getHead().getCmd());
 
         MethodParameter bodyParameter = null;
         MethodParameter[] methodParameters = protobufMethod.getMethodParameters();
+        if (Objects.isNull(methodParameters)) {
+            throw new RuntimeException("no method parameters");
+        }
+
         for (MethodParameter methodParameter : methodParameters) {
             if (methodParameter.hasParameterAnnotation(Body.class)) {
                 bodyParameter = methodParameter;
@@ -84,33 +105,45 @@ public class MessageHandler {
         }
 
         if (Objects.isNull(value)) {
-            log.error("no return");
+            throw new RuntimeException("no return");
         }
+
+        log.info("hander return:" + value.toString());
+
+        return value.toString();
     }
 
-    public void send(OutputStream os, String cmdLine) {
+    public void send(OutputStream os, String cmdLine) throws IOException {
         this.os = os;
         log.info(cmdLine);
         String[] commands = cmdLine.split(" ");
         int length = commands.length;
         if (length == 0) {
-            log.error("command length is zero");
-            return;
+            throw new RuntimeException("command length is zero");
         }
         CommandMethod commandMethod = protobufMappingHandler.getCommandMethod(commands[0]);
         if (commandMethod == null) {
             log.error("no method");
             return;
         }
-        Object[] args =
-        MethodParameter[] methodParameters = commandMethod.getMethodParameters();
-        for (int i=0;i<methodParameters.length;i++)
-        {
-            Object p = methodParameters[i].getParameterType().cast(commands[i+1]);
+        Object[] args = getMethodArgumentValues(commandMethod, commands);
+        Object value = null;
+        try {
+            value = commandMethod.getMethod().invoke(commandMethod.getBean(), args);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
-        for (MethodParameter methodParameter : methodParameters) {
-            Type t = methodParameter.getGenericParameterType();
 
+        if (Objects.isNull(value)) {
+            throw new RuntimeException("no return");
+        }
+
+        if (value instanceof Message) {
+            serial++;
+            NetProtocol protocol = NetProtocol.create(ProtocolHeadDefine.ENCRYPT_PROTOBUF_HEAD, ProtocolHeadDefine.VERSION, serial, commandMethod.getCmd(), session, ((Message) value).toByteArray());
+            os.write(protocol.toArray());
         }
     }
 
@@ -140,17 +173,28 @@ public class MessageHandler {
             return EMPTY_ARGS;
         }
         List<Object> args = new ArrayList<>(parameters.length);
-        for (MethodParameter parameter : parameters) {
+        for (int i = 0; i < parameters.length; i++) {
+            MethodParameter parameter = parameters[i];
             parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
-            Annotation[] parameterAnnotations = parameter.getParameterAnnotations();
-            Stream.of(parameterAnnotations).forEach(annotation -> {
-                if (annotation instanceof Header) {
-                    args.add(header);
-                } else if (annotation instanceof Body) {
-                    args.add(message);
-                }
-            });
+            String strParam = commands[i + 1];
+            Object objParam = CastParam(parameter.getParameterType(), strParam);
+            if (Objects.isNull(objParam)) {
+                log.error("no correct param:" + commandMethod.getMethod().getName());
+                return EMPTY_ARGS;
+            }
+            args.add(objParam);
         }
         return args.toArray();
+    }
+
+    Object CastParam(Class<?> type, String param) {
+        if (type == String.class) {
+            return param;
+        }
+        if (type == Integer.class) {
+            return Integer.valueOf(param);
+        }
+        log.error("no support type:" + type);
+        return null;
     }
 }

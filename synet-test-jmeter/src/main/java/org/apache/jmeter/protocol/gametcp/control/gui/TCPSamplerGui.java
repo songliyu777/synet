@@ -26,6 +26,7 @@ import org.apache.jmeter.config.gui.LoginConfigGui;
 import org.apache.jmeter.gui.util.VerticalPanel;
 import org.apache.jmeter.protocol.gametcp.config.gui.TCPConfigGui;
 import org.apache.jmeter.protocol.gametcp.sampler.GameTCPSampler;
+import org.apache.jmeter.protocol.gametcp.test.GAccountMananger;
 import org.apache.jmeter.samplers.gui.AbstractSamplerGui;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jmeter.util.JMeterUtils;
@@ -100,5 +101,6 @@ public class TCPSamplerGui extends AbstractSamplerGui {
         mainPanel.add(loginPanel);
 
         add(mainPanel, BorderLayout.CENTER);
+        GAccountMananger.getInstance().InitAccount();
     }
 }

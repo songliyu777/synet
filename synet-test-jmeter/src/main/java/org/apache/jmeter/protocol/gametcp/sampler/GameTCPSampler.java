@@ -39,6 +39,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jmeter.config.ConfigTestElement;
+import org.apache.jmeter.protocol.gametcp.test.ProcessDefine;
 import org.apache.jmeter.samplers.AbstractSampler;
 import org.apache.jmeter.samplers.Entry;
 import org.apache.jmeter.samplers.Interruptible;
@@ -51,7 +52,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A sampler which understands Tcp requests.
- *
  */
 public class GameTCPSampler extends AbstractSampler implements ThreadListener, Interruptible {
     private static final long serialVersionUID = 280L;
@@ -110,11 +110,11 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
 
     static {
         boolean hsp = false;
-        log.debug("Status prefix={}, suffix={}, properties={}", 
+        log.debug("Status prefix={}, suffix={}, properties={}",
                 STATUS_PREFIX, STATUS_SUFFIX, STATUS_PROPERTIES); //$NON-NLS-1$
         if (STATUS_PROPERTIES.length() > 0) {
             File f = new File(STATUS_PROPERTIES);
-            try (FileInputStream fis = new FileInputStream(f)){
+            try (FileInputStream fis = new FileInputStream(f)) {
                 STATUS_PROPS.load(fis);
                 log.debug("Successfully loaded properties"); //$NON-NLS-1$
                 hsp = true;
@@ -127,13 +127,15 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
         HAVE_STATUS_PROPS = hsp;
     }
 
-    /** the cache of TCP Connections */
+    /**
+     * the cache of TCP Connections
+     */
     // KEY = TCPKEY or ERRKEY, Entry= Socket or String
     private static final ThreadLocal<Map<String, Object>> tp =
             ThreadLocal.withInitial(HashMap::new);
 
     private transient TCPClient protocolHandler;
-    
+
     private transient boolean firstSample; // Are we processing the first sample?
 
     private transient volatile Socket currentSocket; // used for handling interrupt
@@ -162,11 +164,11 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
                 closeSocket(socketKey); // Bug 44910 - close previous socket (if any)
                 SocketAddress sockaddr = new InetSocketAddress(getServer(), getPort());
                 con = new Socket(); // NOSONAR socket is either cache in ThreadLocal for reuse and closed at end of thread or closed here
-                if (getPropertyAsString(SO_LINGER,"").length() > 0){
+                if (getPropertyAsString(SO_LINGER, "").length() > 0) {
                     con.setSoLinger(true, getSoLinger());
                 }
                 con.connect(sockaddr, getConnectTimeout());
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug("Created new connection {}", con); //$NON-NLS-1$
                 }
                 cp.put(socketKey, con);
@@ -178,13 +180,13 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
                 log.warn("Could not create socket for {}", getLabel(), e); //$NON-NLS-1$
                 cp.put(ERRKEY, e.toString());
                 return null;
-            }     
+            }
         }
         // (re-)Define connection params - Bug 50977 
         try {
             con.setSoTimeout(getTimeout());
             con.setTcpNoDelay(getNoDelay());
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("{} Timeout={}, NoDelay={}", this, getTimeout(), getNoDelay()); //$NON-NLS-1$
             }
         } catch (SocketException se) {
@@ -198,7 +200,7 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
      * @return String socket key in cache Map
      */
     private String getSocketKey() {
-        return TCPKEY+"#"+getServer()+"#"+getPort()+"#"+getUsername()+"#"+getPassword();
+        return TCPKEY + "#" + getServer() + "#" + getPort() + "#" + getUsername() + "#" + getPassword();
     }
 
     public String getUsername() {
@@ -236,15 +238,15 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     public int getSoLinger() {
         return getPropertyAsInt(SO_LINGER);
     }
-    
+
     public void setEolByte(String eol) {
         this.setProperty(EOL_BYTE, eol, "");
     }
-    
+
     public int getEolByte() {
         return getPropertyAsInt(EOL_BYTE);
     }
-    
+
 
     public void setPort(String newFilename) {
         this.setProperty(PORT, newFilename);
@@ -295,8 +297,8 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     }
 
     public String getClassname() {
-        String clazz = getPropertyAsString(CLASSNAME,"");
-        if (clazz==null || clazz.length()==0){
+        String clazz = getPropertyAsString(CLASSNAME, "");
+        if (clazz == null || clazz.length() == 0) {
             clazz = JMeterUtils.getPropDefault("gametcp.handler", "TCPClientImpl"); //$NON-NLS-1$ $NON-NLS-2$
         }
         return clazz;
@@ -330,14 +332,14 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     private TCPClient getProtocol() {
         TCPClient tcpClient = null;
         Class<?> javaClass = getClass(getClassname());
-        if (javaClass == null){
+        if (javaClass == null) {
             return null;
         }
         try {
             tcpClient = (TCPClient) javaClass.newInstance();
-            if (getPropertyAsString(EOL_BYTE, "").length()>0){
+            if (getPropertyAsString(EOL_BYTE, "").length() > 0) {
                 tcpClient.setEolByte(getEolByte());
-                log.info("Using eolByte={}", getEolByte());
+                log.info("Using endofcommand={}", getEolByte());
             }
 
             if (log.isDebugEnabled()) {
@@ -354,12 +356,12 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     {
         if (firstSample) { // Do stuff we cannot do as part of threadStarted()
             initSampling();
-            firstSample=false;
+            firstSample = false;
         }
         final boolean reUseConnection = isReUseConnection();
         final boolean closeConnection = isCloseConnection();
         String socketKey = getSocketKey();
-        if (log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(getLabel() + " " + getFilename() + " " + getUsername() + " " + getPassword());
         }
         SampleResult res = new SampleResult();
@@ -376,7 +378,7 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
         sb.append(" EOL: ").append(getEolByte()); // $NON-NLS-1$
         sb.append(" noDelay: ").append(getNoDelay()); // $NON-NLS-1$
         sb.append("]"); // $NON-NLS-1$
-        res.setSamplerData(sb.toString()); 
+        res.setSamplerData(sb.toString());
         res.sampleStart();
         try {
             Socket sock;
@@ -388,7 +390,7 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
             if (sock == null) {
                 res.setResponseCode("500"); //$NON-NLS-1$
                 res.setResponseMessage(getError());
-            } else if (protocolHandler == null){
+            } else if (protocolHandler == null) {
                 res.setResponseCode("500"); //$NON-NLS-1$
                 res.setResponseMessage("Protocol handler not found");
             } else {
@@ -396,19 +398,30 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
                 InputStream is = sock.getInputStream();
                 OutputStream os = sock.getOutputStream();
                 String req = getRequestData();
-                // TODO handle filenames
                 res.setSamplerData(req);
                 protocolHandler.write(os, req);
-                String in = protocolHandler.read(is, res);
+                String in = "";
+                while (!res.isResponseCodeOK()) {
+                    String result = protocolHandler.read(is, res);
+                    if (result.startsWith(ProcessDefine.NEXT)) {
+                        protocolHandler.write(os, result);
+                    } else if (result.equals(ProcessDefine.END)) {
+                        res.setResponseCodeOK();
+                    }
+                    if (!result.isEmpty()) {
+                        in += result;
+                    }
+                    log.info("result:" + result);
+                }
                 isSuccessful = setupSampleResult(res, in, null, protocolHandler);
             }
         } catch (ReadException ex) {
             log.error("", ex);
-            isSuccessful=setupSampleResult(res, ex.getPartialResponse(), ex,protocolHandler);
+            isSuccessful = setupSampleResult(res, ex.getPartialResponse(), ex, protocolHandler);
             closeSocket(socketKey);
         } catch (Exception ex) {
             log.error("", ex);
-            isSuccessful=setupSampleResult(res, "", ex, protocolHandler);
+            isSuccessful = setupSampleResult(res, "", ex, protocolHandler);
             closeSocket(socketKey);
         } finally {
             currentSocket = null;
@@ -427,20 +440,21 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
 
     /**
      * Fills SampleResult object
-     * @param sampleResult {@link SampleResult}
-     * @param readResponse Response read until error occurred
-     * @param exception Source exception
+     *
+     * @param sampleResult    {@link SampleResult}
+     * @param readResponse    Response read until error occurred
+     * @param exception       Source exception
      * @param protocolHandler {@link TCPClient}
      * @return boolean if sample is considered as successful
      */
     private boolean setupSampleResult(SampleResult sampleResult,
-            String readResponse, 
-            Exception exception,
-            TCPClient protocolHandler) {
-        sampleResult.setResponseData(readResponse, 
+                                      String readResponse,
+                                      Exception exception,
+                                      TCPClient protocolHandler) {
+        sampleResult.setResponseData(readResponse,
                 protocolHandler != null ? protocolHandler.getCharset() : null);
         sampleResult.setDataType(SampleResult.TEXT);
-        if(exception==null) {
+        if (exception == null) {
             sampleResult.setResponseCodeOK();
             sampleResult.setResponseMessage("OK"); //$NON-NLS-1$
         } else {
@@ -490,9 +504,9 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
         protocolHandler = getProtocol();
         if (log.isDebugEnabled()) {
             log.debug("Using Protocol Handler: {}",  //$NON-NLS-1$
-                protocolHandler == null ? "NONE" : protocolHandler.getClass().getName()); //$NON-NLS-1$
+                    protocolHandler == null ? "NONE" : protocolHandler.getClass().getName()); //$NON-NLS-1$
         }
-        if (protocolHandler != null){
+        if (protocolHandler != null) {
             protocolHandler.setupTest();
         }
     }
@@ -520,7 +534,7 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     public void threadFinished() {
         log.debug("Thread Finished"); //$NON-NLS-1$
         tearDown();
-        if (protocolHandler != null){
+        if (protocolHandler != null) {
             protocolHandler.teardownTest();
         }
     }
@@ -531,9 +545,9 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
     private void tearDown() {
         Map<String, Object> cp = tp.get();
         cp.forEach((k, v) -> {
-            if(k.startsWith(TCPKEY)) {
+            if (k.startsWith(TCPKEY)) {
                 try {
-                    ((Socket)v).close();
+                    ((Socket) v).close();
                 } catch (IOException e) {
                     // NOOP
                 }
@@ -542,7 +556,7 @@ public class GameTCPSampler extends AbstractSampler implements ThreadListener, I
         cp.clear();
         tp.remove();
     }
-    
+
     /**
      * @see org.apache.jmeter.samplers.AbstractSampler#applies(org.apache.jmeter.config.ConfigTestElement)
      */
