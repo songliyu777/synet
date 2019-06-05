@@ -17,7 +17,7 @@
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.yuyan</groupId>
+            <groupId>com.synet</groupId>
             <artifactId>cache-redis</artifactId>
         </dependency>
         <dependency>
