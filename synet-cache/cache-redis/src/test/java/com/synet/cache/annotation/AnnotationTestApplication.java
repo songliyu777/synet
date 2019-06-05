@@ -27,7 +27,7 @@ public class AnnotationTestApplication {
     @Bean
     public LettuceConnectionFactory lettuceConnectionFactory() {
         //connection factory
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("192.168.99.230");
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration("192.168.99.108");
         return new LettuceConnectionFactory(redisStandaloneConfiguration);
     }
 

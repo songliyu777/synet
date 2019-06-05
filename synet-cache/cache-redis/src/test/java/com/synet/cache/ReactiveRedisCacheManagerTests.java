@@ -13,7 +13,7 @@ import reactor.test.StepVerifier;
 
 public class ReactiveRedisCacheManagerTests {
 
-    private final static String HOST = "192.168.99.230";
+    private final static String HOST = "192.168.99.108";
 
     private ReactiveRedisCacheManager emptyCacheManager() {
         //connection factory
