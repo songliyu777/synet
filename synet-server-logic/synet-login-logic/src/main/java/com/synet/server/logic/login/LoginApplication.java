@@ -1,6 +1,5 @@
 package com.synet.server.logic.login;
 
-import com.synet.starter.feign.FeignClientsConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.loadbalancer.reactive.ReactiveLoadBalancerAutoConfiguration;

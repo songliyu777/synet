@@ -1,6 +1,7 @@
 syntax = "proto3";
+import "sydatabase.proto";
 
-option java_package = "com.synet.protobuf";
+option java_package = "com.synet.protobuf.protocol";
 
 enum protocol_id
 {

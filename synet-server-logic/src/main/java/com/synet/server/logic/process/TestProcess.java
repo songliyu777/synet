@@ -52,8 +52,8 @@ public class TestProcess {
     AtomicLong l = new AtomicLong(100000000);
 //
 //    public Mono<IMessage<AbstractMessage>> process(IMessage<AbstractMessage> message) {
-//        TestOuterClass.Test test = (TestOuterClass.Test) message.getMessage();
-//        Test t = new Test();
+//        TestOuterClass.TestBean test = (TestOuterClass.TestBean) message.getMessage();
+//        TestBean t = new TestBean();
 //        t.setId(l.getAndIncrement());
 //        t.setName("test123");
 //        t.setPassword("test123");

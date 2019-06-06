@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+option java_package = "com.synet.protobuf.database";
+
+message User
+{
+    int64 uid = 1;
+}

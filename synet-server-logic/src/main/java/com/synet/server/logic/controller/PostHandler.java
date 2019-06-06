@@ -20,11 +20,11 @@ public class PostHandler {
 //        short cmd = buffer.getShort(NetProtocol.cmd_index);
 //        long session = buffer.getLong(NetProtocol.session_index);
 //        buffer.position(NetProtocol.protobuf_index);
-//        TestOuterClass.Test test = null;
+//        TestOuterClass.TestBean test = null;
 //        try {
 //            ByteBuffer pbuffer = buffer.slice();
 //            if (pbuffer.remaining() > 0) {
-//                test = TestOuterClass.Test.parseFrom(pbuffer);
+//                test = TestOuterClass.TestBean.parseFrom(pbuffer);
 //            }
 //        } catch (InvalidProtocolBufferException e) {
 //            throw new RuntimeException(e);

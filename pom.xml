@@ -29,6 +29,7 @@
         <module>synet-starters</module>
         <module>synet-cache</module>
         <module>synet-config-server</module>
+        <module>synet-generate</module>
     </modules>
 
 </project>

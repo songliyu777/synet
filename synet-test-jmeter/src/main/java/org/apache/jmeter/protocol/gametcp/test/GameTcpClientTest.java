@@ -2,13 +2,9 @@ package org.apache.jmeter.protocol.gametcp.test;
 
 import com.synet.net.protocol.ProtocolHead;
 import com.synet.net.protocol.NetProtocol;
-import com.synet.protobuf.Syprotocol;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.apache.jmeter.protocol.gametcp.sampler.ReadException;
 import org.apache.jmeter.protocol.gametcp.sampler.TCPClient;
 import org.apache.jmeter.samplers.SampleResult;
-import org.apache.jorphan.util.JOrphanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,9 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 public class GameTcpClientTest implements TCPClient {

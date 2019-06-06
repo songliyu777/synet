@@ -3,7 +3,6 @@ package com.synet.server.gateway;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.synet.net.protocol.NetProtocol;
 import com.synet.net.tcp.TcpNetClient;
-import com.synet.protobuf.TestOuterClass;
 import com.synet.net.protocol.ProtocolHeadDefine;
 import org.junit.Assert;
 import org.junit.Test;

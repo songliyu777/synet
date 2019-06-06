@@ -1,10 +1,10 @@
 package com.synet.net.tcp;
 
+import com.synet.net.protocol.NetProtocol;
 import com.synet.net.protocol.ProtocolHeadDefine;
 import com.synet.net.service.NetService;
-import com.synet.net.protocol.NetProtocol;
 import com.synet.net.session.ISession;
-import com.synet.protobuf.Syprotocol;
+import com.synet.protobuf.protocol.Syprotocol;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -13,7 +13,6 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 @Slf4j
 public class TcpService implements ApplicationListener, NetService {

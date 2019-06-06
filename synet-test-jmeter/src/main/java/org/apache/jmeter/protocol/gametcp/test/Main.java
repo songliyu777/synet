@@ -2,7 +2,6 @@ package org.apache.jmeter.protocol.gametcp.test;
 
 import com.synet.net.protocol.NetProtocol;
 import com.synet.net.protocol.ProtocolHeadDefine;
-import com.synet.protobuf.Syprotocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
