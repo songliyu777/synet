@@ -2,6 +2,7 @@ package org.apache.jmeter.protocol.gametcp.test.logic;
 
 import com.google.protobuf.Message;
 import com.synet.net.protobuf.mapping.*;
+import com.synet.protobuf.protocol.Syprotocol;
 import org.apache.jmeter.protocol.gametcp.test.ProcessDefine;
 import org.apache.jmeter.protocol.gametcp.test.ProtobufCmd;
 import org.slf4j.Logger;
