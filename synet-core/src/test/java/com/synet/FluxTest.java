@@ -4,9 +4,11 @@ import org.junit.Test;
 import org.reactivestreams.Subscription;
 import reactor.core.publisher.BaseSubscriber;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -96,7 +98,7 @@ public class FluxTest {
      * SampleSubscriber类扩展了BaseSubscriber, BaseSubscriber是反应器中为用户定义的订阅者推荐的抽象类。
      * 该类提供可重写的钩子来优化订阅者的行为。默认情况下，它将触发一个无限制的请求，其行为与subscribe()完全相同。
      * 但是，当您需要自定义请求量时，扩展BaseSubscriber要有用得多。
-     * */
+     */
 
 
     public class SampleSubscriber<T> extends BaseSubscriber<T> {
@@ -115,7 +117,7 @@ public class FluxTest {
     /**
      * BaseSubscriber还提供了一个requestUnbounded()方法来切换到unbounded模式(相当于request(Long.MAX_VALUE))，以及一个cancel()方法。
      * 它有额外的钩子:hookOnComplete、hookOnError、hookOnCancel和hookFinally(在序列终止时总是调用它，并将终止类型作为SignalType参数传入)
-     * */
+     */
 
     @Test
     public void testFlux_5() {
@@ -151,19 +153,22 @@ public class FluxTest {
      * Synchronous generate
      * 这是用于同步和逐个排放的，这意味着sink是一个synchronioussink，它的next()方法在每次回调调用时最多只能被调用一次。
      * 然后可以另外调用error(Throwable)或complete()，但这是可选的。
-     * */
+     */
 
     @Test
     public void testFlux_7() {
         Flux<String> flux = Flux.generate(
-                () -> {System.out.println("callable" + GetThreadId()); return 0;},
+                () -> {
+                    System.out.println("callable" + GetThreadId());
+                    return 0;
+                },
                 (state, sink) -> {
-                    String tmp = "3 x " + state + " = " + 3*state;
+                    String tmp = "3 x " + state + " = " + 3 * state;
                     sink.next(tmp);
                     if (state == 10) sink.complete();
                     return state + 1;
                 });
-        flux.subscribe((tmp)->System.out.println(tmp + GetThreadId()));
+        flux.subscribe((tmp) -> System.out.println(tmp + GetThreadId()));
     }
 
     @Test
@@ -172,12 +177,12 @@ public class FluxTest {
                 AtomicLong::new,
                 (state, sink) -> {
                     long i = state.getAndIncrement();
-                    String tmp = "3 x " + i + " = " + 3*i;
+                    String tmp = "3 x " + i + " = " + 3 * i;
                     sink.next(tmp);
                     if (i == 10) sink.complete();
                     return state;
                 });
-        flux.subscribe((tmp)->System.out.println(tmp + GetThreadId()));
+        flux.subscribe((tmp) -> System.out.println(tmp + GetThreadId()));
     }
 
     @Test
@@ -186,13 +191,13 @@ public class FluxTest {
                 AtomicLong::new,
                 (state, sink) -> {
                     long i = state.getAndIncrement();
-                    String tmp = "3 x " + i + " = " + 3*i;
+                    String tmp = "3 x " + i + " = " + 3 * i;
                     sink.next(tmp);
                     if (i == 10) sink.complete();
                     return state;
                 }, (state) -> System.out.println("state: " + state + GetThreadId()));
 
-        flux.subscribe((tmp)->System.out.println(tmp + GetThreadId()));
+        flux.subscribe((tmp) -> System.out.println(tmp + GetThreadId()));
     }
 
     /**
@@ -200,19 +205,25 @@ public class FluxTest {
      * create是一种更高级的通量编程创建形式，它适用于每轮的多个排放，甚至来自多个线程。
      * 它公开了一个FluxSink，以及它的next、error和complete方法。与generate相反，它没有基于状态的变体。
      * 另一方面，它可以在回调中触发多线程事件。
-     * */
+     */
 
     interface MyEventListener<T> {
         void onDataChunk(List<T> chunk);
+
         void processComplete();
+
         void processError(Throwable e);
     }
 
     interface MyEventProcessor {
         void register(MyEventListener<String> eventListener);
+
         void fireEvents(String... values);
+
         void processComplete();
+
         void processError(Throwable a);
+
         void shutdown();
     }
 
@@ -242,7 +253,7 @@ public class FluxTest {
         }
 
         @Override
-        public void processError(Throwable a){
+        public void processError(Throwable a) {
             executor.schedule(() -> eventListener.processError(a),
                     500, TimeUnit.MILLISECONDS);
         }
@@ -269,15 +280,17 @@ public class FluxTest {
                                 }
                             }
                         }
+
                         public void processComplete() {
                             System.out.println("processComplete" + GetThreadId());
                             sink.complete();
                         }
+
                         public void processError(Throwable e) {
                             sink.error(e);
                         }
                     });
-        }).log().subscribe((tmp)->System.out.println(tmp + GetThreadId()));
+        }).log().subscribe((tmp) -> System.out.println(tmp + GetThreadId()));
         myEventProcessor.fireEvents("1", "2", "3", "4", "end");
         try {
             //myEventProcessor.processComplete();
@@ -297,7 +310,7 @@ public class FluxTest {
                     new MyEventListener<String>() {
 
                         public void onDataChunk(List<String> chunk) {
-                            for(String s : chunk) {
+                            for (String s : chunk) {
                                 sink.next(s);
                             }
                         }
@@ -312,7 +325,7 @@ public class FluxTest {
                         }
                     });
         });
-        bridge.log().subscribe((tmp)->System.out.println(tmp + GetThreadId()));
+        bridge.log().subscribe((tmp) -> System.out.println(tmp + GetThreadId()));
         myEventProcessor.fireEvents("1", "2", "3", "4", "end");
         try {
             myEventProcessor.processError(new Error("test error"));
@@ -329,7 +342,7 @@ public class FluxTest {
      * 两个回调onDispose和onCancel在取消或终止时执行任何清理。
      * onDispose可用于在通量完成、错误输出或取消时执行清理。
      * onCancel可用于在使用onDispose进行清理之前执行任何特定于cancel的操作。
-     * */
+     */
 
     @Test
     public void testFlux_12() {
@@ -344,10 +357,9 @@ public class FluxTest {
     /**
      * The handle method is a bit different: it is an instance method, meaning that it is chained on an existing source (as are the common operators).
      * It is present in both Mono and Flux.
-     *
+     * <p>
      * handle 的不同在于可以跳过一些元素，不用
-     *
-     * */
+     */
 
     public String alphabet(int letterNumber) {
         if (letterNumber < 1 || letterNumber > 26) {
@@ -367,6 +379,17 @@ public class FluxTest {
                 });
 
         alphabet.subscribe(System.out::println);
+    }
+
+    @Test
+    public void testFlux_14() {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 1; i < 10; i++) {
+            list.add(Integer.valueOf(i));
+        }
+        Flux.fromIterable(list).filter((i)->i<8).flatMap((i) -> {
+            return Mono.just(i).doOnSuccess(System.out::println);
+        }).then(Mono.just("hello").doOnSuccess(System.out::println)).subscribe();
     }
 
 }
