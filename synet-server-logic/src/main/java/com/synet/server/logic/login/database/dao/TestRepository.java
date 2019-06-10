@@ -1,7 +1,7 @@
-package com.synet.server.logic.database.dao;
+package com.synet.server.logic.login.database.dao;
 
 
-import com.synet.server.logic.database.bean.TestBean;
+import com.synet.server.logic.login.database.bean.TestBean;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 

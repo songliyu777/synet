@@ -1,4 +1,4 @@
-package com.synet.server.logic.database.dao;
+package com.synet.server.logic.login.database.dao;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;

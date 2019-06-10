@@ -7,9 +7,21 @@ spring:
     serviceId: server-logic
   data:
     mongodb:
-      host: 192.168.99.108
+      host: 192.168.99.249
       database: test
       port: 27017
+  redis:
+    host: 192.168.99.230
+    port: 6379
+    database: 1
+## cache 配置
+synet:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3h
+      cache-null-values: false
+
 #      username: admin
 #      password: admin
 #      url: mongodb://admin:admin@192.168.99.249:27017/test

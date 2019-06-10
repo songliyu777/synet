@@ -9,7 +9,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-@ConfigurationProperties(prefix = "lightning.cache")
+@ConfigurationProperties(prefix = "synet.cache")
 public class ReactiveCacheProperties {
 
     /**

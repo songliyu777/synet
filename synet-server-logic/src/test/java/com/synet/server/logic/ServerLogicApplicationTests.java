@@ -1,9 +1,8 @@
 package com.synet.server.logic;
 
-import com.mongodb.bulk.UpdateRequest;
-import com.synet.server.logic.database.bean.SequenceBean;
-import com.synet.server.logic.database.bean.TestBean;
-import com.synet.server.logic.database.dao.TestRepository;
+import com.synet.server.logic.login.database.bean.SequenceBean;
+import com.synet.server.logic.login.database.bean.TestBean;
+import com.synet.server.logic.login.database.dao.TestRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -26,6 +26,10 @@ public class ServerLogicApplicationTests {
 
 	@Autowired
 	TestRepository repository;
+
+	@Autowired
+	ReactiveRedisTemplate<String, String> redisTemplate;
+
 
 	@Test
 	public void contextLoads() {
@@ -67,6 +71,13 @@ public class ServerLogicApplicationTests {
 		});
 
 		StepVerifier.create(m2).consumeNextWith(System.out::println).verifyComplete();
+	}
+
+	@Test
+	public void TestRedisRepository()
+	{
+		Mono<Long> m = redisTemplate.opsForSet().add("test1","123456");
+		StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
 	}
 
 }
