@@ -7,6 +7,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import reactor.test.StepVerifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -387,9 +388,11 @@ public class FluxTest {
         for (int i = 1; i < 10; i++) {
             list.add(Integer.valueOf(i));
         }
-        Flux.fromIterable(list).filter((i)->i<8).flatMap((i) -> {
+        Mono<String> m1 = Flux.fromIterable(list).filter((i)->i<8).flatMap((i) -> {
             return Mono.just(i).doOnSuccess(System.out::println);
-        }).then(Mono.just("hello").doOnSuccess(System.out::println)).subscribe();
+        }).then(Mono.just("hello")).flatMap(s-> Mono.just("next"));
+
+        StepVerifier.create(m1).consumeNextWith(System.out::println).verifyComplete();
     }
 
 }
