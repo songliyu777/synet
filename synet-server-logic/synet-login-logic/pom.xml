@@ -56,6 +56,11 @@
 
         <dependency>
             <groupId>com.synet</groupId>
+            <artifactId>redis-lock</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.synet</groupId>
             <artifactId>synet-protobufservice-starter</artifactId>
         </dependency>
 

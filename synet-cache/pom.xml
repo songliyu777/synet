@@ -18,6 +18,7 @@
         <module>cache-abstract</module>
         <module>cache-redis</module>
         <module>cache-autoconfigure</module>
+        <module>redis-lock</module>
     </modules>
 
     <properties>
@@ -40,6 +41,11 @@
             <dependency>
                 <groupId>com.synet</groupId>
                 <artifactId>cache-autoconfigure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>redis-lock</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

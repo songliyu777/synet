@@ -25,8 +25,8 @@ public class UserDao {
     }
 
     @ReactiveCacheEvict(value = "user", key = "#account")
-    public Mono<Void> delete(String account){
-        return userRepository.deleteById(account);
+    public Mono<User> delete(String account) {
+        return userRepository.findById(account).flatMap(t -> userRepository.deleteById(t.getAccount()).then(Mono.just(t)));
     }
 }
 

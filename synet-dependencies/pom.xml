@@ -112,6 +112,12 @@
 
             <dependency>
                 <groupId>com.synet</groupId>
+                <artifactId>redis-lock</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.synet</groupId>
                 <artifactId>synet-generate</artifactId>
                 <version>${synet.version}</version>
             </dependency>

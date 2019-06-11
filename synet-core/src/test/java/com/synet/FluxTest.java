@@ -390,9 +390,18 @@ public class FluxTest {
         }
         Mono<String> m1 = Flux.fromIterable(list).filter((i)->i<8).flatMap((i) -> {
             return Mono.just(i).doOnSuccess(System.out::println);
-        }).then(Mono.just("hello")).flatMap(s-> Mono.just("next"));
+        }).then(Mono.empty()).flatMap(s-> Mono.just("next"));
 
         StepVerifier.create(m1).consumeNextWith(System.out::println).verifyComplete();
     }
+
+    @Test
+    public void testFlux_15() {
+        Mono<Boolean> m1 = Mono.just(Boolean.TRUE);
+        Mono<String> m2 = m1.filter((b)->false).flatMap(b->Mono.just("next"));
+        m2.subscribe(System.out::println);
+        //StepVerifier.create(m2).consumeNextWith(System.out::println).verifyComplete();
+    }
+
 
 }
