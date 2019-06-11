@@ -22,7 +22,7 @@ public class PostController {
         return ServerResponse.ok().build();
     }
 
-    public Mono<ServerResponse> test(ServerRequest req) {
+    public Mono<ServerResponse> protocol(ServerRequest req) {
         return req.body(BodyExtractors.toMono(ByteBuffer.class)).flatMap(this::bufferToSend);
     }
 

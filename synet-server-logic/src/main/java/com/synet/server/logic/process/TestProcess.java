@@ -19,7 +19,7 @@ public class TestProcess {
 
 //    Scheduler[] scheduler = new Scheduler[32];
 
-    //GatewayInterface client;
+    //GatewayInterfaceSynet client;
 
 //    static <T> CloudReactiveFeign.Builder<T> cloudBuilder() {
 //        return CloudReactiveFeign.builder(WebReactiveFeign.builder());
@@ -41,10 +41,10 @@ public class TestProcess {
 //        }
 //
 //
-//        client = TestProcess.<GatewayInterface>cloudBuilder()
+//        client = TestProcess.<GatewayInterfaceSynet>cloudBuilder()
 //                .enableLoadBalancer()
 //                .disableHystrix()
-//                .target(GatewayInterface.class, "http://server-gateway");
+//                .target(GatewayInterfaceSynet.class, "http://server-gateway");
     }
 
     @Autowired

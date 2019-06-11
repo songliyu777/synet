@@ -17,6 +17,9 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class ProtobufServiceConfiguration {
 
+    //for SynetRemoteInterface invoke
+    public static ProtobufProtocolEncoder encoder;
+
     @Bean
     public RouterFunction<ServerResponse> monoRouterFunction(DefaultProtobufHandler protobufHandler) {
         return route(POST("/pb/protocol").
@@ -37,7 +40,8 @@ public class ProtobufServiceConfiguration {
 
     @Bean
     public ProtobufProtocolEncoder protobufProtocolEncoder() {
-        return new ProtobufProtocolEncoder();
+        encoder = new ProtobufProtocolEncoder();
+        return encoder;
     }
 
     @Bean

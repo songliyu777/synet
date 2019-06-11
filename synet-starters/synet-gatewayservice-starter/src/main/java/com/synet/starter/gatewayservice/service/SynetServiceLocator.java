@@ -10,19 +10,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class LightningServiceLocator {
+public class SynetServiceLocator {
 
     private final static String SERVICE_PREFIX = "lb://";
 
     //key-routerId : service
-    private Map<String, LightningPbService> routeServiceMap = Maps.newHashMap();
+    private Map<String, SynetPbService> routeServiceMap = Maps.newHashMap();
 
     //key-servicename : service
-    private Map<String, LightningPbService> serviceServiceMap = Maps.newHashMap();
+    private Map<String, SynetPbService> serviceServiceMap = Maps.newHashMap();
 
-    private CloudReactiveFeign.Builder<LightningPbService> builder;
+    private CloudReactiveFeign.Builder<SynetPbService> builder;
 
-    public LightningServiceLocator(List<Route> routes, CloudReactiveFeign.Builder builder) {
+    public SynetServiceLocator(List<Route> routes, CloudReactiveFeign.Builder builder) {
         this.builder = builder;
         initService(routes);
     }
@@ -35,24 +35,24 @@ public class LightningServiceLocator {
         routes.forEach(route -> {
             String uri = route.getUri();
             String serviceName = StringUtils.remove(uri, SERVICE_PREFIX);
-            LightningPbService lightningPbService = serviceServiceMap.get(serviceName);
-            if (Objects.isNull(lightningPbService)) {
-                lightningPbService = createService(serviceName);
-                serviceServiceMap.put(serviceName, lightningPbService);
+            SynetPbService synetPbService = serviceServiceMap.get(serviceName);
+            if (Objects.isNull(synetPbService)) {
+                synetPbService = createService(serviceName);
+                serviceServiceMap.put(serviceName, synetPbService);
             }
-            routeServiceMap.put(route.getId(), lightningPbService);
+            routeServiceMap.put(route.getId(), synetPbService);
         });
     }
 
-    private LightningPbService createService(String service) {
-        return builder.target(LightningPbService.class, "http://" + service);
+    private SynetPbService createService(String service) {
+        return builder.target(SynetPbService.class, "http://" + service);
     }
 
-    public LightningPbService match(Route route) {
+    public SynetPbService match(Route route) {
         return match(route.getId());
     }
 
-    public LightningPbService match(String routeId) {
+    public SynetPbService match(String routeId) {
         return routeServiceMap.get(routeId);
     }
 }

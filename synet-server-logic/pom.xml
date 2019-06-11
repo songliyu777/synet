@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>synet-server-logic</artifactId>
-    <packaging>pom</packaging>
+    <!--<packaging>pom</packaging>-->
     <modules>
         <module>synet-login-logic</module>
     </modules>

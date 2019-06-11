@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 import java.nio.ByteBuffer;
 
 @Headers({ "Accept: application/octet-stream", "Content-Type: application/octet-stream" })
-public interface LightningPbService {
+public interface SynetPbService {
 
     /**
      * 调用服务

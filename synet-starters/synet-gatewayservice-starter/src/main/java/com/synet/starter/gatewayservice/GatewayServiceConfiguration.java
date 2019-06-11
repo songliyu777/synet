@@ -13,7 +13,7 @@ import com.synet.net.route.RouteDefinition;
 import com.synet.net.route.RouteMatcher;
 import com.synet.starter.gatewayservice.controller.PostController;
 import com.synet.starter.gatewayservice.handler.RemoteInvokeHandler;
-import com.synet.starter.gatewayservice.service.LightningServiceLocator;
+import com.synet.starter.gatewayservice.service.SynetServiceLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.client.loadbalancer.reactive.WebClientCustomizer;
 import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +33,6 @@ import reactivefeign.ReactiveFeignBuilder;
 import reactivefeign.cloud.CloudReactiveFeign;
 import reactivefeign.cloud.LoadBalancerCommandFactory;
 import reactivefeign.spring.config.ReactiveFeignAutoConfiguration;
-import reactivefeign.spring.config.ReactiveFeignClientsConfiguration;
-import reactivefeign.spring.config.ReactiveFeignHystrixConfigurator;
-import reactivefeign.spring.config.ReactiveFeignRibbonConfigurator;
 import reactivefeign.webclient.WebClientFeignCustomizer;
 import reactivefeign.webclient.WebReactiveFeign;
 
@@ -59,19 +55,19 @@ public class GatewayServiceConfiguration {
     }
 
     @Bean
-    public LightningServiceLocator lightningServiceLocator(RouteMatcher routeMatcher, CloudReactiveFeign.Builder builder) {
-        return new LightningServiceLocator(routeMatcher.getRoutes(), builder);
+    public SynetServiceLocator lightningServiceLocator(RouteMatcher routeMatcher, CloudReactiveFeign.Builder builder) {
+        return new SynetServiceLocator(routeMatcher.getRoutes(), builder);
     }
 
     @Bean
     @ConditionalOnMissingBean(value = RemoteInvokeHandler.class)
-    public RemoteInvokeHandler serviceInvokeHandler(RouteMatcher routeMatcher, LightningServiceLocator lightningServiceLocator) {
-        return new RemoteInvokeHandler(routeMatcher, lightningServiceLocator);
+    public RemoteInvokeHandler serviceInvokeHandler(RouteMatcher routeMatcher, SynetServiceLocator synetServiceLocator) {
+        return new RemoteInvokeHandler(routeMatcher, synetServiceLocator);
     }
 
     @Bean
     public RouterFunction<ServerResponse> routes(PostController postController) {
-        return route(POST("/test").and(contentType(APPLICATION_OCTET_STREAM)), postController::test);
+        return route(POST("/pb/protocol").and(contentType(APPLICATION_OCTET_STREAM)), postController::protocol);
     }
 
     @Bean
