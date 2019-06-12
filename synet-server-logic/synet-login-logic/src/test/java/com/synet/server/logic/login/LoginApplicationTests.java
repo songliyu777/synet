@@ -1,5 +1,6 @@
 package com.synet.server.logic.login;
 
+import com.mongodb.MongoClient;
 import com.synet.cache.lock.RedisLock;
 import com.synet.cache.lock.RedisLockFactory;
 import com.synet.server.logic.login.database.bean.Sequence;
@@ -10,17 +11,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -86,7 +98,17 @@ public class LoginApplicationTests {
     @Test
     public void TestUserDao_Transactional()
     {
+        AtomicLong uid = new AtomicLong(1);
 
+        Mono<User> m = template.inTransaction().execute(action -> {
+             User user = new User();
+             user.setAccount("111");
+             user.setUser_id(uid.getAndIncrement());
+             return userDao.save(user);
+
+        }).next().map(u->u);
+
+        StepVerifier.create(m).verifyComplete();
     }
 
     @Test

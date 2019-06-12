@@ -9,12 +9,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import reactivefeign.spring.config.EnableReactiveFeignClients;
 
 @SpringBootApplication(exclude = ReactiveLoadBalancerAutoConfiguration.class)
 @EnableEurekaClient
 @EnableReactiveFeignClients
 @EnableReactiveCaching
+@EnableTransactionManagement
 public class LoginApplication {
     public static void main(String[] args) {
         SpringApplication.run(LoginApplication.class, args);
