@@ -5,6 +5,7 @@ import com.synet.cache.lock.RedisLockFactory;
 import com.synet.server.logic.login.database.bean.Sequence;
 import com.synet.server.logic.login.database.bean.User;
 import com.synet.server.logic.login.database.dao.UserDao;
+import com.synet.server.logic.login.redis.RedisKeyDefine;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
@@ -34,6 +36,9 @@ public class LoginApplicationTests {
 
     @Autowired
     ReactiveStringRedisTemplate reactiveStringRedisTemplate;
+
+    @Autowired
+    ReactiveRedisTemplate<String, User> reactiveRedisTemplate;
 
     @Autowired
     RedisLockFactory redisLockFactory;
@@ -79,27 +84,59 @@ public class LoginApplicationTests {
     }
 
     @Test
-    public void TestReactiveRedisTemplate()
+    public void TestUserDao_Transactional()
     {
-        Mono<Long> m = reactiveStringRedisTemplate.opsForSet().add("test1","123456");
+
+    }
+
+    @Test
+    public void TestReactiveRedisTemplate() {
+        Mono<Long> m = reactiveStringRedisTemplate.opsForSet().add("test1", "123456");
         StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
     }
 
     @Test
     public void TestRedisLock_1() {
         RedisLock rl = redisLockFactory.NewLock(Long.valueOf(5000));
-        Mono<Boolean> m = rl.lock("Test").filter(b -> b).flatMap(b->Mono.just("LockTest").delaySubscription(Duration.ofMillis(4000))).flatMap(s -> rl.unlock("Test"));
+        Mono<Boolean> m = rl.lock("Test").filter(b -> b).flatMap(b -> Mono.just("LockTest").delaySubscription(Duration.ofMillis(4000))).flatMap(s -> rl.unlock("Test"));
         StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
     }
 
     @Test
     public void TestRedisLock_2() {
         RedisLock rl1 = redisLockFactory.NewLock(Long.valueOf(5000));
-        Mono<String> m1 = rl1.lock("Test").filter(b -> b).flatMap(b->Mono.just("LockTest1:"+ System.currentTimeMillis()).delaySubscription(Duration.ofMillis(2000)));
+        Mono<String> m1 = rl1.lock("Test").filter(b -> b).flatMap(b -> Mono.just("LockTest1:" + System.currentTimeMillis()).delaySubscription(Duration.ofMillis(2000)));
         StepVerifier.create(m1).consumeNextWith(System.out::println).verifyComplete();
         //无法拿到锁
         RedisLock rl2 = redisLockFactory.NewLock(Long.valueOf(5000));
-        Mono<String> m2 = rl2.lock("Test").doOnSuccess(System.err::println).filter(b -> b).flatMap(b->Mono.just("LockTest2:" + System.currentTimeMillis()));
+        Mono<String> m2 = rl2.lock("Test").doOnSuccess(System.err::println).filter(b -> b).flatMap(b -> Mono.just("LockTest2:" + System.currentTimeMillis()));
         StepVerifier.create(m2).verifyComplete();
+    }
+
+    @Test
+    public void TestRedisList() {
+        User user = new User();
+        user.setAccount("123456");
+        user.setPassword("123456");
+        Mono<Long> m = reactiveRedisTemplate.opsForList().size(RedisKeyDefine.LOGIN_QUEUE).flatMap(len -> reactiveRedisTemplate.opsForList().leftPush(RedisKeyDefine.LOGIN_QUEUE, user));
+        StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
+    }
+
+    @Test
+    public void TestRedisQueue() {
+        User user = new User();
+        user.setAccount("123456");
+        user.setPassword("123456");
+        Mono<Long> m = reactiveRedisTemplate.opsForSet().add(RedisKeyDefine.LOGIN_SET, user)
+                .flatMap(i -> {
+                    if (i > 0) {
+                        return reactiveRedisTemplate.opsForList().leftPush(RedisKeyDefine.LOGIN_QUEUE, user);
+                    }
+                    return Mono.just(i);
+                });
+//        Mono<Long> m = reactiveRedisTemplate.opsForSet().isMember(RedisKeyDefine.LOGIN_SET, user)
+//                .filter(b->!b)
+//                .flatMap(b->reactiveRedisTemplate.opsForSet().add(RedisKeyDefine.LOGIN_SET, user));
+        StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
     }
 }
