@@ -7,6 +7,7 @@ import com.synet.server.logic.login.database.bean.Sequence;
 import com.synet.server.logic.login.database.bean.User;
 import com.synet.server.logic.login.database.dao.UserDao;
 import com.synet.server.logic.login.redis.RedisKeyDefine;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import reactor.test.StepVerifier;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @RunWith(SpringRunner.class)
@@ -96,19 +98,16 @@ public class LoginApplicationTests {
     }
 
     @Test
-    public void TestUserDao_Transactional()
-    {
-        AtomicLong uid = new AtomicLong(1);
+    public void TestUserDao_Transactional() {
+        User user = new User();
+        user.setAccount("111");
+        user.setUser_id(Long.valueOf(1));
 
-        Mono<User> m = template.inTransaction().execute(action -> {
-             User user = new User();
-             user.setAccount("111");
-             user.setUser_id(uid.getAndIncrement());
-             return userDao.save(user);
-
-        }).next().map(u->u);
-
-        StepVerifier.create(m).verifyComplete();
+        //不能嵌入repository这一点要切记了，下面代码会回滚
+        template.inTransaction().execute(action ->
+                action.save(user).then(action.insert(user)).flatMap(val -> {
+                    return Mono.just(user);
+                })).as(StepVerifier::create).verifyError();
     }
 
     @Test
