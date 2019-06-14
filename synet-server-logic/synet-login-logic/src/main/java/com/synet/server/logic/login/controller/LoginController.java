@@ -14,11 +14,9 @@ public class LoginController {
 
     @ProtobufMapping(cmd = (short) Syprotocol.protocol_id.login_msg_VALUE)
     public Mono<ProtoResponse> login(@Header ProtoHeader head, @Body Syprotocol.cts_Login cts) {
-        ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(cts).build();
-        //return Mono.just(response);
 
-        //gatewayInterface.query(head, test, head.getRemoteAddress()).subscribe();
-        //return Mono.just(response);
-        return Mono.just(response).doOnSuccess((r) -> gatewayInterface.query(head, cts, head.getRemoteAddress()).subscribe());
+        ProtoResponse response = ProtoResponse.builder().protoHeader(head).message(Syprotocol.stc_Login.newBuilder().setState(0).build()).build();
+
+        return Mono.just(response);
     }
 }
