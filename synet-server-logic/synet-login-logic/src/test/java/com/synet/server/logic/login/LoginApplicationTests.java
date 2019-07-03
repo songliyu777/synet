@@ -97,6 +97,25 @@ public class LoginApplicationTests {
     }
 
     @Test
+    public void TestUserDao_Transactional_Double() {
+        for (int i = 0; i < 100; i++) {
+            User user1 = new User();
+            user1.setAccount("111");
+            user1.setUser_id(Long.valueOf(1));
+
+            User user2 = new User();
+            user2.setAccount("222");
+            user2.setUser_id(Long.valueOf(2));
+
+            template.inTransaction().execute(action ->
+                    action.save(user1).then(action.save(user2)).flatMap(val -> {
+                        return Mono.just(user2);
+                    })).as(StepVerifier::create).consumeNextWith(System.out::println).verifyComplete();
+        }
+
+    }
+
+    @Test
     public void TestReactiveRedisTemplate() {
         Mono<Long> m = reactiveStringRedisTemplate.opsForSet().add("test1", "123456");
         StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
