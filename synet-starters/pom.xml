@@ -17,5 +17,6 @@
         <module>synet-tcpservice-starter</module>
         <module>synet-protobufservice-starter</module>
         <module>synet-gatewayservice-starter</module>
+        <module>synet-dataservice-starter</module>
     </modules>
 </project>

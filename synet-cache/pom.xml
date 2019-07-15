@@ -18,7 +18,6 @@
         <module>cache-abstract</module>
         <module>cache-redis</module>
         <module>cache-autoconfigure</module>
-        <module>redis-lock</module>
     </modules>
 
     <properties>
