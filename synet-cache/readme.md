@@ -52,3 +52,14 @@ public class LoginApplication {
     }
 }
 ```
+
+### 配置定义
+```
+## cache 配置
+synet:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3h
+      cache-null-values: false
+```

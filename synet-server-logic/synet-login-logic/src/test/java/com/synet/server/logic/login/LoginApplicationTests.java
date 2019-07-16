@@ -26,8 +26,8 @@ public class LoginApplicationTests {
     @Autowired
     ReactiveMongoTemplate template;
 
-    @Autowired
-    ReactiveStringRedisTemplate reactiveStringRedisTemplate;
+//    @Autowired
+//    ReactiveStringRedisTemplate reactiveStringRedisTemplate;
 
     @Autowired
     ReactiveRedisTemplate<String, User> reactiveRedisTemplate;
@@ -78,16 +78,16 @@ public class LoginApplicationTests {
             template.inTransaction().execute(action ->
                     action.save(user1).doOnError(System.err::println).then(action.save(user2)).flatMap(val -> {
                         return Mono.just(user2);
-                    })).as(StepVerifier::create).consumeNextWith(System.err::println).verifyComplete();
+                    })).as(StepVerifier::create).consumeNextWith(System.out::println).verifyComplete();
         }
 
     }
 
-    @Test
-    public void TestReactiveRedisTemplate() {
-        Mono<Long> m = reactiveStringRedisTemplate.opsForSet().add("test1", "123456");
-        StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
-    }
+//    @Test
+//    public void TestReactiveRedisTemplate() {
+//        Mono<Long> m = reactiveStringRedisTemplate.opsForSet().add("test1", "123456");
+//        StepVerifier.create(m).consumeNextWith(System.out::println).verifyComplete();
+//    }
 
     @Test
     public void TestRedisList() {

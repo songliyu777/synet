@@ -7,11 +7,11 @@ spring:
     serviceId: login-logic
   data:
     mongodb:
-      host: 192.168.99.211
+      host: 192.168.99.87
       database: test
-      port: 27018
+      port: 27017
   redis:
-    host: 192.168.99.230
+    host: 192.168.99.87
     port: 6379
     database: 0
 
@@ -20,13 +20,14 @@ reactive:
     hystrix:
       enabled: false
 
-## cache 配置
+## data 配置
+
 synet:
-  cache:
-    type: redis
-    redis:
-      time-to-live: 3h
-      cache-null-values: false
+  player:
+    cache:
+      ttl: 1000
+      entities:
+        - {clazz: com.synet.server.logic.login.UserEntity, playerKey: user, }
 
 eureka:
   instance:
