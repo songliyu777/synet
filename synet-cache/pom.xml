@@ -15,9 +15,9 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>cache-abstract</module>
-        <module>cache-redis</module>
-        <module>cache-autoconfigure</module>
+        <module>synet-cache-abstract</module>
+        <module>synet-cache-redis</module>
+        <module>synet-cache-autoconfigure</module>
     </modules>
 
     <properties>

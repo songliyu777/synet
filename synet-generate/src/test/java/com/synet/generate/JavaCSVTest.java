@@ -1,6 +1,6 @@
 package com.synet.generate;
 
-import com.csvreader.CsvReader;
+import com.synet.csv.CsvReader;
 import org.junit.Test;
 
 import java.io.IOException;

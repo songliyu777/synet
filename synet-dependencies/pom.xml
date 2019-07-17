@@ -92,19 +92,19 @@
 
             <dependency>
                 <groupId>com.synet</groupId>
-                <artifactId>cache-abstract</artifactId>
+                <artifactId>synet-cache-abstract</artifactId>
                 <version>${synet.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.synet</groupId>
-                <artifactId>cache-autoconfigure</artifactId>
+                <artifactId>synet-cache-autoconfigure</artifactId>
                 <version>${synet.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.synet</groupId>
-                <artifactId>cache-redis</artifactId>
+                <artifactId>synet-cache-redis</artifactId>
                 <version>${synet.version}</version>
             </dependency>
 

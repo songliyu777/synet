@@ -5,7 +5,6 @@ RUN mkdir -p $WORK_PATH  && \
     mkdir -p /product/log
 WORKDIR $WORK_PATH
 
-# lightning cloud
 COPY synet-eureka-register/target/synet-eureka-register-1.0.0-SNAPSHOT.jar $WORK_PATH
 COPY synet-server-gateway/target/synet-server-gateway-1.0.0-SNAPSHOT.jar $WORK_PATH
 COPY synet-server-logic/target/synet-server-logic-1.0.0-SNAPSHOT.jar $WORK_PATH
