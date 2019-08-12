@@ -92,6 +92,12 @@
 
             <dependency>
                 <groupId>com.synet</groupId>
+                <artifactId>synet-directclient-starter</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.synet</groupId>
                 <artifactId>synet-cache-abstract</artifactId>
                 <version>${synet.version}</version>
             </dependency>
@@ -111,6 +117,12 @@
             <dependency>
                 <groupId>com.synet</groupId>
                 <artifactId>synet-generate</artifactId>
+                <version>${synet.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.synet</groupId>
+                <artifactId>synet-jmeter-test</artifactId>
                 <version>${synet.version}</version>
             </dependency>
 

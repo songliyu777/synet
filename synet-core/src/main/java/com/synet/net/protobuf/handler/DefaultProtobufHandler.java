@@ -72,7 +72,7 @@ public class DefaultProtobufHandler implements ProtobufHandler {
 
             Message message = decoder.decode(byteBuffer, bodyParameter);
             ProtoRequest protoRequest = ProtoRequest.builder()
-                    .header(protocol.getProtoHeader(request.remoteAddress().get().getHostString()))
+                    .header(protocol.getProtoHeader())
                     .message(message)
                     .build();
 

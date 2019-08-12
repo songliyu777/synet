@@ -18,5 +18,6 @@
         <module>synet-protobufservice-starter</module>
         <module>synet-gatewayservice-starter</module>
         <module>synet-dataservice-starter</module>
+        <module>synet-directclient-starter</module>
     </modules>
 </project>

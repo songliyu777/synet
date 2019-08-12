@@ -7,9 +7,9 @@ import reactor.core.publisher.Mono;
 
 import java.nio.ByteBuffer;
 
-@ReactiveFeignClient(name = "server-logic")
-public interface MessageClient {
-
-    @PostMapping(value = "/pb/protocol", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    Mono<ByteBuffer> protocol(ByteBuffer body);
-}
+//@ReactiveFeignClient(name = "server-logic")
+//public interface MessageClient {
+//
+//    @PostMapping(value = "/pb/protocol", consumes = MediaType.APPLICATION_OCTET_STREAM_VALUE,  headers = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+//    Mono<ByteBuffer> protocol(ByteBuffer body);
+//}

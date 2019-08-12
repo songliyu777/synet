@@ -9,5 +9,4 @@ public class ProtoHeader {
     private int serial;
     private short cmd;
     private long session;
-    private String remoteAddress;
 }

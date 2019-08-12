@@ -82,12 +82,11 @@ public class NetProtocol implements IProtocol {
         return head;
     }
 
-    public ProtoHeader getProtoHeader(String remoteAddress){
+    public ProtoHeader getProtoHeader(){
         return  ProtoHeader.builder()
                 .cmd(getHead().getCmd())
                 .serial(getHead().getSerial())
-                .session(getHead().getSession())
-                .remoteAddress(remoteAddress).build();
+                .session(getHead().getSession()).build();
     }
 
     @Override

@@ -29,7 +29,7 @@ public class PlayerEntityConfig {
         try {
             return (Class<? extends StateEntity>) Class.forName(this.clazz);
         } catch (ClassNotFoundException e) {
-           throw new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 }

@@ -7,11 +7,11 @@ spring:
     serviceId: login-logic
   data:
     mongodb:
-      host: 192.168.99.87
+      host: 192.168.99.110
       database: test
       port: 27017
   redis:
-    host: 192.168.99.87
+    host: 192.168.99.110
     port: 6379
     database: 0
 
@@ -23,6 +23,8 @@ reactive:
 ## data 配置
 
 synet:
+  directclients:
+    - login-logic
   player:
     cache:
       ttl: 1000

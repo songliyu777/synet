@@ -61,35 +61,35 @@
 			<artifactId>protobuf-java</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.playtika.reactivefeign</groupId>
-			<artifactId>feign-reactor-webclient</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.playtika.reactivefeign</groupId>-->
+			<!--<artifactId>feign-reactor-webclient</artifactId>-->
+		<!--</dependency>-->
 
-		<dependency>
-			<groupId>com.playtika.reactivefeign</groupId>
-			<artifactId>feign-reactor-cloud</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.playtika.reactivefeign</groupId>-->
+			<!--<artifactId>feign-reactor-cloud</artifactId>-->
+		<!--</dependency>-->
 
-		<dependency>
-			<groupId>com.playtika.reactivefeign</groupId>
-			<artifactId>feign-reactor-spring-configuration</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.playtika.reactivefeign</groupId>-->
+			<!--<artifactId>feign-reactor-spring-configuration</artifactId>-->
+		<!--</dependency>-->
 
-		<dependency>
-			<groupId>io.micrometer</groupId>
-			<artifactId>micrometer-core</artifactId>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>io.micrometer</groupId>-->
+			<!--<artifactId>micrometer-core</artifactId>-->
+		<!--</dependency>-->
 
 	</dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
+	<!--<build>-->
+		<!--<plugins>-->
+			<!--<plugin>-->
+				<!--<groupId>org.springframework.boot</groupId>-->
+				<!--<artifactId>spring-boot-maven-plugin</artifactId>-->
+			<!--</plugin>-->
+		<!--</plugins>-->
+	<!--</build>-->
 
 </project>

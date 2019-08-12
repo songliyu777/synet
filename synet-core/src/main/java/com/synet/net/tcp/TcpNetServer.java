@@ -9,9 +9,6 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
 import reactor.netty.Connection;
 import reactor.netty.DisposableServer;
 import reactor.netty.NettyInbound;
@@ -27,6 +24,8 @@ import java.util.function.Consumer;
 
 @Slf4j
 public class TcpNetServer {
+
+    SessionManager sessionManager;
 
     CountDownLatch latch;
 
@@ -52,21 +51,22 @@ public class TcpNetServer {
     Consumer<Throwable> error = (throwable) -> log.error(throwable.toString());
 
     DisposableServer server;
-    Scheduler scheduler;
 
     Consumer<? super ISession> doOnConnection = (session) -> log.warn("doOnConnection to be implement");
     Consumer<? super ISession> doOnDisconnection = (session) -> log.warn("doOnDisconnection to be implement");
 
-    public TcpNetServer(String ip, int port) {
+    public TcpNetServer(String ip, int port, SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
         this.ip = ip;
         this.port = port;
     }
 
-    public TcpNetServer(String ip, int port, long readIdleTime, long writeIdleTime) {
+    public TcpNetServer(String ip, int port, long readIdleTime, long writeIdleTime, SessionManager sessionManager) {
         this.ip = ip;
         this.port = port;
         this.readIdleTime = readIdleTime;
         this.writeIdleTime = writeIdleTime;
+        this.sessionManager = sessionManager;
     }
 
     public void setProcessHandler(Consumer<NetProtocol> process) {
@@ -89,12 +89,13 @@ public class TcpNetServer {
             connection.onWriteIdle(writeIdleTime, () -> connection.disposeNow());
         }
         connection.addHandler("server controller", new ChannelInboundHandlerAdapter() {
+
             @Override
             public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
                 //连接中断通道关闭调度到工作线程进行ISession的移除
                 Connection c = () -> ctx.channel();
                 long session = c.channel().attr(SessionManager.channel_session_id).get();
-                doOnDisconnection.accept(SessionManager.GetInstance().RemoveSession(session));
+                doOnDisconnection.accept(sessionManager.removeSession(session));
                 ctx.fireChannelUnregistered();
             }
 
@@ -109,9 +110,8 @@ public class TcpNetServer {
             }
         });
         connection.addHandler("frame decoder", new LengthFieldBasedFrameDecoder(1024 * 1024, 2, 4, 16, 0));
-        //先生成session,再投递到工作线程
-        ISession session = SessionManager.GetInstance().NewTcpSession(connection);
-        doOnConnection.accept(SessionManager.GetInstance().AddSession(session));
+        ISession session = sessionManager.newTcpSession(connection);
+        doOnConnection.accept(sessionManager.addSession(session));
     };
 
     //封包处理handler
@@ -142,11 +142,10 @@ public class TcpNetServer {
             }
 
             server = tcpServer.bind().block();
-            scheduler = Schedulers.newSingle("Tcp Single Work");
             closeFuture = server.channel().closeFuture();
+            sessionManager.generateId();
             latch.countDown();
             closeFuture.sync();
-            scheduler.dispose();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -158,10 +157,6 @@ public class TcpNetServer {
         if (!latch.await(5, TimeUnit.SECONDS)) {
             throw new InterruptedException();
         }
-    }
-
-    public Scheduler getSingleWorkScheduler() {
-        return scheduler;
     }
 
     /**
@@ -189,7 +184,7 @@ public class TcpNetServer {
      * @param buffer
      */
     public void send(long id, ByteBuffer buffer) {
-        ISession session = SessionManager.GetInstance().GetTcpSession(id);
+        ISession session = sessionManager.getTcpSession(id);
         session.send(buffer.array());
     }
 }

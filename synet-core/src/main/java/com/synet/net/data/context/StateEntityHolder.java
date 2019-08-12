@@ -1,5 +1,6 @@
 package com.synet.net.data.context;
 
+import com.synet.net.data.context.StateEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

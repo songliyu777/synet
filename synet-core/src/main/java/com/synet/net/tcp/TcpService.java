@@ -21,13 +21,13 @@ public class TcpService implements ApplicationListener, NetService {
 
     TcpNetServer server;
 
-    public TcpService(TcpServiceConfig config, TcpServiceHandler handler) throws Exception {
+    public TcpService(TcpNetServer server, TcpServiceHandler handler) throws Exception {
         this.handler = handler;
-        server = new TcpNetServer(config.getHost(), config.getPort(), config.getReadIdleTime(), config.getWriteIdleTime());
-        server.setProcessHandler(this::process);
-        server.setErrorHandler(this::error);
-        server.doOnConnection(this::connection);
-        server.createServer();
+        this.server = server;
+        this.server.setProcessHandler(this::process);
+        this.server.setErrorHandler(this::error);
+        this.server.doOnConnection(this::connection);
+        this.server.createServer();
     }
 
     public TcpNetServer GetServer() {
@@ -61,7 +61,6 @@ public class TcpService implements ApplicationListener, NetService {
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
-        log.info(event.toString());
         if (event instanceof ContextStoppedEvent) {
             server.getServer().dispose();
         }

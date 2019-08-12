@@ -24,18 +24,40 @@
         <module>synet-eureka-register</module>
         <module>synet-server-gateway</module>
         <module>synet-server-logic</module>
-        <module>synet-test-jmeter</module>
+        <module>synet-jmeter-test</module>
         <module>synet-starters</module>
         <module>synet-cache</module>
         <module>synet-config-server</module>
         <module>synet-generate</module>
     </modules>
 
+    <profiles>
+        <profile>
+            <id>Repository Proxy</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>syzz-synet-public</id>
+                    <name>public</name>
+                    <url>https://syzz-maven.pkg.coding.net/repository/synet/public/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
-            <id>maven-public</id>
-            <name>maven-public</name>
-            <url>http://192.168.99.87:8081/repository/maven-public/</url>
+            <id>syzz-synet-public</id>
+            <name>public</name>
+            <url>https://syzz-maven.pkg.coding.net/repository/synet/public/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
@@ -43,19 +65,44 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <!--<repository>-->
+            <!--<id>maven-public</id>-->
+            <!--<name>maven-public</name>-->
+            <!--<url>http://192.168.99.87:8081/repository/maven-public/</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>true</enabled>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
     </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>nexus-aliyun</id>
+            <name>Nexus aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <distributionManagement>
         <repository>
-            <id>maven-releases</id>
-            <name>maven-releases</name>
-            <url>http://192.168.99.87:8081/repository/maven-releases/</url>
+            <!--必须与 settings.xml 的 id 一致-->
+            <id>syzz-synet-public</id>
+            <name>public</name>
+            <url>https://syzz-maven.pkg.coding.net/repository/synet/public/</url>
         </repository>
-        <snapshotRepository>
-            <id>maven-snapshots</id>
-            <name>maven-snapshots</name>
-            <url>http://192.168.99.87:8081/repository/maven-snapshots/</url>
-        </snapshotRepository>
+        <!--<repository>-->
+            <!--<id>maven-releases</id>-->
+            <!--<name>maven-releases</name>-->
+            <!--<url>http://192.168.99.87:8081/repository/maven-releases/</url>-->
+        <!--</repository>-->
+        <!--<snapshotRepository>-->
+            <!--<id>maven-snapshots</id>-->
+            <!--<name>maven-snapshots</name>-->
+            <!--<url>http://192.168.99.87:8081/repository/maven-snapshots/</url>-->
+        <!--</snapshotRepository>-->
     </distributionManagement>
 
 </project>

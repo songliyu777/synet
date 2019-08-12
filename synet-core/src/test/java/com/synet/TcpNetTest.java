@@ -1,5 +1,6 @@
 package com.synet;
 
+import com.synet.net.session.SessionManager;
 import com.synet.net.tcp.TcpNetClient;
 import com.synet.net.tcp.TcpNetServer;
 import org.junit.Assert;
@@ -17,7 +18,7 @@ public class TcpNetTest {
 
         CountDownLatch latch = new CountDownLatch(10);
 
-        TcpNetServer server = new TcpNetServer("", 1234);
+        TcpNetServer server = new TcpNetServer("", 1234, new SessionManager());
 
         server.setProcessHandler((protocol) -> {
             System.out.println("Success");
